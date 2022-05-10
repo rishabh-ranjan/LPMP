@@ -17,9 +17,6 @@
 [submodule "external/BCFW-Bundle"]
 	path = external/BCFW-Bundle
 	url = https://github.com/pawelswoboda/BCFW-Bundle.git
-[submodule "external/DD_ILP"]
-	path = external/DD_ILP
-	url = https://github.com/pawelswoboda/DD_ILP.git
 [submodule "external/arboricity"]
 	path = external/arboricity
 	url = https://github.com/pawelswoboda/arboricity.git
