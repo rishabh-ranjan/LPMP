@@ -48,3 +48,6 @@
 [submodule "LifT_Solver"]
 	path = external/LifT_Solver
 	url = https://github.com/AndreaHor/LifT_Solver.git
+[submodule "external/DD_ILP"]
+	path = external/DD_ILP
+	url = https://github.com/pawelswoboda/DD_ILP
