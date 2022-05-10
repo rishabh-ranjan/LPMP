@@ -44,13 +44,13 @@ class stack_arena{
 		int cap_free()const;
 		bool empty()const;
 		bool allocated()const;
-		bool can_allocate(size_t n, int align)const;
+		bool can_allocate(std::size_t n, int align)const;
 	public:
 		stack_arena();
 		//stack_arena()
-		void attach(int * _Beg, size_t size);
+		void attach(int * _Beg, std::size_t size);
 		void detach();
-		stack_arena(int * _Beg, size_t size);
+		stack_arena(int * _Beg, std::size_t size);
 	public:
 		stack_arena(const stack_arena & x) = default;
 		//void operator = (const stack_arena & x) = default;
@@ -64,7 +64,7 @@ class stack_arena{
 		static void mark_block_unused(int * P);
 	public:
 		static int& block_size(int * P);
-		static size_t block_size_bytes(int * P);
+		static std::size_t block_size_bytes(int * P);
 		static int& block_sign(int * P);
 	public:
     //template<class _T> struct rebind {using other = stack_arena<_T>;};
@@ -97,45 +97,45 @@ class stack_arena{
 	class block_arena{
 	public:
 	protected:
-		size_t buffer_size;
+		std::size_t buffer_size;
     mutable std::vector<stack_arena> buffers;
 		//mutable dynamic_array1<stack_allocator, mallocator<stack_allocator> > buffers;
 		stack_arena spare;//!< when deallocating, save one spare buffer
-		size_t peak_reserved;
-		size_t current_reserved;
-		size_t current_used;
+		std::size_t peak_reserved;
+		std::size_t current_reserved;
+		std::size_t current_used;
 		int alloc_count;
       spinlock lock_;
 	private:
-		void took_mem(size_t size_bytes);
-		void released_mem(size_t size_bytes);
+		void took_mem(std::size_t size_bytes);
+		void released_mem(std::size_t size_bytes);
 	protected:
-		void add_buffer(size_t buffer_size_sp);
+		void add_buffer(std::size_t buffer_size_sp);
 		void drop_buffer();
 	public:
 		//!clean unused blocks in the buffers and drop empty buffers
 		void clean_garbage();
 	public:
-		block_arena(size_t default_buffer_size=16*MB);
-		void reserve(size_t reserve_buffer_size);
+		block_arena(std::size_t default_buffer_size=16*MB);
+		void reserve(std::size_t reserve_buffer_size);
 	private://forbidden
 		block_arena(const block_arena & x);
 		void operator=(const block_arena & x);
-		void* protect_allocate(size_t n, int align);
+		void* protect_allocate(std::size_t n, int align);
 		void protect_deallocate(void * vP);
 	public:
 		~block_arena();
 	public:
-		size_t mem_used()const;
-		size_t mem_reserved()const;
-		size_t mem_peak_reserved()const;
-		static size_t round_up(size_t size_bytes);
-		static size_t align_up(size_t size_bytes);
+		std::size_t mem_used()const;
+		std::size_t mem_reserved()const;
+		std::size_t mem_peak_reserved()const;
+		static std::size_t round_up(std::size_t size_bytes);
+		static std::size_t align_up(std::size_t size_bytes);
 	public:
-		void* allocate(size_t n, int aling = sizeof(size_t));
-		size_t object_size(void * vP);
+		void* allocate(std::size_t n, int aling = sizeof(std::size_t));
+		std::size_t object_size(void * vP);
 		void deallocate(void * vP);
-		void* realloc(void * vP, size_t size_bytes);
+		void* realloc(void * vP, std::size_t size_bytes);
 		void error_allocate(big_size n, const char * caller);
 		void check_integrity();
 	};
@@ -171,7 +171,7 @@ class stack_arena{
 	inline stack_arena::stack_arena() :_beg(0), _end(0), _capbeg(0){
    }
 	//stack_arena()
-	inline void stack_arena::attach(int * _Beg, size_t size){
+	inline void stack_arena::attach(int * _Beg, std::size_t size){
 		if (!empty())throw std::bad_alloc();
 		_capbeg = _Beg;
 		_end = _Beg + size;
@@ -182,7 +182,7 @@ class stack_arena{
 		_end = 0;
 		_capbeg = 0;
    }
-	inline stack_arena::stack_arena(int * _Beg, size_t size) :_capbeg(_Beg){
+	inline stack_arena::stack_arena(int * _Beg, std::size_t size) :_capbeg(_Beg){
 		_end = _Beg + size;
 		_beg = _end;
    }
@@ -226,16 +226,16 @@ template<typename T>
 	inline int& stack_arena::block_size(int * P){
 		return *(P - 2);
    }
-	inline size_t stack_arena::block_size_bytes(int * P){
-		return size_t(*(P - 2))*sizeof(int);
+	inline std::size_t stack_arena::block_size_bytes(int * P){
+		return std::size_t(*(P - 2))*sizeof(int);
    }
 	inline int& stack_arena::block_sign(int * P){
 		return *(P - 1);
    }
-	inline bool stack_arena::can_allocate(size_t n, int align)const{
-		// assume size_bytes is aligned to sizeof(size_t)
+	inline bool stack_arena::can_allocate(std::size_t n, int align)const{
+		// assume size_bytes is aligned to sizeof(std::size_t)
 		int size = n;
-		int sz_add_bytes = size_t(beg() - size) % align;
+		int sz_add_bytes = std::size_t(beg() - size) % align;
 		size = size + sz_add_bytes/sizeof(int);
 		return (cap_free() >= size + overhead);
 		//return big_size(cap_free())*sizeof(int) >= size_bytes + overhead*sizeof(int);
@@ -253,17 +253,17 @@ template<typename T>
 		//int size = size_bytes >> 2;
 		// now alignment, must also be multiple of 4
 		// how many extra space to add so that (beg()-size) % (align/4) == 0?
-		//int sz_add = size_t(beg() - size) % (align / 4);
+		//int sz_add = std::size_t(beg() - size) % (align / 4);
 		//size = size + sz_add;
 		int size = size_bytes / sizeof(int);
-		int sz_add_bytes = size_t(beg() - size) % align;
+		int sz_add_bytes = std::size_t(beg() - size) % align;
 		size = size + sz_add_bytes / sizeof(int);
     if (cap_free() < size + overhead){//check if it fits
       throw std::bad_alloc();
     }
 		int * P = beg() - size;
 		//chech address is aligned
-		assert(size_t(P)%(align) == 0);
+		assert(std::size_t(P)%(align) == 0);
 		block_size(P) = size;
 		mark_block_used(P);
 		_beg = P - overhead;
@@ -353,11 +353,11 @@ template<typename T>
 
 
 //__________________block_arena________________________
-	inline void block_arena::took_mem(size_t size_bytes){
+	inline void block_arena::took_mem(std::size_t size_bytes){
 		current_reserved += size_bytes;
 		peak_reserved = std::max(peak_reserved, current_reserved);
    }
-	inline void block_arena::released_mem(size_t size_bytes){
+	inline void block_arena::released_mem(std::size_t size_bytes){
 		current_reserved -= size_bytes;
    }
 
@@ -371,8 +371,8 @@ template<typename T>
 		throw std::bad_alloc();
 	}
 
-	inline void block_arena::add_buffer(size_t buffer_size_sp){
-		if (spare.allocated() && spare.capacity()*size_t(sizeof(int)) >= buffer_size_sp){//have required amount in the spare
+	inline void block_arena::add_buffer(std::size_t buffer_size_sp){
+		if (spare.allocated() && spare.capacity()*std::size_t(sizeof(int)) >= buffer_size_sp){//have required amount in the spare
 			buffers.push_back(spare);//steal constructor will make spare empty
 		} else{//spare is empty or too small
 			//get a new buffer
@@ -412,7 +412,7 @@ template<typename T>
       }
    }
 
-	inline block_arena::block_arena(size_t default_buffer_size) :buffer_size(default_buffer_size) {
+	inline block_arena::block_arena(std::size_t default_buffer_size) :buffer_size(default_buffer_size) {
 		current_reserved = 0;
 		peak_reserved = 0;
 		current_used = 0;
@@ -421,7 +421,7 @@ template<typename T>
    }
 
 	//inline
-	inline void block_arena::reserve(size_t reserve_buffer_size){
+	inline void block_arena::reserve(std::size_t reserve_buffer_size){
     std::lock_guard<spinlock> lock(lock_);
 //#pragma omp critical(mem_allocation)
 		{
@@ -469,31 +469,31 @@ template<typename T>
       }
    }
 
-	inline size_t block_arena::mem_used()const{
+	inline std::size_t block_arena::mem_used()const{
 		return current_used;
    }
 
-	inline size_t block_arena::mem_reserved()const{
-		size_t m = current_reserved - spare.cap_free()*sizeof(int);
+	inline std::size_t block_arena::mem_reserved()const{
+		std::size_t m = current_reserved - spare.cap_free()*sizeof(int);
 		if (!buffers.empty())m -= buffers.back().cap_free()*sizeof(int);
 		return m;
    }
 
-	inline size_t block_arena::mem_peak_reserved()const{
+	inline std::size_t block_arena::mem_peak_reserved()const{
 		return peak_reserved;
    }
 
 
-	inline size_t block_arena::round_up(size_t size_bytes){
+	inline std::size_t block_arena::round_up(std::size_t size_bytes){
 		return (((size_bytes + 3) >> 2) << 2);
    }
 
-	inline size_t block_arena::align_up(size_t size_bytes){
-		//return ((size_bytes + sizeof(size_t) - 1) / sizeof(size_t))*sizeof(size_t);
+	inline std::size_t block_arena::align_up(std::size_t size_bytes){
+		//return ((size_bytes + sizeof(std::size_t) - 1) / sizeof(std::size_t))*sizeof(std::size_t);
 		return ((size_bytes + 15) >> 4)<< 4;
    }
 
-	inline void* block_arena::protect_allocate(size_t n, int align){
+	inline void* block_arena::protect_allocate(std::size_t n, int align){
 		void* P;
 		int size_bytes = round_up(n);
 		++alloc_count;
@@ -523,21 +523,21 @@ template<typename T>
          std::cout << "large allocation not fitting into buffers\n";
       }
 		big_size cap = round_up(size_bytes);
-		big_size size_allocate = cap + sizeof(int) + sizeof(size_t);
+		big_size size_allocate = cap + sizeof(int) + sizeof(std::size_t);
 		if (size_allocate > (big_size)(std::numeric_limits<std::size_t>::max() / 2)){
 			error_allocate(n , "size_check");
       }
-		int * Q = (int*)malloc(size_t(size_allocate));
+		int * Q = (int*)malloc(std::size_t(size_allocate));
 		if (Q == 0)error_allocate(size_allocate, "malloc (2)");
-		took_mem(size_t(cap));
-		P = (void*)((char*)Q + sizeof(int) + sizeof(size_t));
+		took_mem(std::size_t(cap));
+		P = (void*)((char*)Q + sizeof(int) + sizeof(std::size_t));
 		*((int*)(P) - 1) = sign_malloc;
-		*((size_t*)((int*)(P) - 1) - 1) = (size_t)cap;
-		current_used += (size_t)cap;
+		*((std::size_t*)((int*)(P) - 1) - 1) = (std::size_t)cap;
+		current_used += (std::size_t)cap;
 		return P;
       }
 
-	inline void * block_arena::allocate(size_t n, int align){
+	inline void * block_arena::allocate(std::size_t n, int align){
 		void* P;
     std::lock_guard<spinlock> lock(lock_);
 //#pragma omp critical (mem_allocation)
@@ -545,14 +545,14 @@ template<typename T>
 		return P;
    }
 
-	inline size_t block_arena::object_size(void * vP){
+	inline std::size_t block_arena::object_size(void * vP){
 		assert(vP != 0);
 		int * P = (int*)vP;
 		int sign = stack_arena::block_sign(P);
 		if (sign == sign_block_used){
 			return stack_arena::block_size(P)*sizeof(int);
 		} else if (sign == sign_malloc){
-			return *((size_t*)(P - 1) - 1);
+			return *((std::size_t*)(P - 1) - 1);
 		} else{
 			printf("Error:unrecognized signature\n");
 			throw std::bad_alloc();
@@ -571,7 +571,7 @@ template<typename T>
 		int sign = stack_arena::block_sign(P);
 		if (sign == sign_block_used){//allocated by stack_arena
 			assert(!buffers.empty());
-			size_t cap = stack_arena::block_size(P)*sizeof(int);
+			std::size_t cap = stack_arena::block_size(P)*sizeof(int);
 			current_used -= cap;
 			assert(current_used >= 0);
 			//does not matter if cP is not from the top buffer (or even from other allocator) -- in that case it will only be marked for deallocation
@@ -582,11 +582,11 @@ template<typename T>
 			return;
       }
 		if (sign == sign_malloc){//was a large separate block
-			size_t cap = *((size_t*)(P - 1) - 1);
+			std::size_t cap = *((std::size_t*)(P - 1) - 1);
 			stack_arena::block_sign(P) = 321321321;
 			current_used -= cap;
 			assert(current_used >= 0);
-			free((char*)P - sizeof(int) - sizeof(size_t));
+			free((char*)P - sizeof(int) - sizeof(std::size_t));
 			released_mem(cap);
 			return;
       }
@@ -605,9 +605,9 @@ template<typename T>
    }
 
 	//inline
-	inline void* block_arena::realloc(void * vP, size_t size_bytes){
+	inline void* block_arena::realloc(void * vP, std::size_t size_bytes){
 		if (!vP)return allocate(size_bytes);
-		size_t sz = object_size(vP);
+		std::size_t sz = object_size(vP);
 		void * vQ = allocate(size_bytes);
 		memcpy(vQ, vP, std::min(sz, size_bytes));
 		deallocate(vP);
@@ -638,7 +638,7 @@ public:
   stack_allocator& operator=(stack_allocator&) = delete;
   stack_allocator(stack_arena& a) noexcept : a_(a) {}
   //template<typename T2> struct rebind {using other = stack_allocator<T2>;};
-  T* allocate(std::size_t n, int align = sizeof(size_t)) { return (T*)a_.allocate(n*sizeof(T),align); }
+  T* allocate(std::size_t n, int align = sizeof(std::size_t)) { return (T*)a_.allocate(n*sizeof(T),align); }
   void deallocate(T* p, std::size_t n) { return a_.deallocate((void*)p,n); }
   template<typename TT>
   friend bool operator==(const stack_allocator<TT>& a1, const stack_allocator<TT>& a2);
@@ -664,7 +664,7 @@ public:
   block_allocator& operator=(block_allocator&) = delete;
   block_allocator(block_arena& a) noexcept : a_(a) {}
   //template<typename T2> struct rebind {using other = block_allocator<T2>;};
-  T* allocate(std::size_t n, int align = sizeof(size_t)) { return (T*)a_.allocate(n*sizeof(T), align); }
+  T* allocate(std::size_t n, int align = sizeof(std::size_t)) { return (T*)a_.allocate(n*sizeof(T), align); }
   void deallocate(T* p, std::size_t n) { return a_.deallocate((void*)p); }
   template<typename TT>
   friend bool operator==(const block_allocator<TT>& a1, const block_allocator<TT>& a2);
@@ -698,11 +698,11 @@ constexpr INDEX no_stack_allocators = 1;
 static std::array<block_arena, no_stack_allocators> global_real_block_arena_array;
 
 template <std::size_t... I, typename RandomAccessIterator>
-std::array<block_allocator<REAL>, no_stack_allocators> make_block_allocator_array(RandomAccessIterator& first, std::integer_sequence<size_t,I...>) {
+std::array<block_allocator<REAL>, no_stack_allocators> make_block_allocator_array(RandomAccessIterator& first, std::integer_sequence<std::size_t,I...>) {
   return std::array<block_allocator<REAL>, no_stack_allocators>{ { first[I]... } };
 }
 
-static std::array<block_allocator<REAL>, no_stack_allocators> global_real_block_allocator_array ( make_block_allocator_array(global_real_block_arena_array, std::make_integer_sequence<size_t,no_stack_allocators>{} ) ) ;
+static std::array<block_allocator<REAL>, no_stack_allocators> global_real_block_allocator_array ( make_block_allocator_array(global_real_block_arena_array, std::make_integer_sequence<std::size_t,no_stack_allocators>{} ) ) ;
 
 static thread_local INDEX stack_allocator_index = 0;
 // do zrobienia: both above allocators do not destroy their arenas

@@ -58,8 +58,8 @@ namespace lifted_disjoint_paths {
 template<class T=char>
  std::vector<std::string> split(
         std::string inputString, T delim) {
-    size_t occurence = 0;
-    size_t newOccurence = 0;
+    std::size_t occurence = 0;
+    std::size_t newOccurence = 0;
     std::vector<std::string> strings;
     while (newOccurence < inputString.size()) {
         newOccurence = std::min(inputString.find_first_of(delim, occurence),
@@ -75,7 +75,7 @@ template<class T=char>
 }
 
 //template<class T>
-//inline bool edgeCompare(const std::tuple<T,size_t,size_t,bool>& t1,const std::tuple<T,size_t,size_t,bool>& t2) {
+//inline bool edgeCompare(const std::tuple<T,std::size_t,std::size_t,bool>& t1,const std::tuple<T,std::size_t,std::size_t,bool>& t2) {
 //     if(std::get<0>(t1)==std::get<0>(t2)){
 //         if(std::get<1>(t1)==std::get<1>(t2)){
 //             if(std::get<2>(t1)==std::get<2>(t2)){
@@ -120,7 +120,7 @@ template<class T=char>
 // template <class T>
 // class ForQueueComparator{
 // public:
-//     bool operator()(const std::tuple<double,size_t,T>& lhs, const  std::tuple<double,size_t,T>& rhs) {
+//     bool operator()(const std::tuple<double,std::size_t,T>& lhs, const  std::tuple<double,std::size_t,T>& rhs) {
 //         if(std::abs(std::get<0>(rhs)-std::get<0>(lhs))<eps){
 //             return std::get<1>(rhs) < std::get<1>(lhs);
 //         }
@@ -134,7 +134,7 @@ template<class T=char>
 
 
 template<class T>
-inline bool edgeCompare(const std::tuple<T,size_t,size_t,bool>& t1,const std::tuple<T,size_t,size_t,bool>& t2) {
+inline bool edgeCompare(const std::tuple<T,std::size_t,std::size_t,bool>& t1,const std::tuple<T,std::size_t,std::size_t,bool>& t2) {
      if(abs(std::get<0>(t1)-std::get<0>(t2))<eps){
          if(std::get<1>(t1)==std::get<1>(t2)){
              if(std::get<2>(t1)==std::get<2>(t2)){
@@ -166,7 +166,7 @@ inline bool edgeCompare(const std::tuple<T,size_t,size_t,bool>& t1,const std::tu
  }
 
 template<class T>
-inline bool baseEdgeCompare(const std::tuple<T,size_t,size_t>& t1,const std::tuple<T,size_t,size_t>& t2) {
+inline bool baseEdgeCompare(const std::tuple<T,std::size_t,std::size_t>& t1,const std::tuple<T,std::size_t,std::size_t>& t2) {
     //if(std::get<0>(t1)==std::get<0>(t2)){
      if(abs(std::get<0>(t1)-std::get<0>(t2))<eps){
         if(std::get<1>(t1)==std::get<1>(t2)){
@@ -197,26 +197,26 @@ inline bool reverseOrderCompare(const T& t1,const T& t2) {
 
 }  //end of namespace
 
-template<class T=size_t>
+template<class T=std::size_t>
 struct EdgeVector{
 public:
     EdgeVector(std::vector<std::array<T,2>>& inputVector):
         edges(inputVector)
     {}
 
-    T& operator()(size_t i,size_t j){
+    T& operator()(std::size_t i,std::size_t j){
         assert(j<2);
         assert(i<edges.size());
         return edges[i][j];
     }
 
-    const T& operator()(size_t i,size_t j)const{
+    const T& operator()(std::size_t i,std::size_t j)const{
         assert(j<2);
         assert(i<edges.size());
         return edges[i][j];
     }
 
-    const size_t shape(size_t i)const{
+    const std::size_t shape(std::size_t i)const{
         assert(i<=1);
         if(i==0){
             return edges.size();
@@ -231,24 +231,24 @@ private:
 
 };
 
-template<class T=size_t>
+template<class T=std::size_t>
 struct InfoVector{
 public:
     InfoVector(std::vector<T>& inputVector):
         myVector(inputVector)
     {}
 
-    T& operator()(size_t i){
+    T& operator()(std::size_t i){
         assert(i<myVector.size());
         return myVector[i];
     }
 
-    const T& operator()(size_t i)const {
+    const T& operator()(std::size_t i)const {
         assert(i<myVector.size());
         return myVector[i];
     }
 
-    const size_t shape(size_t i)const{
+    const std::size_t shape(std::size_t i)const{
         assert(i==0);
         return myVector.size();
 
@@ -262,8 +262,8 @@ private:
 
 
 template<typename T>
-void fillWithValue(std::vector<T>& myVector,size_t first,size_t last, T value){
-    for(size_t i=first;i<last;i++){
+void fillWithValue(std::vector<T>& myVector,std::size_t first,std::size_t last, T value){
+    for(std::size_t i=first;i<last;i++){
         myVector[i]=value;
     }
 }
@@ -279,16 +279,16 @@ public:
 //        myVector=std::vector<T>(0);
 //    }
 
-    ShiftedVector<T>(size_t boundary1,size_t boundary2,const T& value): //inclusive both min and max vertex
+    ShiftedVector<T>(std::size_t boundary1,std::size_t boundary2,const T& value): //inclusive both min and max vertex
     minVertex(std::min(boundary1,boundary2)),maxVertex(std::max(boundary1,boundary2))
     {
-        //const size_t min = std::min(boundary1,boundary2);
-        //const size_t max = std::max(boundary1,boundary2);
-        //const size_t size = max - min + 1;
+        //const std::size_t min = std::min(boundary1,boundary2);
+        //const std::size_t max = std::max(boundary1,boundary2);
+        //const std::size_t size = max - min + 1;
         //myVector = new T[size];
         myVector=std::vector<T>(maxVertex-minVertex+1,value);
     }
-    ShiftedVector<T>(size_t boundary1,size_t boundary2,const std::vector<T>& sourceVector): //inclusive both min and max vertex
+    ShiftedVector<T>(std::size_t boundary1,std::size_t boundary2,const std::vector<T>& sourceVector): //inclusive both min and max vertex
     minVertex(std::min(boundary1,boundary2)),maxVertex(std::max(boundary1,boundary2))
     {
         assert(sourceVector.size()>maxVertex);
@@ -298,7 +298,7 @@ public:
         itEnd+=maxVertex+1;
         myVector=std::vector<T>(itBegin,itEnd);
     }
-    ShiftedVector<T>(size_t boundary1,size_t boundary2): //inclusive both min and max vertex
+    ShiftedVector<T>(std::size_t boundary1,std::size_t boundary2): //inclusive both min and max vertex
     minVertex(std::min(boundary1,boundary2)),maxVertex(std::max(boundary1,boundary2))
     {
         myVector=std::vector<T>(maxVertex-minVertex+1);
@@ -310,26 +310,26 @@ public:
     }
 
 
-    T& operator[](size_t idx){
+    T& operator[](std::size_t idx){
        // if(debug()&&( idx<minVertex||idx>maxVertex)) std::cout<<"out of bounds, index "<<idx<<", interval "<<minVertex<<","<<maxVertex<<std::endl;
         assert(idx>=minVertex&&idx<=maxVertex);
-        size_t shiftedIndex=idx-minVertex;
+        std::size_t shiftedIndex=idx-minVertex;
         return myVector[shiftedIndex];
     }
 
-//    void setValue(size_t index,T value){
+//    void setValue(std::size_t index,T value){
 //        assert(index>=minVertex&&index<=maxVertex);
 //        myVector[index-minVertex]=value;
 
 //    }
 
-//    T getValue(size_t idx)const {
+//    T getValue(std::size_t idx)const {
 //        assert(idx>=minVertex&&idx<=maxVertex);
-//        size_t shiftedIndex=idx-minVertex;
+//        std::size_t shiftedIndex=idx-minVertex;
 //        return myVector[shiftedIndex];
 //    }
 
-    const T& operator [](size_t idx) const {
+    const T& operator [](std::size_t idx) const {
         if(debug()&&( idx<minVertex||idx>maxVertex)) std::cout<<"out of bounds, index "<<idx<<", interval "<<minVertex<<","<<maxVertex<<std::endl;
         assert(idx>=minVertex&&idx<=maxVertex);
         return myVector[idx-minVertex];
@@ -339,33 +339,33 @@ public:
         myVector=std::vector<T>(maxVertex-minVertex+1,value);
     }
 
-    void fillWith(const T& value,size_t index1,size_t index2){ //inclusive both boundary indices
-        size_t minIndex=std::min(index1,index2);
-        size_t maxIndex=std::max(index1,index2);
+    void fillWith(const T& value,std::size_t index1,std::size_t index2){ //inclusive both boundary indices
+        std::size_t minIndex=std::min(index1,index2);
+        std::size_t maxIndex=std::max(index1,index2);
         assert(minIndex>=minVertex&&maxIndex<=maxVertex);
-        for (size_t i = minIndex; i <= maxIndex; ++i) {
+        for (std::size_t i = minIndex; i <= maxIndex; ++i) {
             myVector[i-minVertex]=value;
         }
     }
 
-    bool isWithinBounds(const size_t index)const{
+    bool isWithinBounds(const std::size_t index)const{
         return index>=minVertex&&index<=maxVertex;
 
     }
 
-    size_t getMaxVertex()const{
+    std::size_t getMaxVertex()const{
         return maxVertex;
     }
 
-    size_t getMinVertex()const{
+    std::size_t getMinVertex()const{
         return minVertex;
     }
 
 private:
     //T* myVector; // TODO: might be faster depending on whether initializing myVector is expensive
     std::vector<T> myVector;
-    size_t minVertex;
-    size_t maxVertex;
+    std::size_t minVertex;
+    std::size_t maxVertex;
 };
 
 } //end of namespace

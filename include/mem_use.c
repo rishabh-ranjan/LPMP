@@ -22,7 +22,7 @@
 /// The amount of memory currently being used by this process, in bytes.
 /// By default, returns the full virtual arena, but if resident=true,
 /// it will report just the resident set in RAM (if supported on that OS).
-inline size_t memory_used (bool resident=false)
+inline std::size_t memory_used (bool resident=false)
 {
 #if defined(__linux__)
     // Ugh, getrusage doesn't work well on Linux.  Try grabbing info
@@ -31,13 +31,13 @@ inline size_t memory_used (bool resident=false)
     // numbers that are: virtual mem program size, resident set size,
     // shared pages, text/code, data/stack, library, dirty pages.  The
     // mem sizes should all be multiplied by the page size.
-    size_t size = 0;
+    std::size_t size = 0;
     std::ifstream file{"/proc/self/statm"};
     if (file) {
         unsigned long vm = 0;
         file >> vm;
        file.close();
-       size = (size_t)vm * getpagesize();
+       size = (std::size_t)vm * getpagesize();
     }
     return size;
 
@@ -47,7 +47,7 @@ inline size_t memory_used (bool resident=false)
     struct task_basic_info t_info;
     mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
     task_info(current_task(), TASK_BASIC_INFO, (task_info_t)&t_info, &t_info_count);
-    size_t size = (resident ? t_info.resident_size : t_info.virtual_size);
+    std::size_t size = (resident ? t_info.resident_size : t_info.virtual_size);
     return size;
 
 #elif defined(_WINDOWS)

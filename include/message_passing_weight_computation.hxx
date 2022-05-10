@@ -106,10 +106,10 @@ weight_array compute_type_dependent_weights
             std::size_t k=0;
             auto msgs = (*factor_it)->get_messages();
 
-            std::vector<size_t> type_specific= (*factor_it)->no_type_specific_send_messages();
+            std::vector<std::size_t> type_specific= (*factor_it)->no_type_specific_send_messages();
 
-            size_t counter=0;
-            size_t index=0;
+            std::size_t counter=0;
+            std::size_t index=0;
             double firstWeight=(1.0-leave_percentage)/(std::max(double(type_specific.size()),1.0));
             //  const auto weight = (1.0-leave_percentage)/double((*factor_it)->no_send_messages());
             for(auto msg : msgs) {

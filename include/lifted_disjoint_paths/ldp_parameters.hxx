@@ -22,11 +22,11 @@
 namespace LPMP{
 namespace lifted_disjoint_paths {
 
-template<class T=size_t>
+template<class T=std::size_t>
 std::vector<std::string> split(
 		std::string inputString, char delim) {
-	size_t occurence = 0;
-	size_t newOccurence = 0;
+	std::size_t occurence = 0;
+	std::size_t newOccurence = 0;
 	std::vector<std::string> strings;
 	while (newOccurence < inputString.size()) {
 		newOccurence = std::min(inputString.find_first_of(delim, occurence),
@@ -42,7 +42,7 @@ std::vector<std::string> split(
 }
 
 
-template<class T = size_t>
+template<class T = std::size_t>
 class LdpParameters {
 public:
 
@@ -63,19 +63,19 @@ public:
 		return graphFileName;
 	}
 
-	size_t getMaxTimeBase() const {
+	std::size_t getMaxTimeBase() const {
 		return maxTimeBase;
 	}
 
-	size_t getMaxTimeFrame() const {
+	std::size_t getMaxTimeFrame() const {
 		return maxTimeFrame;
 	}
 
-    size_t getMinTimeFrame() const {
+    std::size_t getMinTimeFrame() const {
         return minTimeFrame;
     }
 
-	const size_t getMaxTimeLifted() const {
+	const std::size_t getMaxTimeLifted() const {
 		//std::cout<<"getting max time lifted "<<maxTimeLifted<<std::endl;
 		return maxTimeLifted;
 	}
@@ -91,19 +91,19 @@ public:
 		return baseUpperThreshold;
 	}
 
-	size_t getDenseTimeLifted() const {
+	std::size_t getDenseTimeLifted() const {
 		return denseTimeLifted;
 	}
 
-	size_t getKnnK() const {
+	std::size_t getKnnK() const {
 		return knnK;
 	}
 
-	size_t getKnnTimeGap() const {
+	std::size_t getKnnTimeGap() const {
 		return knnTimeGap;
 	}
 
-	size_t getLongerIntervalLifted() const {
+	std::size_t getLongerIntervalLifted() const {
 		return longerIntervalLifted;
 	}
 
@@ -146,12 +146,12 @@ public:
     }
 
 
-//	void setMaxTimeLifted(size_t maxTimeLifted) {
+//	void setMaxTimeLifted(std::size_t maxTimeLifted) {
 //		this->maxTimeLifted = maxTimeLifted;
 //	}
 
 
-	size_t getMaxTimeGapComplete() const {
+	std::size_t getMaxTimeGapComplete() const {
         return maxTimeGapComplete;
 	}
 
@@ -180,7 +180,7 @@ public:
 	//ConfigDisjoint<>& operator=(const ConfigDisjoint<>&);
 
 
-    size_t getTightenMaxEdgeUsage() const{
+    std::size_t getTightenMaxEdgeUsage() const{
         return tighteningMaxEdgeUsage;
     }
 
@@ -202,7 +202,7 @@ public:
     }
 
 
-    size_t getPrimalHeuristicIterations()const{
+    std::size_t getPrimalHeuristicIterations()const{
         return primalHeuristicIterations;
     }
 
@@ -246,31 +246,31 @@ private:
 
 	bool sparsify;     //use graph sparsification?
 	bool restrictFrames;  //is maximal number of frames given
-	size_t maxTimeFrame;   //maximal time frame to be used
-    size_t minTimeFrame;
-	//size_t smallIntervals;
+	std::size_t maxTimeFrame;   //maximal time frame to be used
+    std::size_t minTimeFrame;
+	//std::size_t smallIntervals;
 
     bool useAdaptiveThresholds;
 
-	size_t maxTimeBase;  //max timegap for base edges
+	std::size_t maxTimeBase;  //max timegap for base edges
 	double baseUpperThreshold;  //upper cost thereshold for base edges
-	size_t knnTimeGap;   //time gap for base edges to be added densely (all K best to every node in every layer)
-	size_t knnK;         //Parameter K for knn
+	std::size_t knnTimeGap;   //time gap for base edges to be added densely (all K best to every node in every layer)
+	std::size_t knnK;         //Parameter K for knn
 
 	//bool automaticLifted;
 	double negativeThresholdLifted;  //negative cost threshold for lifted edges (lifted edges with cost close to zero are not included)
 	double positiveThresholdLifted;  //positive cost threshold for lifted edges (lifted edges with cost close to zero are not included)
-	size_t maxTimeLifted;            //max time gap for lifted edges
-	size_t denseTimeLifted;          //timegap for lifted edges to be added densely
-	size_t longerIntervalLifted;    //time frame skip for adding lifted edges sparsely
+	std::size_t maxTimeLifted;            //max time gap for lifted edges
+	std::size_t denseTimeLifted;          //timegap for lifted edges to be added densely
+	std::size_t longerIntervalLifted;    //time frame skip for adding lifted edges sparsely
 
-	size_t maxTimeGapComplete;     //max time gap of edges to read
+	std::size_t maxTimeGapComplete;     //max time gap of edges to read
 
      std::stringstream controlOutput;
 
 
      double tighteningMinImprovement;
-     size_t tighteningMaxEdgeUsage;
+     std::size_t tighteningMaxEdgeUsage;
 
 
      bool allBaseToZero;
@@ -279,7 +279,7 @@ private:
      bool missingAsMustCut;
      double mustCutPenalty;
 
-     size_t primalHeuristicIterations;
+     std::size_t primalHeuristicIterations;
 
      bool usePreIter;
      bool repamCostInHeuristic;
@@ -296,8 +296,8 @@ private:
 //	strings=split<>(line,delim);
 //	std::string whitespaces (" ");
 
-//	size_t foundLast = strings[0].find_last_not_of(whitespaces);
-//	size_t foundFirst=strings[0].find_first_not_of(whitespaces);
+//	std::size_t foundLast = strings[0].find_last_not_of(whitespaces);
+//	std::size_t foundFirst=strings[0].find_first_not_of(whitespaces);
 //	std::string key=strings[0].substr(foundFirst,foundLast-foundFirst+1);
 
 //	foundLast = strings[1].find_last_not_of(whitespaces);
@@ -403,7 +403,7 @@ inline void LdpParameters<T>::init(std::map<std::string,std::string>& parameters
     }
     else{
         restrictFrames=0;
-        maxTimeFrame=std::numeric_limits<size_t>::max();
+        maxTimeFrame=std::numeric_limits<std::size_t>::max();
     }
     controlOutput<<"max time frame "<<maxTimeFrame<<std::endl;
     writeControlOutput();

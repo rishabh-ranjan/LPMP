@@ -24,7 +24,7 @@
 #define MEMORY_BLOCK_TCC
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 inline typename MemoryPool<T, BlockSize>::size_type
 MemoryPool<T, BlockSize>::padPointer(data_pointer_ p, size_type align)
 const noexcept
@@ -35,7 +35,7 @@ const noexcept
 
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 MemoryPool<T, BlockSize>::MemoryPool()
 noexcept
 {
@@ -47,7 +47,7 @@ noexcept
 
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 MemoryPool<T, BlockSize>::MemoryPool(const MemoryPool& memoryPool)
 noexcept :
 MemoryPool()
@@ -55,7 +55,7 @@ MemoryPool()
 
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 MemoryPool<T, BlockSize>::MemoryPool(MemoryPool&& memoryPool)
 noexcept
 {
@@ -67,7 +67,7 @@ noexcept
 }
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 template<class U>
 MemoryPool<T, BlockSize>::MemoryPool(const MemoryPool<U>& memoryPool)
 noexcept :
@@ -76,7 +76,7 @@ MemoryPool()
 
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 MemoryPool<T, BlockSize>&
 MemoryPool<T, BlockSize>::operator=(MemoryPool&& memoryPool)
 noexcept
@@ -93,7 +93,7 @@ noexcept
 
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 MemoryPool<T, BlockSize>::~MemoryPool()
 noexcept
 {
@@ -116,7 +116,7 @@ noexcept
 
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 inline typename MemoryPool<T, BlockSize>::pointer
 MemoryPool<T, BlockSize>::address(reference x)
 const noexcept
@@ -126,7 +126,7 @@ const noexcept
 
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 inline typename MemoryPool<T, BlockSize>::const_pointer
 MemoryPool<T, BlockSize>::address(const_reference x)
 const noexcept
@@ -136,7 +136,7 @@ const noexcept
 
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 void
 MemoryPool<T, BlockSize>::allocateBlock()
 {
@@ -155,7 +155,7 @@ MemoryPool<T, BlockSize>::allocateBlock()
 
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 inline typename MemoryPool<T, BlockSize>::pointer
 MemoryPool<T, BlockSize>::allocate(size_type n, const_pointer hint)
 {
@@ -173,7 +173,7 @@ MemoryPool<T, BlockSize>::allocate(size_type n, const_pointer hint)
 
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 inline void
 MemoryPool<T, BlockSize>::deallocate(pointer p, size_type n)
 {
@@ -185,7 +185,7 @@ MemoryPool<T, BlockSize>::deallocate(pointer p, size_type n)
 
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 inline typename MemoryPool<T, BlockSize>::size_type
 MemoryPool<T, BlockSize>::max_size()
 const noexcept
@@ -196,7 +196,7 @@ const noexcept
 
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 template <class U, class... Args>
 inline void
 MemoryPool<T, BlockSize>::construct(U* p, Args&&... args)
@@ -206,7 +206,7 @@ MemoryPool<T, BlockSize>::construct(U* p, Args&&... args)
 
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 template <class U>
 inline void
 MemoryPool<T, BlockSize>::destroy(U* p)
@@ -216,7 +216,7 @@ MemoryPool<T, BlockSize>::destroy(U* p)
 
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 template <class... Args>
 inline typename MemoryPool<T, BlockSize>::pointer
 MemoryPool<T, BlockSize>::newElement(Args&&... args)
@@ -228,7 +228,7 @@ MemoryPool<T, BlockSize>::newElement(Args&&... args)
 
 
 
-template <typename T, size_t BlockSize>
+template <typename T, std::size_t BlockSize>
 inline void
 MemoryPool<T, BlockSize>::deleteElement(pointer p)
 {

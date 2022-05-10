@@ -27,8 +27,8 @@
 #include <cstddef>
 #include "config.hxx"
 
-constexpr static size_t NO_ELEMENTS_IN_MEMORY_POOL = 1024;
-template <typename T, size_t BlockSize = NO_ELEMENTS_IN_MEMORY_POOL*(sizeof(T)+sizeof(void*))>
+constexpr static std::size_t NO_ELEMENTS_IN_MEMORY_POOL = 1024;
+template <typename T, std::size_t BlockSize = NO_ELEMENTS_IN_MEMORY_POOL*(sizeof(T)+sizeof(void*))>
 class MemoryPool
 {
   public:
@@ -38,7 +38,7 @@ class MemoryPool
     typedef T&              reference;
     typedef const T*        const_pointer;
     typedef const T&        const_reference;
-    typedef size_t          size_type;
+    typedef std::size_t          size_type;
     typedef ptrdiff_t       difference_type;
     typedef std::false_type propagate_on_container_copy_assignment;
     typedef std::true_type  propagate_on_container_move_assignment;

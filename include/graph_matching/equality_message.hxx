@@ -211,7 +211,7 @@ public:
 
 
 private:
-   //do zrobienia: possibly SHORT_std::size_t or some 16 bit index (i.e. short unsigned int)
+   //do zrobienia: possibly SHORT_std::std::size_t or some 16 bit index (i.e. short unsigned int)
    // certainly 32 bits will be enough.
    const std::size_t leftVar_, rightVar_; // variables affected
 };

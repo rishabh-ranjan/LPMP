@@ -498,7 +498,7 @@ namespace LPMP {
     void graph_matching_frank_wolfe_impl<ASSIGNMENT_VECTOR_TYPE, QUADRATIC_COST_TYPE>::solve()
     {
         auto begin_time = std::chrono::system_clock::now();
-        for(size_t iter=0; iter<options.max_iter; ++iter) {
+        for(std::size_t iter=0; iter<options.max_iter; ++iter) {
             if(!perform_fw_step(iter))
                 break;
             const auto current_time = std::chrono::system_clock::now();

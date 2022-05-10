@@ -39,10 +39,10 @@ namespace LPMP {
         std::vector<char> is_terminal(adj.size(), 0);
         std::size_t pos = adj.size()-1;
 
-        std::vector<size_t> pseudo_peripheral_nodes = find_pseudo_peripheral_nodes(adj);
+        std::vector<std::size_t> pseudo_peripheral_nodes = find_pseudo_peripheral_nodes(adj);
 
         // loop over connected components
-        for (size_t s : pseudo_peripheral_nodes)
+        for (std::size_t s : pseudo_peripheral_nodes)
         {
             Q.push(s);
             seen[s] = 1;

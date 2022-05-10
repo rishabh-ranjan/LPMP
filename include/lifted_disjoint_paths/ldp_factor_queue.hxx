@@ -13,7 +13,7 @@ namespace LPMP {
 template <class T>
 class ForQueueComparator{
 public:
-    bool operator()(const std::tuple<double,size_t,T*>& lhs, const  std::tuple<double,size_t,T*>& rhs) {
+    bool operator()(const std::tuple<double,std::size_t,T*>& lhs, const  std::tuple<double,std::size_t,T*>& rhs) {
         if(std::abs(std::get<0>(rhs)-std::get<0>(lhs))<eps){
             return std::get<1>(rhs) < std::get<1>(lhs);
         }
@@ -28,7 +28,7 @@ template<class T>
 class LdpFactorQueue{
 public:
 
-    using QueueElement=std::tuple<double,size_t,T*>;
+    using QueueElement=std::tuple<double,std::size_t,T*>;
 
     LdpFactorQueue(){
         numberOfElements=0;
@@ -63,7 +63,7 @@ public:
 private:
 
 std::priority_queue<QueueElement,std::vector<QueueElement>,ForQueueComparator<T>> stableQueue;
-size_t numberOfElements;
+std::size_t numberOfElements;
 
 };
 

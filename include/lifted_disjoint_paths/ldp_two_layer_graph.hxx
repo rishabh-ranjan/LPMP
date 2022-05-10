@@ -7,16 +7,16 @@ namespace LPMP {
 class LdpTwoLayerGraph{
 public:
     LdpTwoLayerGraph(){}
-    LdpTwoLayerGraph(const std::vector<std::array<size_t,2>>& edges,const std::vector<double>& inputEdgeCosts);
+    LdpTwoLayerGraph(const std::vector<std::array<std::size_t,2>>& edges,const std::vector<double>& inputEdgeCosts);
 
     struct edge {
-        size_t head;
+        std::size_t head;
         double cost;
-        size_t reverse_neighbor_index; 
+        std::size_t reverse_neighbor_index; 
     };
 
 
-    void setForwardEdgeCost(size_t vertex,size_t neighborIndex,double value) {
+    void setForwardEdgeCost(std::size_t vertex,std::size_t neighborIndex,double value) {
         //todo asserts
         assert(vertex<numberOfInputs);
         assert(neighborIndex<forwardEdges[vertex].size());
@@ -29,7 +29,7 @@ public:
         assert(backwardEdges[e.head][e.reverse_neighbor_index].head==vertex);
     }
 
-    void updateForwardEdgeCost(size_t vertex,size_t neighborIndex,double value) {
+    void updateForwardEdgeCost(std::size_t vertex,std::size_t neighborIndex,double value) {
         assert(vertex<numberOfInputs);
         assert(neighborIndex<forwardEdges[vertex].size());
         edge& e=forwardEdges[vertex][neighborIndex];
@@ -40,7 +40,7 @@ public:
         assert(backwardEdges[e.head][e.reverse_neighbor_index].head==vertex);
     }
 
-    void setBackwardEdgeCost(size_t vertex,size_t neighborIndex,double value) {
+    void setBackwardEdgeCost(std::size_t vertex,std::size_t neighborIndex,double value) {
         //todo asserts
         assert(vertex<numberOfOutputs);
         assert(neighborIndex<backwardEdges[vertex].size());
@@ -52,7 +52,7 @@ public:
         assert(forwardEdges[e.head][e.reverse_neighbor_index].head==vertex);
     }
 
-    void updateBackwardEdgeCost(size_t vertex,size_t neighborIndex,double value) {
+    void updateBackwardEdgeCost(std::size_t vertex,std::size_t neighborIndex,double value) {
         assert(vertex<numberOfOutputs);
         assert(neighborIndex<backwardEdges[vertex].size());
         edge& e=backwardEdges[vertex][neighborIndex];
@@ -61,95 +61,95 @@ public:
         assert(forwardEdges[e.head][e.reverse_neighbor_index].head==vertex);
     }
 
-    double getForwardEdgeCost(size_t vertex,size_t neighborIndex) const{
+    double getForwardEdgeCost(std::size_t vertex,std::size_t neighborIndex) const{
         assert(vertex<numberOfInputs);
         assert(neighborIndex<forwardEdges[vertex].size());
         return forwardEdges[vertex][neighborIndex].cost;
     }
 
-    size_t getForwardEdgeVertex(size_t vertex,size_t neighborIndex) const{
+    std::size_t getForwardEdgeVertex(std::size_t vertex,std::size_t neighborIndex) const{
         assert(vertex<numberOfInputs);
         assert(neighborIndex<forwardEdges[vertex].size());
         return forwardEdges[vertex][neighborIndex].head;
     }
 
-    double getBackwardEdgeCost(size_t vertex,size_t neighborIndex) const{
+    double getBackwardEdgeCost(std::size_t vertex,std::size_t neighborIndex) const{
         assert(vertex<numberOfOutputs);
         assert(neighborIndex<backwardEdges[vertex].size());
         return backwardEdges[vertex][neighborIndex].cost;
     }
 
-    size_t getBackwardEdgeVertex(size_t vertex,size_t neighborIndex) const{
+    std::size_t getBackwardEdgeVertex(std::size_t vertex,std::size_t neighborIndex) const{
         assert(vertex<numberOfOutputs);
         assert(neighborIndex<backwardEdges[vertex].size());
         return backwardEdges[vertex][neighborIndex].head;
     }
 
 
-    const edge* forwardNeighborsBegin(size_t i)const {
+    const edge* forwardNeighborsBegin(std::size_t i)const {
         assert(i<numberOfInputs);
         return forwardEdges[i].begin();
     }
 
-    const edge* forwardNeighborsEnd(size_t i)const {
+    const edge* forwardNeighborsEnd(std::size_t i)const {
         assert(i<numberOfInputs);
         return forwardEdges[i].end();
     }
 
 
 
-    edge* forwardNeighborsBegin(size_t i){
+    edge* forwardNeighborsBegin(std::size_t i){
         assert(i<numberOfInputs);
         return forwardEdges[i].begin();
     }
 
-    edge* forwardNeighborsEnd(size_t i){
+    edge* forwardNeighborsEnd(std::size_t i){
         assert(i<numberOfInputs);
         return forwardEdges[i].end();
     }
 
 
-    const size_t & getNumberOfInputs()const{
+    const std::size_t & getNumberOfInputs()const{
         return numberOfInputs;
     }
 
 
 
-    const edge* backwardNeighborsBegin(size_t i)const {
+    const edge* backwardNeighborsBegin(std::size_t i)const {
         assert(i<numberOfOutputs);
         return backwardEdges[i].begin();
     }
 
-    const edge* backwardNeighborsEnd(size_t i)const {
+    const edge* backwardNeighborsEnd(std::size_t i)const {
         assert(i<numberOfOutputs);
         return backwardEdges[i].end();
     }
 
 
 
-    edge* backwardNeighborsBegin(size_t i){
+    edge* backwardNeighborsBegin(std::size_t i){
         assert(i<numberOfOutputs);
         return backwardEdges[i].begin();
     }
 
-    edge* backwardNeighborsEnd(size_t i){
+    edge* backwardNeighborsEnd(std::size_t i){
         assert(i<numberOfOutputs);
         return backwardEdges[i].end();
     }
 
 
-    const size_t & getNumberOfOutputs()const{
+    const std::size_t & getNumberOfOutputs()const{
         return numberOfOutputs;
     }
 
 
 private:
 
-    //two_dim_variable_array<std::pair<size_t,double>> forwardEdges;
+    //two_dim_variable_array<std::pair<std::size_t,double>> forwardEdges;
     two_dim_variable_array<edge> forwardEdges;
     two_dim_variable_array<edge> backwardEdges;
-    size_t numberOfInputs;
-    size_t numberOfOutputs;
+    std::size_t numberOfInputs;
+    std::size_t numberOfOutputs;
 
 };
 

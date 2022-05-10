@@ -47,7 +47,7 @@ namespace LPMP {
 
 
 template<class T,class PAR>
-    std::vector<std::unordered_set<size_t>> initReachableSet(T & graph,PAR& parameters,VertexGroups<size_t>* vg=0){
+    std::vector<std::unordered_set<std::size_t>> initReachableSet(T & graph,PAR& parameters,VertexGroups<std::size_t>* vg=0){
 
 
 //        levinkov::Timer tfw;
@@ -55,13 +55,13 @@ template<class T,class PAR>
 
 
         parameters.getControlOutput()<<"Run Floyd Warshall"<<std::endl;
-                const size_t n=graph.numberOfVertices();
+                const std::size_t n=graph.numberOfVertices();
 
                 // todo: use some matrix structure
-                std::vector<std::unordered_set<size_t>> desc(n);
+                std::vector<std::unordered_set<std::size_t>> desc(n);
                 std::vector<std::vector<std::bitset<10000>>> descBit(n);
-                size_t columns=n/10000;
-                size_t mod=n%10000;
+                std::size_t columns=n/10000;
+                std::size_t mod=n%10000;
                 if(mod>0) columns++;
 
 
@@ -69,12 +69,12 @@ template<class T,class PAR>
                         descBit[i]=std::vector<std::bitset<10000>>(columns);
                 }
 
-                for (size_t v = 0; v < n; ++v) {
+                for (std::size_t v = 0; v < n; ++v) {
 
                         descBit[v][v/10000][v%10000]=1; //make this reflexive
-                        size_t edges=graph.numberOfEdgesFromVertex(v);
+                        std::size_t edges=graph.numberOfEdgesFromVertex(v);
                         for (int j = 0; j < edges; ++j) {
-                                size_t w=graph.vertexFromVertex(v,j);
+                                std::size_t w=graph.vertexFromVertex(v,j);
                                 descBit[v][w/10000][w%10000]=1;
 
 
@@ -107,10 +107,10 @@ template<class T,class PAR>
                         for (int k1 = 0; k1 <columns; ++k1) {
                                 for (int k2 = 0; k2 < 10000; ++k2) {
                                         if(k1*10000+k2<n){
-                                                size_t maxTime=vg->getGroupIndex(k1*10000+k2);
+                                                std::size_t maxTime=vg->getGroupIndex(k1*10000+k2);
                                                 for (int t = 0; t < maxTime; ++t) {//TODO use time gap
-                                                        const std::vector<size_t>& vertices=vg->getGroupVertices(t);
-                                                        for (size_t i:vertices) {
+                                                        const std::vector<std::size_t>& vertices=vg->getGroupVertices(t);
+                                                        for (std::size_t i:vertices) {
                                                                 if(descBit[i][k1][k2]){
                                                                         for (int j = 0; j < columns; ++j) {
                                                                                 descBit[i][j]|=descBit[k1*10000+k2][j];
@@ -154,7 +154,7 @@ template<class T,class PAR>
 
 
 
-//    std::vector<std::unordered_set<size_t>> initReachableSet(T & graph,PAR& parameters,VertexGroups<size_t>* vg=0){
+//    std::vector<std::unordered_set<std::size_t>> initReachableSet(T & graph,PAR& parameters,VertexGroups<std::size_t>* vg=0){
 
 
 ////        levinkov::Timer tfw;
@@ -162,13 +162,13 @@ template<class T,class PAR>
 
 
 //        parameters.getControlOutput()<<"Run Floyd Warshall"<<std::endl;
-//                const size_t n=graph.numberOfVertices();
+//                const std::size_t n=graph.numberOfVertices();
 
 //                // todo: use some matrix structure
-//                std::vector<std::unordered_set<size_t>> desc(n);
+//                std::vector<std::unordered_set<std::size_t>> desc(n);
 //                std::vector<std::vector<std::bitset<10000>>> descBit(n);
-//                size_t columns=n/10000;
-//                size_t mod=n%10000;
+//                std::size_t columns=n/10000;
+//                std::size_t mod=n%10000;
 //                if(mod>0) columns++;
 
 
@@ -176,12 +176,12 @@ template<class T,class PAR>
 //                        descBit[i]=std::vector<std::bitset<10000>>(columns);
 //                }
 
-//                for (size_t v = 0; v < n; ++v) {
+//                for (std::size_t v = 0; v < n; ++v) {
 
 //                        descBit[v][v/10000][v%10000]=1; //make this reflexive
-//                        size_t edges=graph.numberOfEdgesFromVertex(v);
+//                        std::size_t edges=graph.numberOfEdgesFromVertex(v);
 //                        for (int j = 0; j < edges; ++j) {
-//                                size_t w=graph.vertexFromVertex(v,j);
+//                                std::size_t w=graph.vertexFromVertex(v,j);
 //                                descBit[v][w/10000][w%10000]=1;
 
 
@@ -214,10 +214,10 @@ template<class T,class PAR>
 //                        for (int k1 = 0; k1 <columns; ++k1) {
 //                                for (int k2 = 0; k2 < 10000; ++k2) {
 //                                        if(k1*10000+k2<n){
-//                                                size_t maxTime=vg->getGroupIndex(k1*10000+k2);
+//                                                std::size_t maxTime=vg->getGroupIndex(k1*10000+k2);
 //                                                for (int t = 0; t < maxTime; ++t) {//TODO use time gap
-//                                                        const std::vector<size_t>& vertices=vg->getGroupVertices(t);
-//                                                        for (size_t i:vertices) {
+//                                                        const std::vector<std::size_t>& vertices=vg->getGroupVertices(t);
+//                                                        for (std::size_t i:vertices) {
 //                                                                if(descBit[i][k1][k2]){
 //                                                                        for (int j = 0; j < columns; ++j) {
 //                                                                                descBit[i][j]|=descBit[k1*10000+k2][j];
@@ -258,7 +258,7 @@ template<class T,class PAR>
 
 
 template<class T,class PAR>
-    std::vector<std::vector<bool>> initReachable(T & graph,PAR& parameters,VertexGroups<size_t>* vg=0){
+    std::vector<std::vector<bool>> initReachable(T & graph,PAR& parameters,VertexGroups<std::size_t>* vg=0){
 
 
 //        levinkov::Timer tfw;
@@ -266,13 +266,13 @@ template<class T,class PAR>
 
 
         parameters.getControlOutput()<<"Run Floyd Warshall"<<std::endl;
-                const size_t n=graph.numberOfVertices();
+                const std::size_t n=graph.numberOfVertices();
 
                 // todo: use some matrix structure
                 std::vector<std::vector<bool>> desc(n);
                 std::vector<std::vector<std::bitset<10000>>> descBit(n);
-                size_t columns=n/10000;
-                size_t mod=n%10000;
+                std::size_t columns=n/10000;
+                std::size_t mod=n%10000;
                 if(mod>0) columns++;
 
 
@@ -281,12 +281,12 @@ template<class T,class PAR>
                         descBit[i]=std::vector<std::bitset<10000>>(columns);
                 }
 
-                for (size_t v = 0; v < n; ++v) {
+                for (std::size_t v = 0; v < n; ++v) {
 
                         descBit[v][v/10000][v%10000]=1; //make this reflexive
-                        size_t edges=graph.numberOfEdgesFromVertex(v);
+                        std::size_t edges=graph.numberOfEdgesFromVertex(v);
                         for (int j = 0; j < edges; ++j) {
-                                size_t w=graph.vertexFromVertex(v,j);
+                                std::size_t w=graph.vertexFromVertex(v,j);
                                 descBit[v][w/10000][w%10000]=1;
 
 
@@ -319,10 +319,10 @@ template<class T,class PAR>
                         for (int k1 = 0; k1 <columns; ++k1) {
                                 for (int k2 = 0; k2 < 10000; ++k2) {
                                         if(k1*10000+k2<n){
-                                                size_t maxTime=vg->getGroupIndex(k1*10000+k2);
+                                                std::size_t maxTime=vg->getGroupIndex(k1*10000+k2);
                                                 for (int t = 0; t < maxTime; ++t) {//TODO use time gap
-                                                        const std::vector<size_t>& vertices=vg->getGroupVertices(t);
-                                                        for (size_t i:vertices) {
+                                                        const std::vector<std::size_t>& vertices=vg->getGroupVertices(t);
+                                                        for (std::size_t i:vertices) {
                                                                 if(descBit[i][k1][k2]){
                                                                         for (int j = 0; j < columns; ++j) {
                                                                                 descBit[i][j]|=descBit[k1*10000+k2][j];
@@ -363,23 +363,23 @@ template<class T,class PAR>
 }
 
    template<class T>
-   std::vector<bool> getEdgeLabels(const T& graph,const std::vector<std::vector<size_t>>& paths){
+   std::vector<bool> getEdgeLabels(const T& graph,const std::vector<std::vector<std::size_t>>& paths){
         char delim=',';
         std::vector<bool> activeEdges(graph.numberOfEdges());
 
 
-        for (size_t i=0;i<paths.size();i++) {
+        for (std::size_t i=0;i<paths.size();i++) {
             std::vector<bool> activeVertices(graph.numberOfVertices());
-            for (size_t j = 0; j < paths.at(i).size(); ++j) {
+            for (std::size_t j = 0; j < paths.at(i).size(); ++j) {
                 activeVertices[paths.at(i).at(j)]=1;
             }
-            for (size_t j = 0; j < paths.at(i).size(); ++j) {
-                size_t v=paths.at(i).at(j);
-                size_t n=graph.numberOfEdgesFromVertex(v);
+            for (std::size_t j = 0; j < paths.at(i).size(); ++j) {
+                std::size_t v=paths.at(i).at(j);
+                std::size_t n=graph.numberOfEdgesFromVertex(v);
                 for (int k = 0; k < n; ++k) {
-                    size_t w=graph.vertexFromVertex(v,k);
+                    std::size_t w=graph.vertexFromVertex(v,k);
                     if(activeVertices[w]){
-                        size_t e=graph.edgeFromVertex(v,k);
+                        std::size_t e=graph.edgeFromVertex(v,k);
                         activeEdges[e]=1;
                     }
 
@@ -393,21 +393,21 @@ template<class T,class PAR>
 
 
    template<class T>
-   std::vector<bool> getLiftedEdgeLabels(const T& edges,const std::vector<std::vector<size_t>>& paths,size_t numberOfVertices){
+   std::vector<bool> getLiftedEdgeLabels(const T& edges,const std::vector<std::vector<std::size_t>>& paths,std::size_t numberOfVertices){
         char delim=',';
         std::vector<bool> activeEdges(edges.size());
-        std::vector<size_t> vertexLabels(numberOfVertices);
+        std::vector<std::size_t> vertexLabels(numberOfVertices);
 
 
 
-        for (size_t i=0;i<paths.size();i++) {
-            for (size_t j = 0; j < paths.at(i).size(); ++j) {
+        for (std::size_t i=0;i<paths.size();i++) {
+            for (std::size_t j = 0; j < paths.at(i).size(); ++j) {
                 vertexLabels[paths.at(i).at(j)]=i+1;
             }
        }
-        for(size_t i=0;i<activeEdges.size();i++){
-            size_t label1=vertexLabels[edges.at(i).at(0)];
-            size_t label2=vertexLabels[edges.at(i).at(1)];
+        for(std::size_t i=0;i<activeEdges.size();i++){
+            std::size_t label1=vertexLabels[edges.at(i).at(0)];
+            std::size_t label2=vertexLabels[edges.at(i).at(1)];
             if(label1==label2) activeEdges[i]=1;
         }
         return activeEdges;
@@ -415,36 +415,36 @@ template<class T,class PAR>
 
 
    template<class T>
-   std::vector<bool> getBaseEdgeLabels(const T& edges,const std::vector<std::vector<size_t>>& paths,size_t numberOfVertices){
+   std::vector<bool> getBaseEdgeLabels(const T& edges,const std::vector<std::vector<std::size_t>>& paths,std::size_t numberOfVertices){
         char delim=',';
         std::vector<bool> activeEdges(edges.size());
-        std::vector<size_t> vertexDescendants(numberOfVertices);
+        std::vector<std::size_t> vertexDescendants(numberOfVertices);
        // std::vector<bool> needCheck(numberOfVertices);
 
         //TODO: make check if all inner base edges stored in vertexDescendants, were present in edges contrainer
-        size_t t=numberOfVertices+1;
+        std::size_t t=numberOfVertices+1;
 
 
-        for (size_t i=0;i<paths.size();i++) {
-            for (size_t j = 0; j < paths.at(i).size()-1; ++j) {
-                size_t vertex=paths.at(i).at(j);
+        for (std::size_t i=0;i<paths.size();i++) {
+            for (std::size_t j = 0; j < paths.at(i).size()-1; ++j) {
+                std::size_t vertex=paths.at(i).at(j);
                 vertexDescendants[vertex]=paths.at(i).at(j+1);
               //  needCheck[vertex]=1;
             }
-            size_t lastVertex=*(paths.at(i).rbegin());
+            std::size_t lastVertex=*(paths.at(i).rbegin());
             vertexDescendants[lastVertex]=t;
        }
-        for(size_t i=0;i<activeEdges.size();i++){
-            size_t firstVertex=edges.at(i).at(0);
-            size_t secondVertex=edges.at(i).at(1);
-            size_t descendant=vertexDescendants[firstVertex];
+        for(std::size_t i=0;i<activeEdges.size();i++){
+            std::size_t firstVertex=edges.at(i).at(0);
+            std::size_t secondVertex=edges.at(i).at(1);
+            std::size_t descendant=vertexDescendants[firstVertex];
             if(descendant==secondVertex){
                 activeEdges[i]=1;
               //  needCheck[firstVertex]=0;
             }
         }
 //        if(debug()){
-//            for(size_t i=0;i<needCheck.size();i++){
+//            for(std::size_t i=0;i<needCheck.size();i++){
 //                if(needCheck[i]) //TODO exception
 //            }
 
@@ -460,15 +460,15 @@ template<class T,class PAR>
         parameters.writeControlOutput();
 
         std::vector<double> newBaseCosts;
-        //std::vector<size_t> inOutEdges;
-        size_t k=parameters.getKnnK();
-        //std::vector<size_t> goodLongEdges;
+        //std::vector<std::size_t> inOutEdges;
+        std::size_t k=parameters.getKnnK();
+        //std::vector<std::size_t> goodLongEdges;
 
 
         const andres::graph::Digraph<>& graph_=instance.getGraph();
-        const size_t t_=instance.getTerminalNode();
-        const size_t s_=instance.getSourceNode();
-        const VertexGroups<size_t>& vg=instance.getVertexGroups();
+        const std::size_t t_=instance.getTerminalNode();
+        const std::size_t s_=instance.getSourceNode();
+        const VertexGroups<std::size_t>& vg=instance.getVertexGroups();
         const std::vector<double>& edgeScore=instance.getEdgesScore();
         andres::graph::Digraph<> tempGraph(graph_.numberOfVertices());
 
@@ -476,11 +476,11 @@ template<class T,class PAR>
 
         std::vector<bool> finalEdges(graph_.numberOfEdges(),false);
         for (int v0 = 0; v0 < graph_.numberOfVertices(); ++v0) {
-            std::unordered_map<int,std::list<size_t>> edgesToKeep;
-            size_t l0=vg.getGroupIndex(v0);
-            for (size_t ne = 0; ne < graph_.numberOfEdgesFromVertex(v0); ++ne) {
-                size_t e=graph_.edgeFromVertex(v0,ne);
-                size_t v1=graph_.vertexFromVertex(v0,ne);
+            std::unordered_map<int,std::list<std::size_t>> edgesToKeep;
+            std::size_t l0=vg.getGroupIndex(v0);
+            for (std::size_t ne = 0; ne < graph_.numberOfEdgesFromVertex(v0); ++ne) {
+                std::size_t e=graph_.edgeFromVertex(v0,ne);
+                std::size_t v1=graph_.vertexFromVertex(v0,ne);
     //			std::cout<<"edge "<<e<<": "<<v0<<","<<v1<<": "<<problemGraph.getEdgeScore(e)<<std::endl;
                 if(v0==s_||v1==t_){
                     //tempGraph.insertEdge(v0,v1);
@@ -488,20 +488,20 @@ template<class T,class PAR>
                     finalEdges[e]=true;
                 }
                 else{
-                    size_t l1=vg.getGroupIndex(v1);
-                    size_t gap=l1-l0;
+                    std::size_t l1=vg.getGroupIndex(v1);
+                    std::size_t gap=l1-l0;
                     if(gap<=parameters.getMaxTimeBase()){
                     //if(gap<=parameters.getKnnTimeGap()){
                         //gap=std::min(parameters.getKnnTimeGap()+1,gap);
                         double cost=edgeScore[e];
                         if(edgesToKeep.count(gap)>0){
-                            std::list<size_t>& smallList=edgesToKeep[gap];
+                            std::list<std::size_t>& smallList=edgesToKeep[gap];
                             auto it=smallList.begin();
                             double bsf=edgeScore[*it];
                             //std::cout<<"edge "<<e<<": "<<v0<<","<<v1<<": "<<bsf<<std::endl;
                             while(bsf>cost&&it!=smallList.end()){
                                 it++;
-                                size_t index=*it;
+                                std::size_t index=*it;
                                 if(it!=smallList.end()){
                                     bsf=edgeScore[index];
                                     //	std::cout<<"edge "<<e<<": "<<v0<<","<<v1<<": "<<bsf<<std::endl;
@@ -534,7 +534,7 @@ template<class T,class PAR>
             for (int gap = 0; gap <= parameters.getKnnTimeGap(); ++gap) {
                 if(edgesToKeep.count(gap)>0){
                     auto& smallList=edgesToKeep[gap];
-                    for(size_t e:smallList){
+                    for(std::size_t e:smallList){
                         finalEdges[e]=true;
                         if(edgeScore[e]<bsf){
                             bsf=edgeScore[e];
@@ -546,7 +546,7 @@ template<class T,class PAR>
             for (int gap =  parameters.getKnnTimeGap()+1;gap<=parameters.getMaxTimeBase(); ++gap) {
                 if(edgesToKeep.count(gap)>0){
                     auto& smallList=edgesToKeep[gap];
-                    for(size_t e:smallList){
+                    for(std::size_t e:smallList){
                         double score=edgeScore[e];
                         if(score<=parameters.getBaseUpperThreshold()){
                             finalEdges[e]=true;
@@ -560,8 +560,8 @@ template<class T,class PAR>
 
         for (int e = 0; e < graph_.numberOfEdges(); ++e) {
             if(finalEdges[e]){
-                size_t v0=graph_.vertexOfEdge(e,0);
-                size_t v1=graph_.vertexOfEdge(e,1);
+                std::size_t v0=graph_.vertexOfEdge(e,0);
+                std::size_t v1=graph_.vertexOfEdge(e,1);
                 tempGraph.insertEdge(v0,v1);
                 newBaseCosts.push_back(edgeScore[e]);
             }
@@ -614,10 +614,10 @@ template<class T,class PAR>
         const andres::graph::Digraph<>& graph_=instance.getGraph();
         const andres::graph::Digraph<>& graphLifted_=instance.getGraphLifted();
         const std::vector<double>& liftedCosts=instance.getLiftedEdgesScore();
-        const std::vector<std::unordered_set<size_t>>* pReachable =instance.getPReachable();
-        const std::vector<std::unordered_set<size_t>>& reachable=*pReachable;
-        const size_t t_=instance.getTerminalNode();
-        const VertexGroups<size_t>& vg=instance.getVertexGroups();
+        const std::vector<std::unordered_set<std::size_t>>* pReachable =instance.getPReachable();
+        const std::vector<std::unordered_set<std::size_t>>& reachable=*pReachable;
+        const std::size_t t_=instance.getTerminalNode();
+        const VertexGroups<std::size_t>& vg=instance.getVertexGroups();
 
         std::vector<double> newBaseEdgeScore=instance.getEdgesScore();
 
@@ -630,17 +630,17 @@ template<class T,class PAR>
 
 
 
-        std::unordered_map<size_t,std::set<size_t>> liftedEdges;
+        std::unordered_map<std::size_t,std::set<std::size_t>> liftedEdges;
         for (int v = 0; v < graphLifted_.numberOfVertices()-2; ++v) {
-            std::unordered_set<size_t> alternativePath;
+            std::unordered_set<std::size_t> alternativePath;
             for (int i = 0; i < graph_.numberOfEdgesFromVertex(v); ++i) {
-                size_t w=graph_.vertexFromVertex(v,i);
-                for(size_t u:reachable[w]){
+                std::size_t w=graph_.vertexFromVertex(v,i);
+                for(std::size_t u:reachable[w]){
                     if(u!=w) alternativePath.insert(u);
                 }
             }
             for (int i = 0; i < graphLifted_.numberOfEdgesFromVertex(v); ++i) {
-                size_t w=graphLifted_.vertexFromVertex(v,i);
+                std::size_t w=graphLifted_.vertexFromVertex(v,i);
                 if(w!=t_){
                     if(alternativePath.count(w)>0) liftedEdges[v].insert(w);
 
@@ -655,8 +655,8 @@ template<class T,class PAR>
 
 
         for (int i = 0; i < graphLifted_.numberOfEdges(); ++i) {
-            size_t v0=graphLifted_.vertexOfEdge(i,0);
-            size_t v1=graphLifted_.vertexOfEdge(i,1);
+            std::size_t v0=graphLifted_.vertexOfEdge(i,0);
+            std::size_t v1=graphLifted_.vertexOfEdge(i,1);
             int l0=vg.getGroupIndex(v0);
             int l1=vg.getGroupIndex(v1);
             double cost=liftedCosts.at(i);

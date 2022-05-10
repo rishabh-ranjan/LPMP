@@ -39,11 +39,11 @@ namespace LPMP {
 
        std::string unary_variable_identifier(const std::size_t i, const std::size_t l) const;
        std::string pairwise_variable_identifier(const std::array<std::size_t,2> vars, const std::array<std::size_t,2> labels) const;
-       std::string Potts_pairwise_variable_identifier(const std::size_t i, const std::size_t j, const size_t label) const;
-       std::string truncated_L1_pairwise_variable_identifier(const std::size_t i, const std::size_t j, const size_t label) const;
-       std::string unary_simplex_identifier(const size_t i) const;
-       std::string pairwise_simplex_identifier(const size_t i, const size_t j) const;
-       std::string marginalization_constraint_identifier(const size_t i, const size_t j, const size_t unary_var, const size_t label) const;
+       std::string Potts_pairwise_variable_identifier(const std::size_t i, const std::size_t j, const std::size_t label) const;
+       std::string truncated_L1_pairwise_variable_identifier(const std::size_t i, const std::size_t j, const std::size_t label) const;
+       std::string unary_simplex_identifier(const std::size_t i) const;
+       std::string pairwise_simplex_identifier(const std::size_t i, const std::size_t j) const;
+       std::string marginalization_constraint_identifier(const std::size_t i, const std::size_t j, const std::size_t unary_var, const std::size_t label) const;
 
        bool unary_variable_active(const std::size_t i, const std::size_t j) const;
        bool unary_variable_active(const std::size_t i) const;
@@ -56,12 +56,12 @@ namespace LPMP {
        bool is_Potts(const std::size_t pairwise_idx) const;
        double Potts_strength(const std::size_t pairwise_index) const;
 
-       bool is_truncated_L1(const size_t pairwise_idx) const;
+       bool is_truncated_L1(const std::size_t pairwise_idx) const;
        struct truncated_L1_potential_param {
            double slope;
            int cutoff; 
        };
-       truncated_L1_potential_param compute_truncated_L1_param(const size_t pairwise_idx) const;
+       truncated_L1_potential_param compute_truncated_L1_param(const std::size_t pairwise_idx) const;
 
        // TODO: add truncated quadratic
    };
@@ -129,7 +129,7 @@ namespace LPMP {
        return unary_variable_active(i) && unary_variable_active(j);
    }
 
-   inline std::string mrf_input::Potts_pairwise_variable_identifier(const std::size_t i, const std::size_t j, const size_t label) const
+   inline std::string mrf_input::Potts_pairwise_variable_identifier(const std::size_t i, const std::size_t j, const std::size_t label) const
    {
        assert(i < no_variables());
        assert(j < no_variables());
@@ -137,27 +137,27 @@ namespace LPMP {
        return "y_" + std::to_string(i) + "_" + std::to_string(j);// + "(" + std::to_string(label) + ")";
    }
 
-   inline std::string mrf_input::truncated_L1_pairwise_variable_identifier(const std::size_t i, const std::size_t j, const size_t label) const
+   inline std::string mrf_input::truncated_L1_pairwise_variable_identifier(const std::size_t i, const std::size_t j, const std::size_t label) const
    {
        assert(i < no_variables());
        assert(j < no_variables());
        return "y_" + std::to_string(i) + "_" + std::to_string(j) + "_" + std::to_string(label);
    }
 
-   inline std::string mrf_input::unary_simplex_identifier(const size_t i) const
+   inline std::string mrf_input::unary_simplex_identifier(const std::size_t i) const
    {
        assert(i < no_variables());
        return "UNARY_SIMPLEX_" + std::to_string(i);
    }
 
-   inline std::string mrf_input::pairwise_simplex_identifier(const size_t i, const size_t j) const
+   inline std::string mrf_input::pairwise_simplex_identifier(const std::size_t i, const std::size_t j) const
    {
        assert(i < j);
        assert(j < no_variables());
        return "PAIRWISE_SIMPLEX_" + std::to_string(i) + "_" + std::to_string(j);
    }
 
-   inline std::string mrf_input::marginalization_constraint_identifier(const size_t i, const size_t j, const size_t unary_var, const size_t label) const
+   inline std::string mrf_input::marginalization_constraint_identifier(const std::size_t i, const std::size_t j, const std::size_t unary_var, const std::size_t label) const
    {
        assert(i < j && j < no_variables());
        assert(unary_var == i || unary_var == j);
@@ -255,7 +255,7 @@ namespace LPMP {
        return pot(0,1) - pot(0,0);
    }
 
-   inline bool mrf_input::is_truncated_L1(const size_t pairwise_idx) const
+   inline bool mrf_input::is_truncated_L1(const std::size_t pairwise_idx) const
    {
        const auto [i, j] = get_pairwise_variables(pairwise_idx);
 
@@ -272,13 +272,13 @@ namespace LPMP {
 
        auto& pot = get_pairwise_potential(pairwise_idx);
        assert(cardinality(i) > 1);
-       for(size_t l=0; l<cardinality(i); ++l)
+       for(std::size_t l=0; l<cardinality(i); ++l)
            if(pot(l,l) != 0.0)
                return false;
 
        const double slope = pot(1,0);
        int cutoff = cardinality(i)-1;
-       for(size_t l=1; l<cardinality(i); ++l)
+       for(std::size_t l=1; l<cardinality(i); ++l)
        {
            if(pot(l,0) == pot(l-1,0))
            {
@@ -295,7 +295,7 @@ namespace LPMP {
        return true; 
    }
 
-   inline mrf_input::truncated_L1_potential_param mrf_input::compute_truncated_L1_param(const size_t pairwise_idx) const
+   inline mrf_input::truncated_L1_potential_param mrf_input::compute_truncated_L1_param(const std::size_t pairwise_idx) const
    {
        assert(is_truncated_L1(pairwise_idx));
        auto& pot = get_pairwise_potential(pairwise_idx);
@@ -304,7 +304,7 @@ namespace LPMP {
        const double slope = pot(1,0);
 
        int cutoff = cardinality(i);
-       for(size_t l=1; l<cardinality(i); ++l)
+       for(std::size_t l=1; l<cardinality(i); ++l)
        {
            if(pot(l,0) == pot(l-1,0))
            {
@@ -333,13 +333,13 @@ namespace LPMP {
                continue;
            if (is_Potts(pairwise_idx))
            {
-               //for(size_t l=0; l<cardinality(i); ++l)
+               //for(std::size_t l=0; l<cardinality(i); ++l)
                    s << " + " << Potts_strength(pairwise_idx) << " " << Potts_pairwise_variable_identifier(i, j, 0) << "\n";
            }
            else if(is_truncated_L1(pairwise_idx))
            {
                const truncated_L1_potential_param param = compute_truncated_L1_param(pairwise_idx);
-               for(size_t d=1; d<=param.cutoff; ++d)
+               for(std::size_t d=1; d<=param.cutoff; ++d)
                    s << " + " << param.slope << " " << truncated_L1_pairwise_variable_identifier(i,j,d) << "\n";
            }
            else
@@ -399,7 +399,7 @@ namespace LPMP {
            {
                // TODO: check if constraints help
                const truncated_L1_potential_param param = compute_truncated_L1_param(pairwise_idx);
-               //for(size_t d=1; d<=param.cutoff; ++d)
+               //for(std::size_t d=1; d<=param.cutoff; ++d)
                //    s << truncated_L1_pairwise_variable_identifier(i,j,d) << " - " << truncated_L1_pairwise_variable_identifier(i,j,d)  << " >= 0\n";
            }
            else
@@ -433,7 +433,7 @@ namespace LPMP {
            assert(i < j);
            if(is_Potts(pairwise_idx))
            {
-               for (size_t l = 0; l < cardinality(i); ++l)
+               for (std::size_t l = 0; l < cardinality(i); ++l)
                {
                    // \mu_{ij} >= \mu_i(l) - \mu_j(l)
                    s << marginalization_constraint_identifier(i,j,i,l) << ": " 
@@ -521,7 +521,7 @@ namespace LPMP {
            assert(pairwise_values.dim3(pairwise_idx) == unaries[j].size());
            if(is_Potts(pairwise_idx))
            {
-               //for(size_t l=0; l<cardinality(i); ++l)
+               //for(std::size_t l=0; l<cardinality(i); ++l)
                    s << Potts_pairwise_variable_identifier(i, j, 0) << "\n";
            }
            else if(is_truncated_L1(pairwise_idx))
@@ -557,19 +557,19 @@ namespace LPMP {
            if(is_Potts(pairwise_idx) || is_truncated_L1(pairwise_idx))
            {
                s << unary_simplex_identifier(i) << " " << unary_simplex_identifier(j) << " ";
-               for(size_t l=0; l<cardinality(i); ++l)
+               for(std::size_t l=0; l<cardinality(i); ++l)
                    s << marginalization_constraint_identifier(i,j,i,l) << " ";
-               for(size_t l=0; l<cardinality(j); ++l)
+               for(std::size_t l=0; l<cardinality(j); ++l)
                    s << marginalization_constraint_identifier(i,j,j,l) << " ";
                s << "\n";
            }
            else
            {
                s << unary_simplex_identifier(i) << " " << unary_simplex_identifier(j) << " ";
-               for(size_t l=0; l<cardinality(i); ++l)
+               for(std::size_t l=0; l<cardinality(i); ++l)
                    if (unary_variable_active(i, l))
                        s << marginalization_constraint_identifier(i,j,i,l) << " ";
-               for(size_t l=0; l<cardinality(j); ++l)
+               for(std::size_t l=0; l<cardinality(j); ++l)
                    if (unary_variable_active(j, l))
                        s << marginalization_constraint_identifier(i,j,j,l) << " ";
                s << "\n";

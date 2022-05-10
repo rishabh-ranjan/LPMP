@@ -28,57 +28,57 @@ public:
         expectedPrimal=0;
 
         costs=std::vector<std::vector<double>>(numberOfVertices);
-        //liftedCosts=std::vector<std::map<size_t,double>>(numberOfVertices);
+        //liftedCosts=std::vector<std::map<std::size_t,double>>(numberOfVertices);
         liftedCostsFull=std::vector<ShiftedVector<double>>(numberOfVertices);
         liftedPotentialForward=std::vector<ShiftedVector<double>>(numberOfVertices);
         liftedPotentialBackward=std::vector<ShiftedVector<double>>(numberOfVertices);
 
-        timeStamps=std::vector<std::vector<size_t>>(numberOfVertices);
+        timeStamps=std::vector<std::vector<std::size_t>>(numberOfVertices);
 
         startingVertices=std::vector<char>(numberOfVertices,1);
-        lastVertices=std::vector<size_t>(numberOfVertices);
-        firstVertices=std::vector<size_t>(numberOfVertices);
+        lastVertices=std::vector<std::size_t>(numberOfVertices);
+        firstVertices=std::vector<std::size_t>(numberOfVertices);
       //  endingVertices=std::vector<char>(numberOfVertices,1);
 
-        neighbors=std::vector<size_t>(numberOfVertices,t);
+        neighbors=std::vector<std::size_t>(numberOfVertices,t);
 
         inOutCost=pInstance->parameters.getInputCost()+pInstance->parameters.getOutputCost();
 
 
         const std::vector<std::array<SNC_FACTOR*,2>>& single_node_cut_factors_=*pSNCFactors;
 
-        for (size_t i = 0; i < numberOfVertices; ++i) { //init costs, lifted costs and time stamps, costs in forward direction only
+        for (std::size_t i = 0; i < numberOfVertices; ++i) { //init costs, lifted costs and time stamps, costs in forward direction only
             lastVertices[i]=i;
             firstVertices[i]=i;
 
             auto pOutFactor=single_node_cut_factors_[i][1]->get_factor();
             costs[i]=pOutFactor->getBaseCosts();
-            timeStamps[i]=std::vector<size_t>(costs[i].size());
+            timeStamps[i]=std::vector<std::size_t>(costs[i].size());
 
             std::vector<double> lc=pOutFactor->getLiftedCosts();
-            std::vector<size_t> liftedIDs=pOutFactor->getLiftedIDs();
+            std::vector<std::size_t> liftedIDs=pOutFactor->getLiftedIDs();
 
             liftedCostsFull[i]=ShiftedVector<double>(getMinForwardNeighbor(i),getMaxForwardNeighbor(i),0);
 
 
 
             assert(lc.size()==liftedIDs.size());
-            for (size_t j = 0; j < liftedIDs.size(); ++j) {
-                size_t vertex2=liftedIDs[j];
+            for (std::size_t j = 0; j < liftedIDs.size(); ++j) {
+                std::size_t vertex2=liftedIDs[j];
                 //liftedCosts[i][vertex2]=lc[j];
                 liftedCostsFull[i][vertex2]=lc[j];
             }
 
             liftedPotentialForward[i]=ShiftedVector<double>(getMinForwardNeighbor(i),getMaxForwardNeighbor(i),0);
             pOutFactor->LowerBound(false);
-            const std::vector<size_t>& traverseOrder=pOutFactor->getTraverseOrder();
+            const std::vector<std::size_t>& traverseOrder=pOutFactor->getTraverseOrder();
 
-            for (size_t j = 0; j < traverseOrder.size(); ++j) {
-                size_t vertex2=traverseOrder[j];
+            for (std::size_t j = 0; j < traverseOrder.size(); ++j) {
+                std::size_t vertex2=traverseOrder[j];
                 if(vertex2>=numberOfVertices||vertex2==i) continue;
                 //liftedCosts[i][vertex2]=lc[j];
                 double potential=0;
-                size_t next=pInstance->sncNeighborStructure[vertex2];
+                std::size_t next=pInstance->sncNeighborStructure[vertex2];
                 if(next!=t){
                     potential=pInstance->sncTDStructure[next];
                 }
@@ -89,28 +89,28 @@ public:
 
         }
 
-        for (size_t i = 0; i < numberOfVertices; ++i) { //update costs with opposite direction
+        for (std::size_t i = 0; i < numberOfVertices; ++i) { //update costs with opposite direction
 
             auto pInFactor=single_node_cut_factors_[i][0]->get_factor();
             const std::vector<double>& baseCosts=pInFactor->getBaseCosts();
-            const std::vector<size_t>& baseIDs=pInFactor->getBaseIDs();
+            const std::vector<std::size_t>& baseIDs=pInFactor->getBaseIDs();
 
             for (int j = 0; j < baseCosts.size(); ++j) {
-                size_t vertexID=baseIDs[j];
+                std::size_t vertexID=baseIDs[j];
                 if(vertexID>=numberOfVertices) continue;
                 auto pOutFactor=single_node_cut_factors_[vertexID][1]->get_factor();
 
-                size_t index=pOutFactor->getBaseIDToOrder(i);
+                std::size_t index=pOutFactor->getBaseIDToOrder(i);
                 assert(index<costs[vertexID].size());
                 costs[vertexID][index]+=baseCosts[j];
 
             }
 
             const std::vector<double>& localLiftedCosts=pInFactor->getLiftedCosts();
-            const std::vector<size_t>& liftedIDs=pInFactor->getLiftedIDs();
+            const std::vector<std::size_t>& liftedIDs=pInFactor->getLiftedIDs();
 
             for (int j = 0; j < liftedIDs.size(); ++j) {
-                size_t vertexID=liftedIDs[j];
+                std::size_t vertexID=liftedIDs[j];
                 //liftedCosts[vertexID][i]+=localLiftedCosts[j];
                 liftedCostsFull[vertexID][i]+=localLiftedCosts[j];
             }
@@ -119,14 +119,14 @@ public:
 
             liftedPotentialBackward[i]=ShiftedVector<double>(getMinBackwardNeighbor(i),getMaxBackwardNeighbor(i),0);
             pInFactor->LowerBound(false);
-            const std::vector<size_t>& traverseOrder=pInFactor->getTraverseOrder();
+            const std::vector<std::size_t>& traverseOrder=pInFactor->getTraverseOrder();
 
-            for (size_t j = 0; j < traverseOrder.size(); ++j) {
-                size_t vertex2=traverseOrder[j];
+            for (std::size_t j = 0; j < traverseOrder.size(); ++j) {
+                std::size_t vertex2=traverseOrder[j];
                 if(vertex2>=numberOfVertices||vertex2==i) continue;
                 //liftedCosts[i][vertex2]=lc[j];
                 double potential=0;
-                size_t next=pInstance->sncNeighborStructure[vertex2];
+                std::size_t next=pInstance->sncNeighborStructure[vertex2];
                 if(next!=t){
                     potential=pInstance->sncTDStructure[next];
                 }
@@ -140,10 +140,10 @@ public:
 
 //        for (int i = 0; i < costs.size(); ++i) {
 //            auto pOutFactor=single_node_cut_factors_[i][1]->get_factor();
-//            const std::vector<size_t>& liftedIDs=pOutFactor->getLiftedIDs();
-//            const std::vector<size_t>& baseIDs=pOutFactor->getBaseIDs();
+//            const std::vector<std::size_t>& liftedIDs=pOutFactor->getLiftedIDs();
+//            const std::vector<std::size_t>& baseIDs=pOutFactor->getBaseIDs();
 
-//            for(size_t j=0;j<baseIDs.size();j++){  //add lifted costs to base costs
+//            for(std::size_t j=0;j<baseIDs.size();j++){  //add lifted costs to base costs
 //                    costs[i][j]+=liftedCostsFull[i][baseIDs[j]];
 //            }
 //        }
@@ -152,21 +152,21 @@ public:
         liftedPotentialForwardOrig=liftedPotentialForward;
         liftedPotentialBackwardOrig=liftedPotentialBackward;
 
-        for (size_t i = 0; i < costs.size(); ++i) {
+        for (std::size_t i = 0; i < costs.size(); ++i) {
             auto pOutFactor=single_node_cut_factors_[i][1]->get_factor();
-            const std::vector<size_t>& baseIDs=pOutFactor->getBaseIDs();
+            const std::vector<std::size_t>& baseIDs=pOutFactor->getBaseIDs();
 
             std::vector<double> mmCheckForward=pOutFactor->getAllBaseMinMarginalsForMCF();
 
             assert(baseIDs.size()==costs[i].size());
-            for (size_t j = 0; j < costs[i].size(); ++j) {
-                size_t vertex2=baseIDs[j];
+            for (std::size_t j = 0; j < costs[i].size(); ++j) {
+                std::size_t vertex2=baseIDs[j];
 
                 if(vertex2>=numberOfVertices) continue;
-                size_t timeGap=getTimeGap(i,vertex2);
+                std::size_t timeGap=getTimeGap(i,vertex2);
                 double mmCheckF=mmCheckForward[j];
                 auto pInFactor=single_node_cut_factors_[vertex2][0]->get_factor();
-                size_t index=pInFactor->getBaseIDToOrder(i);
+                std::size_t index=pInFactor->getBaseIDToOrder(i);
                 std::vector<double> mmCheckBackward=pInFactor->getAllBaseMinMarginalsForMCF();
                 double mmCheckB=mmCheckBackward[index];
 
@@ -191,26 +191,26 @@ public:
             Edge e=Q.top();
             auto pOutFactor=(*pSNCFactors)[e.firstVertex][1]->get_factor();
 
-            size_t secondVertex=pOutFactor->getBaseID(e.neighborIndex);
-            size_t timeStamp=timeStamps[e.firstVertex][e.neighborIndex];
+            std::size_t secondVertex=pOutFactor->getBaseID(e.neighborIndex);
+            std::size_t timeStamp=timeStamps[e.firstVertex][e.neighborIndex];
             if(startingVertices[secondVertex]&&neighbors[e.firstVertex]==t&&timeStamp==e.timeStamp){
                // std::cout<<"connecting "<<e.firstVertex<<","<<secondVertex<<std::endl;
-                size_t first=firstVertices[e.firstVertex];
-                size_t last=lastVertices[secondVertex];
+                std::size_t first=firstVertices[e.firstVertex];
+                std::size_t last=lastVertices[secondVertex];
 
                 startingVertices[secondVertex]=false;
                 //endingVertices[e.firstVertex]=false;
                 neighbors[e.firstVertex]=secondVertex;
 
                 //assert(abs(e.cost-costs[e.firstVertex][e.neighborIndex]-liftedCostsFull[e.firstVertex][secondVertex])<eps);
-                size_t f=first;
+                std::size_t f=first;
                 double controlLiftedCost=0;
                 double controlPotentialForward=0;
                 double controlPotentialBackward=0;
                 while(f!=secondVertex){
                     assert(f!=t);
                     if(last<=getMaxForwardNeighbor(f)) controlPotentialForward+=liftedPotentialForwardOrig[f][last];
-                    size_t sec=secondVertex;
+                    std::size_t sec=secondVertex;
                     while(sec!=t){
                         if(liftedCostsOriginal[f].isWithinBounds(sec)){
                             controlLiftedCost+=liftedCostsOriginal[f][sec];
@@ -230,7 +230,7 @@ public:
                     double controlLiftedCost=0;
                     while(f!=secondVertex){
                         assert(f!=t);
-                        size_t sec=secondVertex;
+                        std::size_t sec=secondVertex;
                         while(sec!=t){
                             if(liftedCostsOriginal[f].isWithinBounds(sec)){
                                 controlLiftedCost+=liftedCostsOriginal[f][sec];
@@ -275,7 +275,7 @@ public:
             (*pSNCFactors)[graph_node][1]->get_factor()->setNoBaseEdgeActive();
         }
 
-        for (size_t i = 0; i < numberOfVertices; ++i) {
+        for (std::size_t i = 0; i < numberOfVertices; ++i) {
             if(startingVertices[i]){
                // if(neighbors[i]!=t){
                     startingFinal.push_back(i);
@@ -290,7 +290,7 @@ public:
         }
 
         for (int i = 0; i < numberOfVertices; ++i) {
-            size_t neighbor=neighbors[i];
+            std::size_t neighbor=neighbors[i];
             auto pOutFactor=(*pSNCFactors)[i][1]->get_factor();
             pOutFactor->setBaseEdgeActiveWithID(neighbor);
             if(neighbor!=t){
@@ -301,45 +301,45 @@ public:
         }
         if(diagnostics()) std::cout<<"expected primal "<<expectedPrimal<<std::endl;
     }
-    const std::vector<size_t>& getStartingVertices()const{
+    const std::vector<std::size_t>& getStartingVertices()const{
         return startingFinal;
     }
 
-    const std::vector<size_t>& getNeighbors()const{
+    const std::vector<std::size_t>& getNeighbors()const{
         return neighbors;
     }
 
 
 private:
 
-    void updateCostOutgoing(size_t i, size_t j){
+    void updateCostOutgoing(std::size_t i, std::size_t j){
         assert(j>i);
        // ShiftedVector<double>& neighborsOfFirst=liftedCostsFull[i];
        // ShiftedVector<double>& neighborsOfSecond=liftedCostsFull[j];
-        size_t last=lastVertices[j];
-        size_t first=firstVertices[i];
+        std::size_t last=lastVertices[j];
+        std::size_t first=firstVertices[i];
 
-        for (size_t l = liftedCostsFull[last].getMinVertex(); l <= liftedCostsFull[i].getMaxVertex(); ++l) {
+        for (std::size_t l = liftedCostsFull[last].getMinVertex(); l <= liftedCostsFull[i].getMaxVertex(); ++l) {
             liftedCostsFull[last][l]+=liftedCostsFull[i][l];
             liftedPotentialBackward[l][last]=liftedPotentialBackward[l][i];
             liftedPotentialForward[last][l]+=liftedPotentialForward[i][l];
         }
-        size_t m=std::max(liftedCostsFull[i].getMaxVertex()+1,liftedCostsFull[last].getMinVertex());
+        std::size_t m=std::max(liftedCostsFull[i].getMaxVertex()+1,liftedCostsFull[last].getMinVertex());
         if(m<numberOfVertices){
-            for (size_t l = m; l<=liftedCostsFull[last].getMaxVertex() ;++l) {
+            for (std::size_t l = m; l<=liftedCostsFull[last].getMaxVertex() ;++l) {
                 liftedPotentialBackward[l][last]=0;
             }
         }
 
 
         auto pOutFactor=(*pSNCFactors)[last][1]->get_factor();
-        const std::vector<size_t>& baseIDs=pOutFactor->getBaseIDs();
+        const std::vector<std::size_t>& baseIDs=pOutFactor->getBaseIDs();
 
         assert(baseIDs.size()==costs[last].size());
-        for (size_t k = 0; k < costs[last].size(); ++k) {
-            size_t vertex2=baseIDs[k];
+        for (std::size_t k = 0; k < costs[last].size(); ++k) {
+            std::size_t vertex2=baseIDs[k];
             if(vertex2==t) continue;
-            size_t timeGap=getTimeGap(last,vertex2);
+            std::size_t timeGap=getTimeGap(last,vertex2);
             double cost=costs[last][k]+liftedCostsFull[last][vertex2]+liftedPotentialForward[last][vertex2]+liftedPotentialBackward[vertex2][last];
             timeStamps[last][k]++;
             if(cost<inOutCost){
@@ -351,12 +351,12 @@ private:
     }
 
 
-    void updateCostIncomming(size_t i, size_t j){
+    void updateCostIncomming(std::size_t i, std::size_t j){
         assert(j>i);
 
-        size_t first=firstVertices[i];
-        size_t minCommonVertex=getMinBackwardNeighbor(j);
-        size_t maxCommonVertex=getMaxBackwardNeighbor(first);
+        std::size_t first=firstVertices[i];
+        std::size_t minCommonVertex=getMinBackwardNeighbor(j);
+        std::size_t maxCommonVertex=getMaxBackwardNeighbor(first);
 
 //        if(i==1290&&j==1303){
 //            std::cout<<"interesting join "<<std::endl;
@@ -364,7 +364,7 @@ private:
 
 
         if(maxCommonVertex!=s){
-            for (size_t l = minCommonVertex; l <= maxCommonVertex; ++l) {
+            for (std::size_t l = minCommonVertex; l <= maxCommonVertex; ++l) {
                 if(l==1277&&first==1290&&j==1303){
                     std::cout<<"interesting join, orig "<<liftedCostsFull[l][first]<<", to add "<<liftedCostsFull[l][j]<<std::endl;
                 }
@@ -374,9 +374,9 @@ private:
                 liftedPotentialBackward[first][l]+=liftedPotentialBackward[j][l];
 
             }
-            size_t m=std::min(minCommonVertex,getMaxBackwardNeighbor(first)+1);
+            std::size_t m=std::min(minCommonVertex,getMaxBackwardNeighbor(first)+1);
             if(m<numberOfVertices){
-                for (size_t l = getMinBackwardNeighbor(first); l < m; ++l) {
+                for (std::size_t l = getMinBackwardNeighbor(first); l < m; ++l) {
                     liftedPotentialForward[l][first]=0;
 
                 }
@@ -385,15 +385,15 @@ private:
         }
 
         auto pInFactor=(*pSNCFactors)[first][0]->get_factor();
-        const std::vector<size_t>& baseIDs=pInFactor->getBaseIDs();
+        const std::vector<std::size_t>& baseIDs=pInFactor->getBaseIDs();
 
         //assert(baseIDs.size()==costs[j].size());
-        for (size_t k = 0; k < baseIDs.size(); ++k) {
-            size_t vertex2=baseIDs[k];
+        for (std::size_t k = 0; k < baseIDs.size(); ++k) {
+            std::size_t vertex2=baseIDs[k];
             if(vertex2==s) continue;
             auto pOutFactor=(*pSNCFactors)[vertex2][1]->get_factor();
-            size_t index=pOutFactor->getBaseIDToOrder(first);
-            size_t timeGap=getTimeGap(vertex2,first);
+            std::size_t index=pOutFactor->getBaseIDToOrder(first);
+            std::size_t timeGap=getTimeGap(vertex2,first);
             double cost=costs[vertex2][index]+liftedCostsFull[vertex2][first]+liftedPotentialForward[vertex2][first]+liftedPotentialBackward[first][vertex2];
             timeStamps[vertex2][index]++;
             if(cost<inOutCost){
@@ -403,9 +403,9 @@ private:
         }
     }
 
-    size_t getMinForwardNeighbor(size_t vertex){
+    std::size_t getMinForwardNeighbor(std::size_t vertex){
         const VertexGroups<>& vg=*pvg;
-        size_t time=vg.getGroupIndex(vertex);
+        std::size_t time=vg.getGroupIndex(vertex);
         if(time==vg.getMaxTime()){
             return t;
         }
@@ -414,10 +414,10 @@ private:
         }
     }
 
-    size_t getMaxForwardNeighbor(size_t vertex){
+    std::size_t getMaxForwardNeighbor(std::size_t vertex){
          const VertexGroups<>& vg=*pvg;
-        size_t time=vg.getGroupIndex(vertex);
-        size_t shiftedTime=time+pInstance->parameters.getMaxTimeGapComplete();
+        std::size_t time=vg.getGroupIndex(vertex);
+        std::size_t shiftedTime=time+pInstance->parameters.getMaxTimeGapComplete();
         if(time==vg.getMaxTime()){
             return t;
         }
@@ -429,9 +429,9 @@ private:
         }
     }
 
-    size_t getMaxBackwardNeighbor(size_t vertex){
+    std::size_t getMaxBackwardNeighbor(std::size_t vertex){
          const VertexGroups<>& vg=*pvg;
-        size_t time=vg.getGroupIndex(vertex);
+        std::size_t time=vg.getGroupIndex(vertex);
         if(time==1){
             return s;
         }
@@ -440,10 +440,10 @@ private:
         }
     }
 
-    size_t getMinBackwardNeighbor(size_t vertex){
+    std::size_t getMinBackwardNeighbor(std::size_t vertex){
          const VertexGroups<>& vg=*pvg;
-        size_t time=vg.getGroupIndex(vertex);
-        //size_t shiftedTime=time+pInstance->parameters.getMaxTimeGapComplete();
+        std::size_t time=vg.getGroupIndex(vertex);
+        //std::size_t shiftedTime=time+pInstance->parameters.getMaxTimeGapComplete();
         if(time==1){
             return s;
         }
@@ -457,26 +457,26 @@ private:
 
 
 
-    size_t getTimeGap(size_t vertex1,size_t vertex2){
-        size_t l0=pInstance->getGroupIndex(vertex1);
-        size_t l1=pInstance->getGroupIndex(vertex2);
+    std::size_t getTimeGap(std::size_t vertex1,std::size_t vertex2){
+        std::size_t l0=pInstance->getGroupIndex(vertex1);
+        std::size_t l1=pInstance->getGroupIndex(vertex2);
 
         assert(l1>l0);
         return l1-l0;
     }
 
-    size_t getTimeForIndex(size_t vertex1,size_t index){
+    std::size_t getTimeForIndex(std::size_t vertex1,std::size_t index){
         assert(vertex1<numberOfVertices);
         auto pOutFactor=(*pSNCFactors)[vertex1][1]->get_factor();
-        const std::vector<size_t>& baseIDs=pOutFactor->getBaseIDs();
+        const std::vector<std::size_t>& baseIDs=pOutFactor->getBaseIDs();
         assert(index<baseIDs.size());
         return getTimeGap(vertex1,baseIDs[index]);
     }
 
-    size_t getVertexToIndex(size_t vertex1,size_t index){
+    std::size_t getVertexToIndex(std::size_t vertex1,std::size_t index){
         assert(vertex1<numberOfVertices);
         auto pOutFactor=(*pSNCFactors)[vertex1][1]->get_factor();
-        const std::vector<size_t>& baseIDs=pOutFactor->getBaseIDs();
+        const std::vector<std::size_t>& baseIDs=pOutFactor->getBaseIDs();
         assert(index<baseIDs.size());
         return baseIDs.at(index);
     }
@@ -484,11 +484,11 @@ private:
 
     struct Edge
     {
-         size_t firstVertex;
-         size_t neighborIndex;
+         std::size_t firstVertex;
+         std::size_t neighborIndex;
          double cost;
-         size_t timeGap;
-         size_t timeStamp;
+         std::size_t timeGap;
+         std::size_t timeStamp;
 
          bool operator <(Edge const& other) const
          {
@@ -499,11 +499,11 @@ private:
 
     };
 
-    size_t numberOfVertices;
-    size_t t;
-    size_t s;
-    //std::vector<std::map<size_t, double>> costs;   //TODO replace with LdpDirectedGraph
-   // std::vector<std::map<size_t, double>> liftedCosts; //TODO replace with LdpDirectedGraph
+    std::size_t numberOfVertices;
+    std::size_t t;
+    std::size_t s;
+    //std::vector<std::map<std::size_t, double>> costs;   //TODO replace with LdpDirectedGraph
+   // std::vector<std::map<std::size_t, double>> liftedCosts; //TODO replace with LdpDirectedGraph
 
     std::vector<ShiftedVector<double>> liftedCostsFull;
     std::vector<ShiftedVector<double>> liftedPotentialForward;
@@ -517,15 +517,15 @@ private:
     std::vector<std::vector<double>> costs;   //TODO replace with LdpDirectedGraph
     //std::vector<std::vector<double>> liftedCosts; //TODO replace with LdpDirectedGraph
 
-    std::vector<std::vector<size_t>> timeStamps;
+    std::vector<std::vector<std::size_t>> timeStamps;
 
     std::vector<char> startingVertices; //char for representing bool: is starting, to check if can be connected in forward direction
-    std::vector<size_t> lastVertices;   //just for vertices that are itself firs or last in a path
-    std::vector<size_t> firstVertices;
-    std::vector<size_t> startingFinal;
+    std::vector<std::size_t> lastVertices;   //just for vertices that are itself firs or last in a path
+    std::vector<std::size_t> firstVertices;
+    std::vector<std::size_t> startingFinal;
    // std::vector<char> endingVertices;  //to check if it can be connected in a backward direction
 
-    std::vector<size_t> neighbors;
+    std::vector<std::size_t> neighbors;
 
     std::vector<std::array<SNC_FACTOR*,2>>* pSNCFactors;
 
@@ -539,7 +539,7 @@ private:
 
      double expectedPrimal;
 
-     //std::vector<std::array<size_t,2>> boundariesOfTimeLayers;  //max vertex and min vertex in each time layer
+     //std::vector<std::array<std::size_t,2>> boundariesOfTimeLayers;  //max vertex and min vertex in each time layer
 
 
 };

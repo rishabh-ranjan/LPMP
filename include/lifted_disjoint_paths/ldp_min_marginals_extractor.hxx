@@ -29,29 +29,29 @@ public:
         numberOfVerticesComplete=0;
     }
 
-    std::vector<std::map<size_t,double>>& getBaseEdgesMinMarginals(){
+    std::vector<std::map<std::size_t,double>>& getBaseEdgesMinMarginals(){
        return baseEdgesWithCosts;
     }
 
-    std::vector<std::map<size_t,double>>& getLiftedEdgesMinMarginals(){
+    std::vector<std::map<std::size_t,double>>& getLiftedEdgesMinMarginals(){
        return liftedEdgesWithCosts;
     }
 
-    void updateCostBase(size_t v,size_t w){
+    void updateCostBase(std::size_t v,std::size_t w){
         auto pFactorIn=(*p_single_node_cut_factors_)[w][0]->get_factor();
         auto pFactorOut=(*p_single_node_cut_factors_)[v][1]->get_factor();
-        size_t indexIn=pFactorIn->getBaseIDToOrder(v);
-         size_t indexOut=pFactorOut->getBaseIDToOrder(w);
+        std::size_t indexIn=pFactorIn->getBaseIDToOrder(v);
+         std::size_t indexOut=pFactorOut->getBaseIDToOrder(w);
          pFactorIn->updateEdgeCost(-baseEdgesInput[v][w],indexIn,false);
          pFactorOut->updateEdgeCost(-baseEdgesOutput[v][w],indexOut,false);
     }
 
 
-    void updateCostLifted(size_t v,size_t w){
+    void updateCostLifted(std::size_t v,std::size_t w){
         auto pFactorIn=(*p_single_node_cut_factors_)[w][0]->get_factor();
         auto pFactorOut=(*p_single_node_cut_factors_)[v][1]->get_factor();
-        size_t indexIn=pFactorIn->getLiftedIDToOrder(v);
-         size_t indexOut=pFactorOut->getLiftedIDToOrder(w);
+        std::size_t indexIn=pFactorIn->getLiftedIDToOrder(v);
+         std::size_t indexOut=pFactorOut->getLiftedIDToOrder(w);
          pFactorIn->updateEdgeCost(-liftedEdgesInput[v][w],indexIn,true);
          pFactorOut->updateEdgeCost(-liftedEdgesOutput[v][w],indexOut,true);
     }
@@ -69,14 +69,14 @@ void clearMinMarginals(){
 private:
 const lifted_disjoint_paths::LdpInstance * pInstance;
 std::vector<std::array<SINGLE_NODE_CUT_FACTOR*,2>>* p_single_node_cut_factors_;
-size_t numberOfVerticesComplete;
-std::vector<std::map<size_t,double>> baseEdgesWithCosts;
-std::vector<std::map<size_t,double>> liftedEdgesWithCosts;
-std::vector<std::map<size_t,double>> baseEdgesInput;
-std::vector<std::map<size_t,double>> liftedEdgesInput;
+std::size_t numberOfVerticesComplete;
+std::vector<std::map<std::size_t,double>> baseEdgesWithCosts;
+std::vector<std::map<std::size_t,double>> liftedEdgesWithCosts;
+std::vector<std::map<std::size_t,double>> baseEdgesInput;
+std::vector<std::map<std::size_t,double>> liftedEdgesInput;
 
-std::vector<std::map<size_t,double>> baseEdgesOutput;
-std::vector<std::map<size_t,double>> liftedEdgesOutput;
+std::vector<std::map<std::size_t,double>> baseEdgesOutput;
+std::vector<std::map<std::size_t,double>> liftedEdgesOutput;
 //LdpDirectedGraph baseGraph;
 //LdpDirectedGraph liftedGraph;
 
@@ -93,17 +93,17 @@ inline void ldp_min_marginals_extractor<SINGLE_NODE_CUT_FACTOR>::initMinMarginal
     assert(p_single_node_cut_factors_!=nullptr);
     std::vector<std::array<SINGLE_NODE_CUT_FACTOR*,2>>& single_node_cut_factors_=*p_single_node_cut_factors_;
 
-    liftedEdgesWithCosts=std::vector<std::map<size_t,double>>(numberOfVerticesComplete-2);
-    baseEdgesWithCosts=std::vector<std::map<size_t,double>>(numberOfVerticesComplete);
+    liftedEdgesWithCosts=std::vector<std::map<std::size_t,double>>(numberOfVerticesComplete-2);
+    baseEdgesWithCosts=std::vector<std::map<std::size_t,double>>(numberOfVerticesComplete);
 
-    liftedEdgesInput=std::vector<std::map<size_t,double>>(numberOfVerticesComplete-2);
-    baseEdgesInput=std::vector<std::map<size_t,double>>(numberOfVerticesComplete);
+    liftedEdgesInput=std::vector<std::map<std::size_t,double>>(numberOfVerticesComplete-2);
+    baseEdgesInput=std::vector<std::map<std::size_t,double>>(numberOfVerticesComplete);
 
-    liftedEdgesOutput=std::vector<std::map<size_t,double>>(numberOfVerticesComplete-2);
-    baseEdgesOutput=std::vector<std::map<size_t,double>>(numberOfVerticesComplete);
+    liftedEdgesOutput=std::vector<std::map<std::size_t,double>>(numberOfVerticesComplete-2);
+    baseEdgesOutput=std::vector<std::map<std::size_t,double>>(numberOfVerticesComplete);
 
     //Getting the edge costs
-    for (size_t i = 0; i < numberOfVerticesComplete-2; ++i) {
+    for (std::size_t i = 0; i < numberOfVerticesComplete-2; ++i) {
         // std::cout<<"node "<<i<<std::endl;
 
         //TODO just half of the change for base!
@@ -112,8 +112,8 @@ inline void ldp_min_marginals_extractor<SINGLE_NODE_CUT_FACTOR>::initMinMarginal
         std::vector<double> localBaseCostsIn=sncFactorIn->getBaseCosts();
 
         //std::cout<<"base mm size "<<minMarginalsIn.size()<<std::endl;
-        for (size_t j = 0; j < minMarginalsIn.size(); ++j) {
-            size_t neighborID=sncFactorIn->getBaseIDs()[j];
+        for (std::size_t j = 0; j < minMarginalsIn.size(); ++j) {
+            std::size_t neighborID=sncFactorIn->getBaseIDs()[j];
             //if(neighborID>=numberOfVertices-2) continue;
             minMarginalsIn[j]*=0.5;
             localBaseCostsIn.at(j)-=minMarginalsIn.at(j);
@@ -126,8 +126,8 @@ inline void ldp_min_marginals_extractor<SINGLE_NODE_CUT_FACTOR>::initMinMarginal
         //  std::cout<<"base min marginals in "<<i<<std::endl;
 
         std::vector<double> minMarginalsLiftedIn=sncFactorIn->getAllLiftedMinMarginals(&localBaseCostsIn);
-        for (size_t j = 0; j < minMarginalsLiftedIn.size(); ++j) {
-            size_t neighborID=sncFactorIn->getLiftedIDs()[j];
+        for (std::size_t j = 0; j < minMarginalsLiftedIn.size(); ++j) {
+            std::size_t neighborID=sncFactorIn->getLiftedIDs()[j];
             liftedEdgesWithCosts[neighborID][i]+=minMarginalsLiftedIn[j];
             liftedEdgesInput[neighborID][i]+=minMarginalsLiftedIn[j];
 
@@ -140,8 +140,8 @@ inline void ldp_min_marginals_extractor<SINGLE_NODE_CUT_FACTOR>::initMinMarginal
         std::vector<double> localBaseCostsOut=sncFactorOut->getBaseCosts();
         std::vector<double> minMarginalsOut=sncFactorOut->getAllBaseMinMarginals();
 
-        for (size_t j = 0; j < minMarginalsOut.size(); ++j) {
-            size_t neighborID=sncFactorOut->getBaseIDs()[j];
+        for (std::size_t j = 0; j < minMarginalsOut.size(); ++j) {
+            std::size_t neighborID=sncFactorOut->getBaseIDs()[j];
             //if(neighborID>=numberOfVertices-2) continue;
             minMarginalsOut[j]*=0.5;
               localBaseCostsOut.at(j)-=minMarginalsOut.at(j);
@@ -152,8 +152,8 @@ inline void ldp_min_marginals_extractor<SINGLE_NODE_CUT_FACTOR>::initMinMarginal
 
          std::vector<double> minMarginalsLiftedOut=sncFactorOut->getAllLiftedMinMarginals(&localBaseCostsOut);
 
-         for (size_t j = 0; j < minMarginalsLiftedOut.size(); ++j) {
-             size_t neighborID=sncFactorOut->getLiftedIDs()[j];
+         for (std::size_t j = 0; j < minMarginalsLiftedOut.size(); ++j) {
+             std::size_t neighborID=sncFactorOut->getLiftedIDs()[j];
              liftedEdgesWithCosts[i][neighborID]+=minMarginalsLiftedOut[j];
              liftedEdgesOutput[i][neighborID]+=minMarginalsLiftedOut[j];
          }
@@ -173,17 +173,17 @@ inline void ldp_min_marginals_extractor<SINGLE_NODE_CUT_FACTOR>::initMinMarginal
     assert(p_single_node_cut_factors_!=nullptr);
     std::vector<std::array<SINGLE_NODE_CUT_FACTOR*,2>>& single_node_cut_factors_=*p_single_node_cut_factors_;
 
-    liftedEdgesWithCosts=std::vector<std::map<size_t,double>>(numberOfVerticesComplete-2);
-    baseEdgesWithCosts=std::vector<std::map<size_t,double>>(numberOfVerticesComplete);
+    liftedEdgesWithCosts=std::vector<std::map<std::size_t,double>>(numberOfVerticesComplete-2);
+    baseEdgesWithCosts=std::vector<std::map<std::size_t,double>>(numberOfVerticesComplete);
 
-    liftedEdgesInput=std::vector<std::map<size_t,double>>(numberOfVerticesComplete-2);
-    baseEdgesInput=std::vector<std::map<size_t,double>>(numberOfVerticesComplete);
+    liftedEdgesInput=std::vector<std::map<std::size_t,double>>(numberOfVerticesComplete-2);
+    baseEdgesInput=std::vector<std::map<std::size_t,double>>(numberOfVerticesComplete);
 
-    liftedEdgesOutput=std::vector<std::map<size_t,double>>(numberOfVerticesComplete-2);
-    baseEdgesOutput=std::vector<std::map<size_t,double>>(numberOfVerticesComplete);
+    liftedEdgesOutput=std::vector<std::map<std::size_t,double>>(numberOfVerticesComplete-2);
+    baseEdgesOutput=std::vector<std::map<std::size_t,double>>(numberOfVerticesComplete);
 
     //Getting the edge costs
-    for (size_t i = 0; i < numberOfVerticesComplete-2; ++i) {
+    for (std::size_t i = 0; i < numberOfVerticesComplete-2; ++i) {
         // std::cout<<"node "<<i<<std::endl;
 
         //TODO just half of the change for base!
@@ -195,10 +195,10 @@ inline void ldp_min_marginals_extractor<SINGLE_NODE_CUT_FACTOR>::initMinMarginal
 
 
         //std::vector<double> minMarginalsLiftedIn=sncFactorIn->getAllLiftedMinMarginals(&localBaseCostsIn);
-        for (size_t j = 0; j < liftedMinMarginalsIn.size(); ++j) {
+        for (std::size_t j = 0; j < liftedMinMarginalsIn.size(); ++j) {
             liftedMinMarginalsIn[j]*=0.5;
             localLiftedCostsIn[j]-=liftedMinMarginalsIn[j];
-            size_t neighborID=sncFactorIn->getLiftedIDs()[j];
+            std::size_t neighborID=sncFactorIn->getLiftedIDs()[j];
             liftedEdgesWithCosts[neighborID][i]+=liftedMinMarginalsIn[j];
             liftedEdgesInput[neighborID][i]+=liftedMinMarginalsIn[j];
 
@@ -208,8 +208,8 @@ inline void ldp_min_marginals_extractor<SINGLE_NODE_CUT_FACTOR>::initMinMarginal
         std::vector<double> baseMinMarginalsIn=sncFactorIn->getAllBaseMinMarginals(&baseCostsIn,&localLiftedCostsIn);
 
         //std::cout<<"base mm size "<<minMarginalsIn.size()<<std::endl;
-        for (size_t j = 0; j < baseMinMarginalsIn.size(); ++j) {
-            size_t neighborID=sncFactorIn->getBaseIDs()[j];
+        for (std::size_t j = 0; j < baseMinMarginalsIn.size(); ++j) {
+            std::size_t neighborID=sncFactorIn->getBaseIDs()[j];
             baseEdgesWithCosts[neighborID][i]+=baseMinMarginalsIn[j];
             baseEdgesInput[neighborID][i]+=baseMinMarginalsIn[j];
         }
@@ -220,10 +220,10 @@ inline void ldp_min_marginals_extractor<SINGLE_NODE_CUT_FACTOR>::initMinMarginal
         std::vector<double> liftedMinMarginalsOut=sncFactorOut->getAllLiftedMinMarginals();
         std::vector<double> localLiftedCostsOut=sncFactorOut->getLiftedCosts();
 
-        for (size_t j = 0; j < liftedMinMarginalsOut.size(); ++j) {
+        for (std::size_t j = 0; j < liftedMinMarginalsOut.size(); ++j) {
             liftedMinMarginalsOut[j]*=0.5;
             localLiftedCostsOut[j]-=liftedMinMarginalsOut[j];
-            size_t neighborID=sncFactorOut->getLiftedIDs()[j];
+            std::size_t neighborID=sncFactorOut->getLiftedIDs()[j];
             liftedEdgesWithCosts[i][neighborID]+=liftedMinMarginalsOut[j];
             liftedEdgesOutput[i][neighborID]+=liftedMinMarginalsOut[j];
         }
@@ -233,8 +233,8 @@ inline void ldp_min_marginals_extractor<SINGLE_NODE_CUT_FACTOR>::initMinMarginal
 
 
 
-        for (size_t j = 0; j < baseMinMarginalsOut.size(); ++j) {
-            size_t neighborID=sncFactorOut->getBaseIDs()[j];
+        for (std::size_t j = 0; j < baseMinMarginalsOut.size(); ++j) {
+            std::size_t neighborID=sncFactorOut->getBaseIDs()[j];
             baseEdgesWithCosts[i][neighborID]+=baseMinMarginalsOut[j];
             baseEdgesOutput[i][neighborID]+=baseMinMarginalsOut[j];
 

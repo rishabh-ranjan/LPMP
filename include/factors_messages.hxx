@@ -2201,14 +2201,14 @@ public:
       return no_calls;
    }
 
-   std::vector<size_t> no_type_specific_send_messages() const final
+   std::vector<std::size_t> no_type_specific_send_messages() const final
    {
-      std::vector<size_t> messageTypes;
+      std::vector<std::size_t> messageTypes;
       INDEX no_calls = 0;
       meta::for_each(MESSAGE_DISPATCHER_TYPELIST{}, [this,&no_calls,&messageTypes](auto l) {
             constexpr INDEX n = FactorContainerType::FindMessageDispatcherTypeIndex<decltype(l)>();
             if(l.sends_message_to_adjacent_factor()) {
-               size_t currentValue=std::get<n>(msg_).size();
+               std::size_t currentValue=std::get<n>(msg_).size();
                if(currentValue>0) messageTypes.push_back(currentValue);
                no_calls += currentValue;
             }
@@ -2758,7 +2758,7 @@ public:
    void operator_equal_plus(std::vector<T>& l, const std::vector<T>& r)
    {
        assert(l.size() == r.size());
-       for(size_t i=0; i<l.size(); ++i)
+       for(std::size_t i=0; i<l.size(); ++i)
            l[i] += r[i]; 
    }
 
@@ -2766,15 +2766,15 @@ public:
    void operator_equal_plus(vector<T>& l, const vector<T>& r)
    {
        assert(l.size() == r.size());
-       for(size_t i=0; i<l.size(); ++i)
+       for(std::size_t i=0; i<l.size(); ++i)
            l[i] += r[i]; 
    }
 
-   template<typename T, size_t N>
+   template<typename T, std::size_t N>
    void operator_equal_plus(array<T,N>& l, const array<T,N>& r)
    {
        assert(l.size() == r.size());
-       for(size_t i=0; i<N; ++i)
+       for(std::size_t i=0; i<N; ++i)
            l[i] += r[i]; 
    }
 
@@ -2782,7 +2782,7 @@ public:
    void operator_equal_plus(matrix<T>& l, const matrix<T>& r)
    {
        assert(l.size() == r.size());
-       for(size_t i=0; i<l.size(); ++i)
+       for(std::size_t i=0; i<l.size(); ++i)
            l[i] += r[i]; 
    }
 

@@ -58,11 +58,11 @@ public:
 
       // Construct adjacency list for the graph
       // Iterate over all of the edges (we do this by looking at the edge intersection sets)
-      for(size_t factorId=0; factorId<gm_.get_number_of_pairwise_factors(); factorId++) {
+      for(std::size_t factorId=0; factorId<gm_.get_number_of_pairwise_factors(); factorId++) {
          auto vars = gm_.get_pairwise_variables(factorId);
          // Get the two nodes i & j
-         const size_t i=std::get<0>(vars);
-         const size_t j=std::get<1>(vars);
+         const std::size_t i=std::get<0>(vars);
+         const std::size_t j=std::get<1>(vars);
          assert(i<j);
          adjacency_list[i].push_back(j);
          adjacency_list[j].push_back(i);
@@ -82,7 +82,7 @@ public:
          std::vector<std::size_t> commonNodes(gm_.get_number_of_variables()-1);
          std::vector<triplet_candidate> triplet_candidates_local;
 //#pragma omp for schedule(guided)
-         for(size_t factorId=0; factorId<gm_.get_number_of_pairwise_factors(); factorId++) {
+         for(std::size_t factorId=0; factorId<gm_.get_number_of_pairwise_factors(); factorId++) {
             auto vars = gm_.get_pairwise_variables(factorId);
             const std::size_t i=std::get<0>(vars);
             const std::size_t j=std::get<1>(vars);
@@ -243,7 +243,7 @@ template<typename PAIRWISE_REPAM>
 matrix<double> k_ary_cycle_inequalities_search<MRF_CONSTRUCTOR, EXTENDED>::column_minima(const PAIRWISE_REPAM& f)
 {
    matrix<double> _column_minima(f.dim2(),2);
-   for(size_t i=0; i<_column_minima.size(); ++i)
+   for(std::size_t i=0; i<_column_minima.size(); ++i)
        _column_minima[i] = std::numeric_limits<double>::infinity();
    for(std::size_t x1=0; x1<f.dim1(); ++x1) {
       for(std::size_t x2=0; x2<f.dim2(); ++x2) {
@@ -499,11 +499,11 @@ k_ary_cycle_inequalities_search<MRF_CONSTRUCTOR, EXTENDED>::compute_partitions()
    {
       auto partitions_local = partitions;
 #pragma omp for schedule(guided) nowait
-      for(size_t factorId=0; factorId<gm_.get_number_of_pairwise_factors(); factorId++) {
+      for(std::size_t factorId=0; factorId<gm_.get_number_of_pairwise_factors(); factorId++) {
          auto vars = gm_.get_pairwise_variables(factorId);
          const auto& factor = *gm_.get_pairwise_factor(factorId)->get_factor();
-         const size_t i=std::get<0>(vars);
-         const size_t j=std::get<1>(vars);
+         const std::size_t i=std::get<0>(vars);
+         const std::size_t j=std::get<1>(vars);
          assert(i<j);
          const auto part_ij = compute_partitions(factor);
          const auto& part_i = std::get<0>(part_ij);
@@ -710,7 +710,7 @@ k_ary_cycle_inequalities_search<MRF_CONSTRUCTOR, EXTENDED>::construct_projection
    {
       auto projection_edges_local = projection_edges_;
 #pragma omp for schedule(guided)
-      for(size_t factorId=0; factorId<gm_.get_number_of_pairwise_factors(); factorId++) {
+      for(std::size_t factorId=0; factorId<gm_.get_number_of_pairwise_factors(); factorId++) {
          // Get the two nodes i & j and the edge intersection set. Put in right order.
          const std::size_t i = std::get<0>(gm_.get_pairwise_variables(factorId));
          const std::size_t j = std::get<1>(gm_.get_pairwise_variables(factorId));

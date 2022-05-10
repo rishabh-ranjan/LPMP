@@ -13,8 +13,8 @@ namespace LPMP {
 template<class T=char>
 std::vector<std::string> split(
         std::string inputString, T delim) {
-    size_t occurence = 0;
-    size_t newOccurence = 0;
+    std::size_t occurence = 0;
+    std::size_t newOccurence = 0;
     std::vector<std::string> strings;
     while (newOccurence < inputString.size()) {
         newOccurence = std::min(inputString.find_first_of(delim, occurence),
@@ -32,7 +32,7 @@ std::vector<std::string> split(
 
 
 
-template<class T=size_t>
+template<class T=std::size_t>
 std::vector<std::vector<T>> readLines(std::string inputFileName, char delim) {
     std::ifstream inputFile;
     std::vector<std::vector<T>> outputs;
@@ -44,13 +44,13 @@ std::vector<std::vector<T>> readLines(std::string inputFileName, char delim) {
         }
 
         std::string line;
-        size_t lineCounter=0;
+        std::size_t lineCounter=0;
         std::getline(inputFile, line);
         std::vector<std::string> strings;
 
         while (std::getline(inputFile, line) && !line.empty()) {
             strings=split(line,delim);
-            size_t length=strings.size();
+            std::size_t length=strings.size();
             std::vector<T> parsedLine(length);
             for (int i = 0; i < length; ++i) {
                 parsedLine[i]=std::stoul(strings[i]);
@@ -75,7 +75,7 @@ std::vector<std::vector<T>> readLines(std::string inputFileName, char delim) {
 
 
 
-inline void writeOutputToFile(const std::vector<std::vector<size_t>>& paths,std::string outputFileName){
+inline void writeOutputToFile(const std::vector<std::vector<std::size_t>>& paths,std::string outputFileName){
 
 
     std::ofstream file;
@@ -85,7 +85,7 @@ inline void writeOutputToFile(const std::vector<std::vector<size_t>>& paths,std:
     for (int i = 0; i < paths.size(); ++i) {
         //std::cout<<"output path "<<i<<std::endl;
         for (int j = 0; j < paths[i].size(); ++j) {
-            size_t v=paths[i][j];
+            std::size_t v=paths[i][j];
             file<<v<<" ";
             //	labels[v]=i+1;
         }

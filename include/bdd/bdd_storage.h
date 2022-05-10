@@ -53,14 +53,14 @@ namespace LPMP {
         std::size_t last_bdd_node(const std::size_t bdd_nr) const;
 
         // return all edges with endpoints being variables that are consecutive in some BDD
-        std::vector<std::array<size_t,2>> dependency_graph() const;
+        std::vector<std::array<std::size_t,2>> dependency_graph() const;
 
     private:
         void check_node_valid(const bdd_node bdd) const;
 
         template<typename BDD_NODE_TYPE, typename BDD_GETTER, typename VARIABLE_GETTER, typename NEXT_BDD_NODE, typename BDD_VARIABLE_ITERATOR>
             void add_bdd_impl(
-                    const size_t nr_bdds,
+                    const std::size_t nr_bdds,
                     BDD_GETTER bdd_getter,
                     VARIABLE_GETTER& get_var,
                     NEXT_BDD_NODE& next_bdd_node,
@@ -76,12 +76,12 @@ namespace LPMP {
         std::size_t nr_variables_ = 0;
 
         // for BDD decomposition //
-        std::vector<size_t> interval_boundaries;
-        std::vector<size_t> intervals;
-        void compute_intervals(const size_t nr_intervals);
-        size_t interval(const size_t variable) const;
-        size_t nr_intervals() const;
-        std::tuple<two_dim_variable_array<bdd_storage::bdd_node>, two_dim_variable_array<size_t>> split_bdd_nodes(const size_t nr_intervals);
+        std::vector<std::size_t> interval_boundaries;
+        std::vector<std::size_t> intervals;
+        void compute_intervals(const std::size_t nr_intervals);
+        std::size_t interval(const std::size_t variable) const;
+        std::size_t nr_intervals() const;
+        std::tuple<two_dim_variable_array<bdd_storage::bdd_node>, two_dim_variable_array<std::size_t>> split_bdd_nodes(const std::size_t nr_intervals);
 
         TCLAP::MultiArg<std::string> preprocessing_arg;
     };
@@ -99,13 +99,13 @@ namespace LPMP {
 
             std::vector<BDD::node_ref> bdd_nodes = bdd.nodes_postorder();
 
-            auto get_bdd = [&](const size_t bdd_nr) {
+            auto get_bdd = [&](const std::size_t bdd_nr) {
                 assert(bdd_nr < bdd_nodes.size());
                 return bdd_nodes[bdd_nr];
             };
 
             auto get_variable = [&](BDD::node_ref& bdd) { 
-                const size_t i = bdd.variable();
+                const std::size_t i = bdd.variable();
                 return i;
                 assert(i < std::distance(bdd_vars_begin, bdd_vars_end));
                 return *(bdd_vars_begin + i); 
@@ -131,13 +131,13 @@ namespace LPMP {
     void bdd_storage::add_bdd(BDD::bdd_collection_entry bdd)
     {
         const auto vars = bdd.variables();
-        std::unordered_map<size_t,size_t> rebase_to_iota;
-        for(size_t i=0; i<vars.size(); ++i)
+        std::unordered_map<std::size_t,std::size_t> rebase_to_iota;
+        for(std::size_t i=0; i<vars.size(); ++i)
             rebase_to_iota.insert({vars[i], i});
         bdd.rebase(rebase_to_iota);
 
-        auto get_node = [&](const size_t i) {
-            const size_t j = bdd.nr_nodes() - 3 - i;
+        auto get_node = [&](const std::size_t i) {
+            const std::size_t j = bdd.nr_nodes() - 3 - i;
             return bdd[j]; 
         };
         auto get_next_node = [&](BDD::bdd_collection_node node) { return node.next_postorder(); };
@@ -156,13 +156,13 @@ namespace LPMP {
 
     template<typename BDD_NODE_TYPE, typename BDD_GETTER, typename VARIABLE_GETTER, typename NEXT_BDD_NODE, typename BDD_VARIABLE_ITERATOR>
         void bdd_storage::add_bdd_impl(
-                const size_t nr_bdds,
+                const std::size_t nr_bdds,
                 BDD_GETTER bdd_getter,
                 VARIABLE_GETTER& get_var, 
                 NEXT_BDD_NODE& next_bdd_node,
                 BDD_VARIABLE_ITERATOR bdd_vars_begin, BDD_VARIABLE_ITERATOR bdd_vars_end)
         {
-            std::unordered_map<BDD_NODE_TYPE, size_t> node_to_index;
+            std::unordered_map<BDD_NODE_TYPE, std::size_t> node_to_index;
 
             auto get_node_index = [&](BDD_NODE_TYPE node) -> std::size_t {
                 if(node.is_botsink()) {
@@ -185,8 +185,8 @@ namespace LPMP {
                 const std::size_t start_var = get_var(start);
 
                 if(!end.is_terminal()) {
-                    const size_t end_var = get_var(end);
-                    size_t last_index = get_node_index(end);
+                    const std::size_t end_var = get_var(end);
+                    std::size_t last_index = get_node_index(end);
                     for(std::size_t i = end_var-1; i != start_var; --i) {
                         assert(i>0);
                         const std::size_t v_intermed = *(bdd_vars_begin + i);
@@ -218,16 +218,16 @@ namespace LPMP {
                 }
             };
 
-            const size_t nr_bdd_nodes_begin = bdd_nodes_.size();
+            const std::size_t nr_bdd_nodes_begin = bdd_nodes_.size();
 
-            for(size_t i=0; i<nr_bdds; ++i)
+            for(std::size_t i=0; i<nr_bdds; ++i)
             {
                 auto node = bdd_getter(i);
-                const size_t variable = get_var(node);
+                const std::size_t variable = get_var(node);
                 nr_variables_ = std::max(*(bdd_vars_begin+variable)+1, nr_variables_);
 
-                const size_t low_index = add_intermediate_nodes(node, node.low());
-                const size_t high_index = add_intermediate_nodes(node, node.high());
+                const std::size_t low_index = add_intermediate_nodes(node, node.low());
+                const std::size_t high_index = add_intermediate_nodes(node, node.high());
 
                 assert(node_to_index.count(node) == 0);
                 node_to_index.insert({node, bdd_nodes_.size()});
@@ -235,7 +235,7 @@ namespace LPMP {
                 check_node_valid(bdd_nodes_.back()); 
             } 
 
-            const size_t nr_bdd_nodes_end = bdd_nodes_.size();
+            const std::size_t nr_bdd_nodes_end = bdd_nodes_.size();
             bdd_delimiters_.push_back(bdd_delimiters_.back() + nr_bdd_nodes_end - nr_bdd_nodes_begin);
         }
 
@@ -291,7 +291,7 @@ namespace LPMP {
             }
             bdd_pre.coalesce_bdd_collection();
 
-            for(size_t bdd_nr=0; bdd_nr<bdd_pre.get_bdd_collection().nr_bdds(); ++bdd_nr)
+            for(std::size_t bdd_nr=0; bdd_nr<bdd_pre.get_bdd_collection().nr_bdds(); ++bdd_nr)
                 add_bdd(bdd_pre.get_bdd_collection()[bdd_nr]);
         }
     }
@@ -311,25 +311,25 @@ namespace LPMP {
         return max_node;
     }
 
-    std::vector<std::array<size_t,2>> bdd_storage::dependency_graph() const
+    std::vector<std::array<std::size_t,2>> bdd_storage::dependency_graph() const
     {
-        std::unordered_set<std::array<size_t,2>> edges;
-        std::unordered_set<size_t> cur_vars;
-        std::vector<size_t> cur_vars_sorted;
-        for(size_t bdd_nr=0; bdd_nr<nr_bdds(); ++bdd_nr)
+        std::unordered_set<std::array<std::size_t,2>> edges;
+        std::unordered_set<std::size_t> cur_vars;
+        std::vector<std::size_t> cur_vars_sorted;
+        for(std::size_t bdd_nr=0; bdd_nr<nr_bdds(); ++bdd_nr)
         {
             cur_vars.clear();
-            for(size_t i=bdd_delimiters_[bdd_nr]; i<bdd_delimiters_[bdd_nr+1]; ++i)
+            for(std::size_t i=bdd_delimiters_[bdd_nr]; i<bdd_delimiters_[bdd_nr+1]; ++i)
                 cur_vars.insert(bdd_nodes_[i].variable);
             cur_vars_sorted.clear();
-            for(const size_t v : cur_vars)
+            for(const std::size_t v : cur_vars)
                 cur_vars_sorted.push_back(v);
             std::sort(cur_vars_sorted.begin(), cur_vars_sorted.end());
-            for(size_t i=0; i+1<cur_vars_sorted.size(); ++i)
+            for(std::size_t i=0; i+1<cur_vars_sorted.size(); ++i)
                 edges.insert({cur_vars_sorted[i], cur_vars_sorted[i+1]});
         }
 
-        return std::vector<std::array<size_t,2>>(edges.begin(), edges.end());
+        return std::vector<std::array<std::size_t,2>>(edges.begin(), edges.end());
     }
 
     template<typename STREAM>
@@ -370,7 +370,7 @@ namespace LPMP {
     // for BDD decomposition //
     ///////////////////////////
 
-    void bdd_storage::compute_intervals(const size_t nr_intervals)
+    void bdd_storage::compute_intervals(const std::size_t nr_intervals)
     {
         // first approach: Just partition variables equidistantly.
         // TODO: Take into account number of BDD nodes in each interval
@@ -378,7 +378,7 @@ namespace LPMP {
         assert(nr_intervals > 1);
         interval_boundaries.clear();
         interval_boundaries.reserve(nr_intervals+1);
-        for(size_t interval=0; interval<nr_intervals; ++interval)
+        for(std::size_t interval=0; interval<nr_intervals; ++interval)
             interval_boundaries.push_back(std::round(double(interval*this->nr_variables())/double(nr_intervals)));
 
         interval_boundaries.push_back(this->nr_variables()); 
@@ -386,12 +386,12 @@ namespace LPMP {
 
         intervals.clear();
         intervals.reserve(this->nr_variables());
-        for(size_t interval = 0; interval+1<interval_boundaries.size(); ++interval)
-            for(size_t var=interval_boundaries[interval]; var<interval_boundaries[interval+1]; ++var)
+        for(std::size_t interval = 0; interval+1<interval_boundaries.size(); ++interval)
+            for(std::size_t var=interval_boundaries[interval]; var<interval_boundaries[interval+1]; ++var)
                 intervals.push_back(interval);
     }
 
-    size_t bdd_storage::interval(const size_t variable) const
+    std::size_t bdd_storage::interval(const std::size_t variable) const
     {
         assert(variable < this->nr_variables());
         assert(interval_boundaries.size() > 2 || interval_boundaries.size() == 0);
@@ -401,7 +401,7 @@ namespace LPMP {
         return intervals[variable];
     }
 
-    size_t bdd_storage::nr_intervals() const
+    std::size_t bdd_storage::nr_intervals() const
     {
         assert(interval_boundaries.size() > 2 || interval_boundaries.size() == 0);
         if(interval_boundaries.size() == 0)
@@ -409,19 +409,19 @@ namespace LPMP {
         return interval_boundaries.size()-1;
     }
 
-    // take bdd_nodes_ and return two_dim_variable_array<bdd_node> bdd_nodes_split_, two_dim_variable_array<size_t> bdd_delimiters_split_
-    std::tuple<two_dim_variable_array<bdd_storage::bdd_node>, two_dim_variable_array<size_t>> bdd_storage::split_bdd_nodes(const size_t nr_intervals)
+    // take bdd_nodes_ and return two_dim_variable_array<bdd_node> bdd_nodes_split_, two_dim_variable_array<std::size_t> bdd_delimiters_split_
+    std::tuple<two_dim_variable_array<bdd_storage::bdd_node>, two_dim_variable_array<std::size_t>> bdd_storage::split_bdd_nodes(const std::size_t nr_intervals)
     {
         compute_intervals(nr_intervals);
 
-        std::vector<size_t> nr_bdd_nodes_per_interval(nr_intervals(), 0);
-        std::vector<size_t> nr_bdds_per_inteval(nr_intervals(), 1);
-        std::unordered_set<size_t> active_intervals;
+        std::vector<std::size_t> nr_bdd_nodes_per_interval(nr_intervals(), 0);
+        std::vector<std::size_t> nr_bdds_per_inteval(nr_intervals(), 1);
+        std::unordered_set<std::size_t> active_intervals;
 
-        for(size_t bdd_counter=0; bdd_counter<bdd_delimiters_.size()-1; ++bdd_counter)
+        for(std::size_t bdd_counter=0; bdd_counter<bdd_delimiters_.size()-1; ++bdd_counter)
         {
-            const size_t last_bdd_interval = [&]() {
-                size_t last_bdd_interval = 0;
+            const std::size_t last_bdd_interval = [&]() {
+                std::size_t last_bdd_interval = 0;
                 for(auto bdd_node_counter=bdd_delimiters_[bdd_counter]; bdd_node_counter<bdd_delimiters_[bdd_counter+1]; ++bdd_node_counter)
                 {
                     const auto& bdd = bdd_nodes_[bdd_node_counter];
@@ -444,7 +444,7 @@ namespace LPMP {
                 const auto& bdd = bdd_nodes_[bdd_node_counter];
                 active_intervals.insert(interval(bdd.variable));
             }
-            for(const size_t i : active_intervals)
+            for(const std::size_t i : active_intervals)
                 ++nr_bdds_per_inteval[i];
 
             // count number of bdd nodes per interval
@@ -477,7 +477,7 @@ namespace LPMP {
                 {
                     if(bdd.low == bdd_node::terminal_0)
                     {
-                        const size_t high_var = bdd_nodes_[bdd.high].variable;
+                        const std::size_t high_var = bdd_nodes_[bdd.high].variable;
                         if(interval(bdd.variable) == interval(high_var)) // case (iii)
                         {
                             ++nr_bdd_nodes_per_interval[interval(bdd.variable)];
@@ -492,7 +492,7 @@ namespace LPMP {
                     else
                     {
                         assert(bdd.high == bdd_node::terminal_0);
-                        const size_t low_var = bdd_nodes_[bdd.low].variable;
+                        const std::size_t low_var = bdd_nodes_[bdd.low].variable;
                         if(interval(bdd.variable) == interval(low_var)) // case (iii)
                         {
                             ++nr_bdd_nodes_per_interval[interval(bdd.variable)];
@@ -515,16 +515,16 @@ namespace LPMP {
         two_dim_variable_array<bdd_node> split_bdd_nodes(nr_bdd_nodes_per_interval.begin(), nr_bdd_nodes_per_interval.end());
         std::fill(nr_bdd_nodes_per_interval.begin(), nr_bdd_nodes_per_interval.end(), 0);
 
-        two_dim_variable_array<size_t> split_bdd_delimiters(nr_bdds_per_inteval.begin(), nr_bdds_per_inteval.end());
+        two_dim_variable_array<std::size_t> split_bdd_delimiters(nr_bdds_per_inteval.begin(), nr_bdds_per_inteval.end());
         std::fill(nr_bdds_per_inteval.begin(), nr_bdds_per_inteval.end(), 1);
-        for(size_t i=0; i<split_bdd_delimiters.size(); ++i)
+        for(std::size_t i=0; i<split_bdd_delimiters.size(); ++i)
             split_bdd_delimiters(i,0) = 0;
 
         // fill split bdd nodes, record duplicated arcs
-        struct split_node { size_t interval; size_t offset; };
+        struct split_node { std::size_t interval; std::size_t offset; };
         std::vector<std::array<split_node,2>> duplicated_nodes;
-        std::unordered_map<std::array<size_t,2>,size_t> split_bdd_node_indices; // bdd index in bdd_nodes_, interval
-        for(size_t bdd_counter=0; bdd_counter<bdd_delimiters_.size()-1; ++bdd_counter)
+        std::unordered_map<std::array<std::size_t,2>,std::size_t> split_bdd_node_indices; // bdd index in bdd_nodes_, interval
+        for(std::size_t bdd_counter=0; bdd_counter<bdd_delimiters_.size()-1; ++bdd_counter)
         {
             split_bdd_node_indices.clear();
             for(auto bdd_node_counter=bdd_delimiters_[bdd_counter]; bdd_node_counter<bdd_delimiters_[bdd_counter+1]; ++bdd_node_counter)
@@ -533,7 +533,7 @@ namespace LPMP {
                 // case (i) & (ii)
                 if(!bdd.low_is_terminal() && !bdd.high_is_terminal())
                 {
-                    const size_t i = interval(bdd.variable);
+                    const std::size_t i = interval(bdd.variable);
                     const bdd_node& low = bdd_nodes_[bdd.low];
                     const bdd_node& high = bdd_nodes_[bdd.high];
                     assert(low.variable == high.variable);
@@ -541,28 +541,28 @@ namespace LPMP {
                     if(interval(bdd.variable) == interval(low.variable)) // case (i)
                     {
                         assert(split_bdd_node_indices.count({bdd.low, i}) > 0);
-                        const size_t low_idx = split_bdd_node_indices.find({bdd.low, i})->second;
+                        const std::size_t low_idx = split_bdd_node_indices.find({bdd.low, i})->second;
                         assert(split_bdd_node_indices.count({bdd.high, i}) > 0);
-                        const size_t high_idx = split_bdd_node_indices.find({bdd.high, i})->second;
+                        const std::size_t high_idx = split_bdd_node_indices.find({bdd.high, i})->second;
 
                         split_bdd_nodes(i, nr_bdd_nodes_per_interval[i]) = {bdd.variable, low_idx, high_idx};
-                        split_bdd_node_indices.insert(std::make_pair(std::array<size_t,2>{bdd_node_counter, i}, nr_bdd_nodes_per_interval[i]));
+                        split_bdd_node_indices.insert(std::make_pair(std::array<std::size_t,2>{bdd_node_counter, i}, nr_bdd_nodes_per_interval[i]));
                         ++nr_bdd_nodes_per_interval[i];
                     }
                     else // case (ii)
                     {
                         // in interval i, low and high arcs should point to topsink
                         split_bdd_nodes(i, nr_bdd_nodes_per_interval[i]) = {bdd.variable, bdd_node::terminal_1, bdd_node::terminal_1};
-                        split_bdd_node_indices.insert(std::make_pair(std::array<size_t,2>{bdd_node_counter, i}, nr_bdd_nodes_per_interval[i]));
+                        split_bdd_node_indices.insert(std::make_pair(std::array<std::size_t,2>{bdd_node_counter, i}, nr_bdd_nodes_per_interval[i]));
                         ++nr_bdd_nodes_per_interval[i];
 
                         // in next interval
-                        const size_t next_i = interval(bdd_nodes_[bdd.low].variable);
+                        const std::size_t next_i = interval(bdd_nodes_[bdd.low].variable);
                         assert(i < next_i);
-                        const size_t next_lo_idx = split_bdd_node_indices.find({bdd.low, next_i})->second;
-                        const size_t next_hi_idx = split_bdd_node_indices.find({bdd.high, next_i})->second;
+                        const std::size_t next_lo_idx = split_bdd_node_indices.find({bdd.low, next_i})->second;
+                        const std::size_t next_hi_idx = split_bdd_node_indices.find({bdd.high, next_i})->second;
                         split_bdd_nodes(next_i, nr_bdd_nodes_per_interval[next_i]) = {bdd.variable, next_lo_idx, next_hi_idx};
-                        split_bdd_node_indices.insert(std::make_pair(std::array<size_t,2>{bdd_node_counter, next_i}, nr_bdd_nodes_per_interval[next_i]));
+                        split_bdd_node_indices.insert(std::make_pair(std::array<std::size_t,2>{bdd_node_counter, next_i}, nr_bdd_nodes_per_interval[next_i]));
                         ++nr_bdd_nodes_per_interval[next_i]; 
 
                         duplicated_nodes.push_back({split_node{i, nr_bdd_nodes_per_interval[i]-1}, split_node{next_i, nr_bdd_nodes_per_interval[next_i]-1}});
@@ -571,34 +571,34 @@ namespace LPMP {
                 else if(bdd.low_is_terminal() && bdd.high_is_terminal()) // case (v)
                 {
                     assert(bdd.low == bdd_node::terminal_1 || bdd.high == bdd_node::terminal_1);
-                    const size_t i = interval(bdd.variable);
+                    const std::size_t i = interval(bdd.variable);
                     split_bdd_nodes(i, nr_bdd_nodes_per_interval[i]) = {bdd.variable, bdd.low, bdd.high};
-                    split_bdd_node_indices.insert(std::make_pair(std::array<size_t,2>{bdd_node_counter, i}, nr_bdd_nodes_per_interval[i])); 
+                    split_bdd_node_indices.insert(std::make_pair(std::array<std::size_t,2>{bdd_node_counter, i}, nr_bdd_nodes_per_interval[i])); 
                     ++nr_bdd_nodes_per_interval[i]; 
                 }
                 else if(bdd.low == bdd_node::terminal_0 || bdd.high == bdd_node::terminal_0)
                 {
-                    const size_t i = interval(bdd.variable);
+                    const std::size_t i = interval(bdd.variable);
                     if(bdd.low == bdd_node::terminal_0)
                     {
-                        const size_t high_var = bdd_nodes_[bdd.high].variable;
+                        const std::size_t high_var = bdd_nodes_[bdd.high].variable;
                         if(i == interval(high_var)) // case (iii)
                         {
                             assert(split_bdd_node_indices.count({bdd.high,i}) > 0);
-                            const size_t high_idx = split_bdd_node_indices.find({bdd.high,i})->second;
+                            const std::size_t high_idx = split_bdd_node_indices.find({bdd.high,i})->second;
                             split_bdd_nodes(i, nr_bdd_nodes_per_interval[i]) = {bdd.variable, bdd_node::terminal_0, high_idx};
-                            split_bdd_node_indices.insert(std::make_pair(std::array<size_t,2>{bdd_node_counter, i}, nr_bdd_nodes_per_interval[i])); 
+                            split_bdd_node_indices.insert(std::make_pair(std::array<std::size_t,2>{bdd_node_counter, i}, nr_bdd_nodes_per_interval[i])); 
                             ++nr_bdd_nodes_per_interval[i]; 
                         }
                         else // case (iv)
                         {
                             split_bdd_nodes(i, nr_bdd_nodes_per_interval[i]) = {bdd.variable, bdd_node::terminal_0, bdd_node::terminal_1};
-                            split_bdd_node_indices.insert(std::make_pair(std::array<size_t,2>{bdd_node_counter, i}, nr_bdd_nodes_per_interval[i])); 
+                            split_bdd_node_indices.insert(std::make_pair(std::array<std::size_t,2>{bdd_node_counter, i}, nr_bdd_nodes_per_interval[i])); 
                             ++nr_bdd_nodes_per_interval[i]; 
 
-                            const size_t next_i = interval(high_var);
+                            const std::size_t next_i = interval(high_var);
                             assert(split_bdd_node_indices.count({bdd.high, next_i}) > 0);
-                            const size_t next_high_idx = split_bdd_node_indices.find({bdd.high, next_i})->second;
+                            const std::size_t next_high_idx = split_bdd_node_indices.find({bdd.high, next_i})->second;
                             split_bdd_nodes(next_i, nr_bdd_nodes_per_interval[next_i]) = {bdd.variable, bdd_node::terminal_0, next_high_idx};
                             ++nr_bdd_nodes_per_interval[next_i]; 
 
@@ -608,24 +608,24 @@ namespace LPMP {
                     else
                     {
                         assert(bdd.high == bdd_node::terminal_0);
-                        const size_t low_var = bdd_nodes_[bdd.low].variable;
+                        const std::size_t low_var = bdd_nodes_[bdd.low].variable;
                         if(interval(bdd.variable) == interval(low_var)) // case (iii)
                         {
                             assert(split_bdd_node_indices.count({bdd.low,i}) > 0);
-                            const size_t low_idx = split_bdd_node_indices.find({bdd.high,i})->second;
+                            const std::size_t low_idx = split_bdd_node_indices.find({bdd.high,i})->second;
                             split_bdd_nodes(i, nr_bdd_nodes_per_interval[i]) = {bdd.variable, low_idx, bdd_node::terminal_0};
-                            split_bdd_node_indices.insert(std::make_pair(std::array<size_t,2>{bdd_node_counter, i}, nr_bdd_nodes_per_interval[i])); 
+                            split_bdd_node_indices.insert(std::make_pair(std::array<std::size_t,2>{bdd_node_counter, i}, nr_bdd_nodes_per_interval[i])); 
                             ++nr_bdd_nodes_per_interval[i]; 
                         }
                         else // case (iv)
                         {
                             split_bdd_nodes(i, nr_bdd_nodes_per_interval[i]) = {bdd.variable, bdd_node::terminal_1, bdd_node::terminal_0};
-                            split_bdd_node_indices.insert(std::make_pair(std::array<size_t,2>{bdd_node_counter, i}, nr_bdd_nodes_per_interval[i])); 
+                            split_bdd_node_indices.insert(std::make_pair(std::array<std::size_t,2>{bdd_node_counter, i}, nr_bdd_nodes_per_interval[i])); 
                             ++nr_bdd_nodes_per_interval[i]; 
 
-                            const size_t next_i = interval(low_var);
+                            const std::size_t next_i = interval(low_var);
                             assert(split_bdd_node_indices.count({bdd.low, next_i}) > 0);
-                            const size_t next_low_idx = split_bdd_node_indices.find({bdd.low, next_i})->second;
+                            const std::size_t next_low_idx = split_bdd_node_indices.find({bdd.low, next_i})->second;
                             split_bdd_nodes(next_i, nr_bdd_nodes_per_interval[next_i]) = {bdd.variable, next_low_idx, bdd_node::terminal_0};
                             ++nr_bdd_nodes_per_interval[next_i]; 
 
@@ -641,7 +641,7 @@ namespace LPMP {
                 const auto& bdd = bdd_nodes_[bdd_node_counter];
                 active_intervals.insert(interval(bdd.variable));
             }
-            for(const size_t i : active_intervals)
+            for(const std::size_t i : active_intervals)
                 split_bdd_delimiters(i, nr_bdds_per_inteval[i]++) = nr_bdd_nodes_per_interval[i];
         }
 

@@ -42,7 +42,7 @@ class multigraph_matching_constructor {
         std::size_t operator()(const triplet_consistency_factor& t) const
         {
             assert(t.p < t.r);
-            size_t hash = std::hash<std::size_t>()(t.p);
+            std::size_t hash = std::hash<std::size_t>()(t.p);
             hash = hash::hash_combine(hash, std::hash<std::size_t>()(t.q));
             hash = hash::hash_combine(hash, std::hash<std::size_t>()(t.r));
             hash = hash::hash_combine(hash, std::hash<std::size_t>()(t.p_node));
@@ -615,9 +615,9 @@ public:
         // iterate over all triplets of graphs and enumerate all possible triplet consistency factors that can be added. 
         // Record guaranteed dual increase of adding the triplet consistency factor
 #ifdef _OPENMP
-       const size_t nr_threads = omp_get_max_threads();
+       const std::size_t nr_threads = omp_get_max_threads();
 #else
-       const size_t nr_threads = 1;
+       const std::size_t nr_threads = 1;
 #endif
        std::vector< std::vector<std::pair<triplet_consistency_factor, double>> > triplet_consistency_candidates_local(nr_threads);
 
@@ -625,9 +625,9 @@ public:
            const double guaranteed_dual_increase = this->triplet_consistency_dual_increase(t, gm_t); 
            if(guaranteed_dual_increase >= eps) {
 #ifdef _OPENMP
-               const size_t thread_nr = omp_get_thread_num();
+               const std::size_t thread_nr = omp_get_thread_num();
 #else
-               const size_t thread_nr = 0;
+               const std::size_t thread_nr = 0;
 #endif
               triplet_consistency_candidates_local[thread_nr].push_back( std::make_pair(t, guaranteed_dual_increase) );
            } 

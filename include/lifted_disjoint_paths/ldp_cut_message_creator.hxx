@@ -8,17 +8,17 @@ namespace LPMP {
 template <class CUT_FACTOR,class SINGLE_NODE_CUT_FACTOR_CONT>
 struct LdpCutMessageInputs{
 
-    void init(CUT_FACTOR* myCutFactor,SINGLE_NODE_CUT_FACTOR_CONT* sncFactor,size_t index);
-    std::vector<size_t> _nodeIndicesInCut;
-    std::vector<size_t> _nodeIndicesInSnc;
-    size_t _nodeIndexOfLiftedEdge;
+    void init(CUT_FACTOR* myCutFactor,SINGLE_NODE_CUT_FACTOR_CONT* sncFactor,std::size_t index);
+    std::vector<std::size_t> _nodeIndicesInCut;
+    std::vector<std::size_t> _nodeIndicesInSnc;
+    std::size_t _nodeIndexOfLiftedEdge;
     bool containsLifted;
 
 };
 
 
 template <class CUT_FACTOR,class SINGLE_NODE_CUT_FACTOR_CONT>
-inline void LdpCutMessageInputs<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::init(CUT_FACTOR* myCutFactor,SINGLE_NODE_CUT_FACTOR_CONT* snc,size_t i) {
+inline void LdpCutMessageInputs<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::init(CUT_FACTOR* myCutFactor,SINGLE_NODE_CUT_FACTOR_CONT* snc,std::size_t i) {
     _nodeIndicesInCut;
     _nodeIndicesInSnc;
 
@@ -26,7 +26,7 @@ inline void LdpCutMessageInputs<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::init(CU
 
     _nodeIndexOfLiftedEdge=0;
 
-    size_t singleVertex=0;
+    std::size_t singleVertex=0;
     const auto & outputVertices=myCutFactor->getOutputVertices();
     const auto & inputVertices=myCutFactor->getInputVertices();
     const auto & cutGraph=myCutFactor->getCutGraph();
@@ -65,11 +65,11 @@ inline void LdpCutMessageInputs<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::init(CU
         _nodeIndexOfLiftedEdge=sncFactor->getLiftedIDToOrder(myCutFactor->getLiftedInputVertex());
     }
 
-    size_t sncCounter=0;
-    size_t cutCounter=0;
+    std::size_t sncCounter=0;
+    std::size_t cutCounter=0;
     while(iterCut!=iterEnd&&iterSnc!=iterSncEnd){
 
-        size_t vertexInCut=0;
+        std::size_t vertexInCut=0;
         if(sncIsOut){
             vertexInCut=outputVertices.at(iterCut->head);
         }

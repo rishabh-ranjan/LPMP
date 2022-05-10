@@ -62,18 +62,18 @@ namespace LPMP {
 
         union_find uf(no_nodes());
 
-        for(size_t e=0; e<no_edges(); ++e)
+        for(std::size_t e=0; e<no_edges(); ++e)
         {
-            const size_t i = this->edges_[e][0];
-            const size_t j = this->edges_[e][1];
+            const std::size_t i = this->edges_[e][0];
+            const std::size_t j = this->edges_[e][1];
             if(!labeling[e])
                 uf.merge(i,j);
         }
 
-        for(size_t e=0; e<no_edges(); ++e)
+        for(std::size_t e=0; e<no_edges(); ++e)
         {
-            const size_t i = this->edges_[e][0];
-            const size_t j = this->edges_[e][1];
+            const std::size_t i = this->edges_[e][0];
+            const std::size_t j = this->edges_[e][1];
             if(labeling[e] && uf.connected(i,j))
                 return false;
             if(!labeling[e] && !uf.connected(i,j))

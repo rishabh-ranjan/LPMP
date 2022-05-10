@@ -96,7 +96,7 @@ public:
        // TODO: remove again //
        ////////////////////////
        assert(l.size() == no_left_nodes());
-       for(size_t i=0; i<no_left_nodes(); ++i)
+       for(std::size_t i=0; i<no_left_nodes(); ++i)
            if(l[i] != graph_matching_input::no_assignment)
                std::cout << l[i] << " ";
            else

@@ -310,7 +310,7 @@ struct linear_assignment_problem_input {
        return std::string("x_") + variable_identifier(l) + "_" + variable_identifier(r);
    }
 
-   std::string unary_simplex_identifier(const size_t i, const std::string& side) const
+   std::string unary_simplex_identifier(const std::size_t i, const std::string& side) const
    {
        assert(side == "left" || side == "right");
        if(side == "left")
@@ -337,9 +337,9 @@ struct linear_assignment_problem_input {
            }
            if(no_matching_allowed) // TODO: this is quick hack, not good if assignments contains costs for no matching variables
            {
-               for(size_t i=0; i<no_left_nodes; ++i)
+               for(std::size_t i=0; i<no_left_nodes; ++i)
                    s << "+ 0.0 " << linear_identifier(i, no_assignment) << "\n";
-               for(size_t i=0; i<no_right_nodes; ++i)
+               for(std::size_t i=0; i<no_right_nodes; ++i)
                    s << "+ 0.0 " << linear_identifier(no_assignment, i) << "\n";
            }
        }
@@ -501,7 +501,7 @@ struct graph_matching_input : public linear_assignment_problem_input {
        return quadratic_identifier({l1, l2}, {r1, r2});
     }
 
-    std::string marginalization_constraint_identifier(const size_t i, const size_t j, const std::string& side, const size_t left_point, const size_t right_point) const
+    std::string marginalization_constraint_identifier(const std::size_t i, const std::size_t j, const std::string& side, const std::size_t left_point, const std::size_t right_point) const
     {
         assert(side == "left" || side == "right");
         assert(i < j);
@@ -552,7 +552,7 @@ struct graph_matching_input : public linear_assignment_problem_input {
         return {left_pairwise_potentials, right_pairwise_potentials};
     }
 
-    std::array<std::vector<std::vector<size_t>>, 2> export_labels(const bool no_matching_allowed) const
+    std::array<std::vector<std::vector<std::size_t>>, 2> export_labels(const bool no_matching_allowed) const
     {
         std::vector<std::vector<std::size_t>> left_labels(this->no_left_nodes);
         std::vector<std::vector<std::size_t>> right_labels(this->no_right_nodes);

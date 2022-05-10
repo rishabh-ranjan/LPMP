@@ -54,7 +54,7 @@ inline bool Graph::sorting_valid(const std::vector<std::size_t>& ordering) const
    return true; 
 }
 
-inline std::vector<std::size_t> topological_sort_adjacency_list(const two_dim_variable_array<size_t>& adj)
+inline std::vector<std::size_t> topological_sort_adjacency_list(const two_dim_variable_array<std::size_t>& adj)
 {
   constexpr unsigned char not_marked = 0;
   constexpr unsigned char temp_marked = 1;

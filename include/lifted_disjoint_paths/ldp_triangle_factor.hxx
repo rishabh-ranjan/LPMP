@@ -24,7 +24,7 @@ class ldp_triangle_factor
 public:
 
 	//By default, all edges are lifted. However vu or uw can be base too.
-    ldp_triangle_factor(size_t v,size_t u,size_t w,const std::array<double,3>& costs,bool vuBase,bool uwBase,const lifted_disjoint_paths::LdpInstance& instance): //TODO remember vertex indices instead of edge indices?
+    ldp_triangle_factor(std::size_t v,std::size_t u,std::size_t w,const std::array<double,3>& costs,bool vuBase,bool uwBase,const lifted_disjoint_paths::LdpInstance& instance): //TODO remember vertex indices instead of edge indices?
 		vInd(v),
 		uInd(u),
         wInd(w),
@@ -70,17 +70,17 @@ public:
         return edgeCosts;
     }
 
-    const size_t & getV1()const {
+    const std::size_t & getV1()const {
         return vInd;
     }
 
 
-    const size_t & getV2()const {
+    const std::size_t & getV2()const {
         return uInd;
     }
 
 
-    const size_t & getV3()const {
+    const std::size_t & getV3()const {
         return wInd;
     }
 
@@ -179,13 +179,13 @@ public:
         return minMarginals;
 	}
 
-    double getOneMinMarginal(size_t edgeId) const{
+    double getOneMinMarginal(std::size_t edgeId) const{
        assert(edgeId<=2);
         double d=delta(edgeId,edgeCosts);
         return d;
     }
 
-    void updateCost(size_t edgeId,double update) {  //update cost of one edge, assumed local edge ID: indices 0-2
+    void updateCost(std::size_t edgeId,double update) {  //update cost of one edge, assumed local edge ID: indices 0-2
         if(edgeId>2){
             std::cout<<"error in triangle update cost, edge id "<<edgeId<<std::endl;
         }
@@ -193,12 +193,12 @@ public:
 		edgeCosts[edgeId]+=update;
 	}
 
-//    void updateCost(size_t v1, size_t v2,double update){ //assumes directed edge vertices
-//        size_t e=getLocalEdgeID(v1,v2);
+//    void updateCost(std::size_t v1, std::size_t v2,double update){ //assumes directed edge vertices
+//        std::size_t e=getLocalEdgeID(v1,v2);
 //		updateCost(e,update);
 //	}
 
-	size_t getLocalEdgeID(size_t v1, size_t v2){ //assumes directed edge vertices. If edge not present in the factor, returns 3.
+	std::size_t getLocalEdgeID(std::size_t v1, std::size_t v2){ //assumes directed edge vertices. If edge not present in the factor, returns 3.
 		if(v1==vInd){
 			if(v2==uInd){
 				return 0;
@@ -217,7 +217,7 @@ public:
 
 private:
 	std::size_t primal_; // index of feasible labeling
-	size_t vInd,uInd,wInd;
+	std::size_t vInd,uInd,wInd;
     //double edgeCosts[3]; //vu, uw, vw
     std::array<double,3> edgeCosts;
 	std::vector<std::bitset<3>> labelings;
@@ -232,7 +232,7 @@ private:
 class ldp_snc_triangle_message
 {
 public:
-    ldp_snc_triangle_message(const std::vector<size_t>& _indicesInTriangle, const std::vector<size_t>& _verticesInSnc,const std::vector<bool> & _isLifted)
+    ldp_snc_triangle_message(const std::vector<std::size_t>& _indicesInTriangle, const std::vector<std::size_t>& _verticesInSnc,const std::vector<bool> & _isLifted)
     : verticesInSnc(_verticesInSnc),
       indicesInTriangle(_indicesInTriangle),
       isLifted(_isLifted)
@@ -275,8 +275,8 @@ public:
     {
         if(debug()) std::cout<<"triangle send one to left ";
         //printIndices();
-        //for (size_t i=0;i<1;i++) {
-        for (size_t i=0;i<isLifted.size();i++) {
+        //for (std::size_t i=0;i<1;i++) {
+        for (std::size_t i=0;i<isLifted.size();i++) {
             double delta=0;
             if(isLifted[i]){
                // std::cout<<"lifted "<<std::endl;
@@ -295,8 +295,8 @@ public:
     void send_message_to_right(const TRIANGLE_FACTOR& l, MSG& msg, const double omega)
     {
         if(debug()) std::cout<<"triangle send one to right"<<std::endl;
-        //for (size_t i=0;i<1;i++) {
-        for (size_t i=0;i<indicesInTriangle.size();i++) {
+        //for (std::size_t i=0;i<1;i++) {
+        for (std::size_t i=0;i<indicesInTriangle.size();i++) {
             const double delta = l.getOneMinMarginal(indicesInTriangle.at(i));
             msg[i] -= omega * delta;
         }
@@ -312,7 +312,7 @@ public:
         //TODO take only one half from the base min marginals!
         std::vector<double> msg_vec_base = r.getAllBaseMinMarginals();
         std::vector<double> localBaseCost=r.getBaseCosts();
-        for (size_t i = 0; i < localBaseCost.size(); ++i) {
+        for (std::size_t i = 0; i < localBaseCost.size(); ++i) {
             msg_vec_base[i]=0.5*msg_vec_base[i];
             localBaseCost[i]-=msg_vec_base[i];
         }
@@ -322,7 +322,7 @@ public:
         {
             auto& msg = (*it).GetMessageOp();
             for (int i = 0; i <msg.verticesInSnc.size(); ++i) {
-                const size_t vertex = msg.verticesInSnc.at(i);
+                const std::size_t vertex = msg.verticesInSnc.at(i);
                 bool lifted=msg.isLifted.at(i);
                 if(lifted){
                     (*it)[i] -=  omega * msg_vec_lifted.at(vertex);
@@ -351,7 +351,7 @@ public:
         {
             auto& msg = (*it).GetMessageOp();
             for (int i = 0; i < msg.indicesInTriangle.size(); ++i) {
-                const size_t indexInTr = msg.indicesInTriangle.at(i);
+                const std::size_t indexInTr = msg.indicesInTriangle.at(i);
                 //(*it)[i]-= 0.5*omega * msg_vec.at(indexInTr);
                 (*it)[i]-= omega * msg_vec.at(indexInTr);
             }
@@ -391,8 +391,8 @@ private:
 //        }
 //        std::cout<<std::endl;
 //    }
-    const std::vector<size_t> indicesInTriangle;
-    const std::vector<size_t> verticesInSnc;
+    const std::vector<std::size_t> indicesInTriangle;
+    const std::vector<std::size_t> verticesInSnc;
     const std::vector<bool> isLifted;
 };
 

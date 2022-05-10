@@ -16,14 +16,14 @@ namespace LPMP {
 class LdpBatchProcess{
 
 public:
-    LdpBatchProcess(VertexGroups<>& shiftedGroups, std::vector<std::array<size_t,2>>& shiftedVertexLabels_, size_t maxLabelSoFar_, size_t maxTimeForLabeled_, size_t minTimeToUse, size_t maxTimeToUse);  //including maxTimeForLabeled_ will be taken as computed
-    LdpBatchProcess(VertexGroups<>& shiftedGroups, std::vector<std::array<size_t,2>>& shiftedVertexLabels_, size_t maxLabelSoFar_, size_t maxTimeForLabeled_);  //including maxTimeForLabeled_ will be taken as computed
+    LdpBatchProcess(VertexGroups<>& shiftedGroups, std::vector<std::array<std::size_t,2>>& shiftedVertexLabels_, std::size_t maxLabelSoFar_, std::size_t maxTimeForLabeled_, std::size_t minTimeToUse, std::size_t maxTimeToUse);  //including maxTimeForLabeled_ will be taken as computed
+    LdpBatchProcess(VertexGroups<>& shiftedGroups, std::vector<std::array<std::size_t,2>>& shiftedVertexLabels_, std::size_t maxLabelSoFar_, std::size_t maxTimeForLabeled_);  //including maxTimeForLabeled_ will be taken as computed
 
-    void initEdgesFromVector(const std::vector<std::array<size_t,2> > &edges, const std::vector<double> &costs);
-    void initVertexScoreFromVector(const std::vector<size_t>& vertexList,const std::vector<double>& costs);
+    void initEdgesFromVector(const std::vector<std::array<std::size_t,2> > &edges, const std::vector<double> &costs);
+    void initVertexScoreFromVector(const std::vector<std::size_t>& vertexList,const std::vector<double>& costs);
     void initFromFile(std::string filename);
-    size_t globalIndexToLocalIndex(const size_t &globalIndex);
-    size_t localIndexToGlobalIndex(const size_t &localIndex);
+    std::size_t globalIndexToLocalIndex(const std::size_t &globalIndex);
+    std::size_t localIndexToGlobalIndex(const std::size_t &localIndex);
     const andres::graph::Digraph<>& getOutputGraph(){
         assert(edgesCreated);
         return outputGraph;
@@ -39,16 +39,16 @@ public:
         return outputVerticesScore;
     }
 
-    void decode(const std::vector<std::vector<size_t> > &paths);
-    std::vector<std::array<size_t,2>> getDecodedLabels(){
+    void decode(const std::vector<std::vector<std::size_t> > &paths);
+    std::vector<std::array<std::size_t,2>> getDecodedLabels(){
         return decodedLabels;
     }
 
-    const size_t& getMaxLabelsSoFar() const{
+    const std::size_t& getMaxLabelsSoFar() const{
         return maxLabelSoFar;
     }
 
-    size_t getIndexToDel() const{
+    std::size_t getIndexToDel() const{
         return indexToDel;
     }
 
@@ -64,33 +64,33 @@ public:
     }
 
 private:
-    size_t minValidVertex;
-    size_t maxTimeForLabeled;
+    std::size_t minValidVertex;
+    std::size_t maxTimeForLabeled;
     VertexGroups<>* pvg;
     //std::vector<double> origVerticesScore;
-    size_t numberOfVerticesInBatch;
-    size_t minVertex;
-    size_t maxVertex;
-    size_t minTime;
-    size_t maxTime;
-    std::vector<size_t> shiftedLabels;
-    std::map<size_t,std::map<size_t,double>> edgesFromLabeled;
-    size_t maxLabelSoFar;
-    size_t numberOfUsedLabels;
-    std::vector<size_t> localIndexToGlobalLabel;
+    std::size_t numberOfVerticesInBatch;
+    std::size_t minVertex;
+    std::size_t maxVertex;
+    std::size_t minTime;
+    std::size_t maxTime;
+    std::vector<std::size_t> shiftedLabels;
+    std::map<std::size_t,std::map<std::size_t,double>> edgesFromLabeled;
+    std::size_t maxLabelSoFar;
+    std::size_t numberOfUsedLabels;
+    std::vector<std::size_t> localIndexToGlobalLabel;
     andres::graph::Digraph<> outputGraph;
     LdpDirectedGraph myOutputGraph;
     std::vector<double> outputEdgeCosts;
     std::vector<double> outputVerticesScore;
-    size_t numberOfOutputVertices;
+    std::size_t numberOfOutputVertices;
     bool edgesCreated;
     bool labelsDecoded;
-    std::vector<std::array<size_t,2>> decodedLabels;
-    size_t indexToDel;
+    std::vector<std::array<std::size_t,2>> decodedLabels;
+    std::size_t indexToDel;
     std::chrono::steady_clock::time_point constructorBegin;
 
 };
-//maybe vertex labels as vector<arra<size_t,2>> globID->label
+//maybe vertex labels as vector<arra<std::size_t,2>> globID->label
 //alternativelly, also set min time and max time as constructor parameters (if not set, taken from vg)
 //max label so far: maybe during decoding?
 }

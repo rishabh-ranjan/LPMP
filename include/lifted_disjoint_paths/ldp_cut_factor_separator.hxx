@@ -27,7 +27,7 @@ public:
 
     }
 
-    void separateCutInequalities(size_t maxConstraints,double minImprovement);
+    void separateCutInequalities(std::size_t maxConstraints,double minImprovement);
 
 
 
@@ -36,51 +36,51 @@ public:
     }
 
 
-    bool checkWithBlockedEdges(const CUT_FACTOR& cutFactor,const std::vector<std::set<size_t>>& blockedBaseEdges,const std::vector<std::set<size_t>>& blockedLiftedEdges)const;
-    void updateUsedEdges(const CUT_FACTOR& cutFactor,std::vector<std::set<size_t>>& blockedBaseEdges,std::vector<std::map<size_t,size_t>>& usedBaseEdges,std::vector<std::set<size_t>>& blockedLiftedEdges,std::vector<std::map<size_t,size_t>>& usedLiftedEdges,const size_t& maxUsage)const;
+    bool checkWithBlockedEdges(const CUT_FACTOR& cutFactor,const std::vector<std::set<std::size_t>>& blockedBaseEdges,const std::vector<std::set<std::size_t>>& blockedLiftedEdges)const;
+    void updateUsedEdges(const CUT_FACTOR& cutFactor,std::vector<std::set<std::size_t>>& blockedBaseEdges,std::vector<std::map<std::size_t,std::size_t>>& usedBaseEdges,std::vector<std::set<std::size_t>>& blockedLiftedEdges,std::vector<std::map<std::size_t,std::size_t>>& usedLiftedEdges,const std::size_t& maxUsage)const;
 
 
 private:
-    void connectEdge(const size_t& v,const size_t& w);
-    void createCut(size_t v1,size_t v2,double cost);
+    void connectEdge(const std::size_t& v,const std::size_t& w);
+    void createCut(std::size_t v1,std::size_t v2,double cost);
 
     const lifted_disjoint_paths::LdpInstance * pInstance;
     ldp_min_marginals_extractor<SINGLE_NODE_CUT_FACTOR_CONT>& mmExtractor;
-    size_t numberOfVertices;
+    std::size_t numberOfVertices;
 
 
-    std::vector<std::map<size_t,double>> baseEdgesWithCosts;
-    std::vector<std::map<size_t,double>> liftedEdgesWithCosts;
-    std::vector<std::list<size_t>> predecessors;
-    std::vector<std::list<size_t>> descendants;
+    std::vector<std::map<std::size_t,double>> baseEdgesWithCosts;
+    std::vector<std::map<std::size_t,double>> liftedEdgesWithCosts;
+    std::vector<std::list<std::size_t>> predecessors;
+    std::vector<std::list<std::size_t>> descendants;
     std::vector<std::vector<char>> isConnected;
     //stable_priority_queue<std::pair<double,CUT_FACTOR*>> pQueue;
     LdpFactorQueue<CUT_FACTOR> factorQueue;
-     std::vector<std::list<size_t>> candidateLifted;
-     size_t maxTimeGap;
+     std::vector<std::list<std::size_t>> candidateLifted;
+     std::size_t maxTimeGap;
 
 };
 
 
 
 template  <class CUT_FACTOR,class SINGLE_NODE_CUT_FACTOR_CONT>
-inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::updateUsedEdges(const CUT_FACTOR& cutFactor,std::vector<std::set<size_t>>& blockedBaseEdges,std::vector<std::map<size_t,size_t>>& usedBaseEdges,std::vector<std::set<size_t>>& blockedLiftedEdges,std::vector<std::map<size_t,size_t>>& usedLiftedEdges,const size_t& maxUsage)const{
+inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::updateUsedEdges(const CUT_FACTOR& cutFactor,std::vector<std::set<std::size_t>>& blockedBaseEdges,std::vector<std::map<std::size_t,std::size_t>>& usedBaseEdges,std::vector<std::set<std::size_t>>& blockedLiftedEdges,std::vector<std::map<std::size_t,std::size_t>>& usedLiftedEdges,const std::size_t& maxUsage)const{
     const LdpTwoLayerGraph& cutGraph=cutFactor.getCutGraph();
-    const std::vector<size_t>& inputs=cutFactor.getInputVertices();
-    const std::vector<size_t>& outputs=cutFactor.getOutputVertices();
+    const std::vector<std::size_t>& inputs=cutFactor.getInputVertices();
+    const std::vector<std::size_t>& outputs=cutFactor.getOutputVertices();
 
     bool isFree=true;
 
     for (int i = 0; i < inputs.size()&&isFree; ++i) {
-        size_t inputVertex=inputs[i];
+        std::size_t inputVertex=inputs[i];
         auto iter=cutGraph.forwardNeighborsBegin(i);
         for (;iter!=cutGraph.forwardNeighborsEnd(i);iter++) {
-            size_t outIndex=iter->head;
+            std::size_t outIndex=iter->head;
             assert(outIndex<outputs.size());
-            size_t outputVertex=outputs[outIndex];
+            std::size_t outputVertex=outputs[outIndex];
             assert(inputVertex<blockedBaseEdges.size());
             assert(inputVertex<usedBaseEdges.size());
-            size_t& currentUsages=usedBaseEdges[inputVertex][outputVertex];
+            std::size_t& currentUsages=usedBaseEdges[inputVertex][outputVertex];
             assert(currentUsages<maxUsage&&blockedBaseEdges[inputVertex].count(outputVertex)==0);
             currentUsages++;
             if(currentUsages==maxUsage){
@@ -89,12 +89,12 @@ inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::updateUsedE
         }
     }
 
-    size_t v=cutFactor.getLiftedInputVertex();
-    size_t w=cutFactor.getLiftedOutputVertex();
+    std::size_t v=cutFactor.getLiftedInputVertex();
+    std::size_t w=cutFactor.getLiftedOutputVertex();
 
     assert(v<usedLiftedEdges.size());
     assert(v<blockedLiftedEdges.size());
-    size_t & currentUsages=usedLiftedEdges[v][w];
+    std::size_t & currentUsages=usedLiftedEdges[v][w];
 
     assert(currentUsages<maxUsage&&blockedLiftedEdges[v].count(w)==0);
 
@@ -109,20 +109,20 @@ inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::updateUsedE
 
 
 template  <class CUT_FACTOR,class SINGLE_NODE_CUT_FACTOR_CONT>
-inline bool LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::checkWithBlockedEdges(const CUT_FACTOR& cutFactor,const std::vector<std::set<size_t>>& blockedBaseEdges,const std::vector<std::set<size_t>>& blockedLiftedEdges)const{
+inline bool LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::checkWithBlockedEdges(const CUT_FACTOR& cutFactor,const std::vector<std::set<std::size_t>>& blockedBaseEdges,const std::vector<std::set<std::size_t>>& blockedLiftedEdges)const{
     const LdpTwoLayerGraph& cutGraph=cutFactor.getCutGraph();
-    const std::vector<size_t>& inputs=cutFactor.getInputVertices();
-    const std::vector<size_t>& outputs=cutFactor.getOutputVertices();
+    const std::vector<std::size_t>& inputs=cutFactor.getInputVertices();
+    const std::vector<std::size_t>& outputs=cutFactor.getOutputVertices();
 
     bool isFree=true;
 
     for (int i = 0; i < inputs.size()&&isFree; ++i) {
-        size_t inputVertex=inputs[i];
+        std::size_t inputVertex=inputs[i];
         auto iter=cutGraph.forwardNeighborsBegin(i);
         for (;iter!=cutGraph.forwardNeighborsEnd(i);iter++) {
-            size_t outIndex=iter->head;
+            std::size_t outIndex=iter->head;
             assert(outIndex<outputs.size());
-            size_t outputVertex=outputs[outIndex];
+            std::size_t outputVertex=outputs[outIndex];
             assert(inputVertex<blockedBaseEdges.size());
             auto f=blockedBaseEdges[inputVertex].find(outputVertex);
             if(f!=blockedBaseEdges[inputVertex].end()){
@@ -133,8 +133,8 @@ inline bool LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::checkWithBl
 
     }
     if(isFree){
-        size_t v=cutFactor.getLiftedInputVertex();
-        size_t w=cutFactor.getLiftedOutputVertex();
+        std::size_t v=cutFactor.getLiftedInputVertex();
+        std::size_t w=cutFactor.getLiftedOutputVertex();
 
         assert(v<blockedLiftedEdges.size());
 
@@ -150,7 +150,7 @@ inline bool LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::checkWithBl
 
 
 template  <class CUT_FACTOR,class SINGLE_NODE_CUT_FACTOR_CONT>
-inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::connectEdge(const size_t& v,const size_t& w){
+inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::connectEdge(const std::size_t& v,const std::size_t& w){
     assert(v<numberOfVertices);
     assert(w<numberOfVertices);
     const LdpDirectedGraph & baseGraph=pInstance->getMyGraph();
@@ -161,7 +161,7 @@ inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::connectEdge
         auto  endOrig=descendants[pred].end();
         auto  endNew=descendants[w].end();
         auto  itBase=baseGraph.forwardNeighborsBegin(pred);
-        size_t baseCounter=0;
+        std::size_t baseCounter=0;
         auto  baseEnd=baseGraph.forwardNeighborsEnd(pred);
         //TODO update is connected
 
@@ -173,8 +173,8 @@ inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::connectEdge
                 baseCounter++;
             }
             if(origDescendants==endOrig||*origDescendants>*newDescendants){
-                size_t l0=pInstance->getGroupIndex(pred);
-                size_t l1=pInstance->getGroupIndex(*newDescendants);
+                std::size_t l0=pInstance->getGroupIndex(pred);
+                std::size_t l1=pInstance->getGroupIndex(*newDescendants);
                 if(l1-l0<=maxTimeGap){
                     descendants[pred].insert(origDescendants,(*newDescendants));
                     predecessors[*newDescendants].push_back(pred);
@@ -201,25 +201,25 @@ inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::connectEdge
 
 
 template  <class CUT_FACTOR,class SINGLE_NODE_CUT_FACTOR_CONT>
-inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::createCut(size_t v1,size_t v2,double cost){
+inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::createCut(std::size_t v1,std::size_t v2,double cost){
 
     double lCost=liftedEdgesWithCosts[v1][v2];  //TODO maybe obtain without map?
-    std::map<size_t,std::map<size_t,double>> cutEdges;
+    std::map<std::size_t,std::map<std::size_t,double>> cutEdges;
     const LdpDirectedGraph & baseGraph=pInstance->getMyGraph();
 
     double improvementValue=std::min(abs(lCost),cost);
 
-    size_t addedCutEdges=0;
+    std::size_t addedCutEdges=0;
     auto descV1Iter=descendants[v1].begin();
     auto descV1end=descendants[v1].end();
     for (;descV1Iter!=descV1end;descV1Iter++) {
         auto descV1SecondIter=descV1Iter;
-        size_t d=*descV1Iter;
+        std::size_t d=*descV1Iter;
         const auto* it=baseGraph.forwardNeighborsBegin(d);
         const auto* end=baseGraph.forwardNeighborsEnd(d);
         while(it!=end){
             if(descV1SecondIter==descV1end||it->first<*descV1SecondIter){
-                size_t d2=it->first;
+                std::size_t d2=it->first;
                 if(pInstance->isReachable(d2,v2)){
                     //assert(baseEdgesWithCosts[d][d2]>=cost-eps);
                     assert(baseEdgesWithCosts[d][d2]>=cost-0.0001);
@@ -252,7 +252,7 @@ inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::createCut(s
 
 
 template  <class CUT_FACTOR,class SINGLE_NODE_CUT_FACTOR_CONT>
-inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::separateCutInequalities(size_t maxConstraints,double minImprovement){
+inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::separateCutInequalities(std::size_t maxConstraints,double minImprovement){
 
     baseEdgesWithCosts=mmExtractor.getBaseEdgesMinMarginals();
     liftedEdgesWithCosts=mmExtractor.getLiftedEdgesMinMarginals();
@@ -262,47 +262,47 @@ inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::separateCut
 
 
 
-    std::vector<std::tuple<double,size_t,size_t>> edgesToSort;
-   // std::vector<std::tuple<float,size_t,size_t>> edgesToSort;
-    descendants= std::vector<std::list<size_t>> (numberOfVertices);
-    predecessors= std::vector<std::list<size_t>> (numberOfVertices);
+    std::vector<std::tuple<double,std::size_t,std::size_t>> edgesToSort;
+   // std::vector<std::tuple<float,std::size_t,std::size_t>> edgesToSort;
+    descendants= std::vector<std::list<std::size_t>> (numberOfVertices);
+    predecessors= std::vector<std::list<std::size_t>> (numberOfVertices);
 
 
     const LdpDirectedGraph & baseGraph=pInstance->getMyGraph();
 
 
     isConnected=std::vector<std::vector<char>>(numberOfVertices);
-    for (size_t i = 0; i < numberOfVertices; ++i) {
-        size_t s=baseGraph.getNumberOfEdgesFromVertex(i);
+    for (std::size_t i = 0; i < numberOfVertices; ++i) {
+        std::size_t s=baseGraph.getNumberOfEdgesFromVertex(i);
         isConnected[i]=std::vector<char>(s,0);
     }
 
     //Structure for connecting negative (and small positive?) edges
-    for(size_t node=0;node<predecessors.size();node++){
+    for(std::size_t node=0;node<predecessors.size();node++){
         predecessors[node].push_back(node);
         descendants[node].push_back(node);
     }
 
 
     //list of base edges to be sorted
-    for(size_t i=0;i<baseEdgesWithCosts.size();i++){
+    for(std::size_t i=0;i<baseEdgesWithCosts.size();i++){
     //for(auto it=baseEdgesWithCosts.begin();it!=baseEdgesWithCosts.end();it++){
-        size_t vertex=i;
-        std::map<size_t,double>& neighbors=baseEdgesWithCosts[i];
-        size_t neighborsCounter=0;
+        std::size_t vertex=i;
+        std::map<std::size_t,double>& neighbors=baseEdgesWithCosts[i];
+        std::size_t neighborsCounter=0;
         for(auto it2=neighbors.begin();it2!=neighbors.end();it2++, neighborsCounter++){
-            size_t w=it2->first;
+            std::size_t w=it2->first;
             double cost=it2->second;
             assert(baseGraph.getForwardEdgeVertex(vertex,neighborsCounter)==w);
-            //std::tuple<double,size_t,size_t> t(cost,v,w)
+            //std::tuple<double,std::size_t,std::size_t> t(cost,v,w)
             if(vertex!=pInstance->getSourceNode()&&w!=pInstance->getTerminalNode()){
                 //if(cost<eps){
                 if(cost<minImprovement){
                     connectEdge(vertex,w);
                 }
                 else{
-                    //edgesToSort.push_back(std::tuple<float,size_t,size_t>(cost,vertex,neighborsCounter));
-                    edgesToSort.push_back(std::tuple<double,size_t,size_t>(cost,vertex,neighborsCounter));
+                    //edgesToSort.push_back(std::tuple<float,std::size_t,std::size_t>(cost,vertex,neighborsCounter));
+                    edgesToSort.push_back(std::tuple<double,std::size_t,std::size_t>(cost,vertex,neighborsCounter));
                 }
             }
         }
@@ -316,12 +316,12 @@ inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::separateCut
 
     //Select candidate lifted edges: negative and disconnected
 
-    candidateLifted=std::vector<std::list<size_t>> (numberOfVertices);  //pair size_t,double instead of size_t?
-    size_t nrClosedNodes=0;
+    candidateLifted=std::vector<std::list<std::size_t>> (numberOfVertices);  //pair std::size_t,double instead of std::size_t?
+    std::size_t nrClosedNodes=0;
     std::vector<char> closedNodes(numberOfVertices);
-    for (size_t i=0;i<numberOfVertices;i++) {
-        const std::map<size_t,double>& neighbors=liftedEdgesWithCosts.at(i);
-        //std::map<size_t,double> neighborsToKeep;
+    for (std::size_t i=0;i<numberOfVertices;i++) {
+        const std::map<std::size_t,double>& neighbors=liftedEdgesWithCosts.at(i);
+        //std::map<std::size_t,double> neighborsToKeep;
         auto itLifted=neighbors.begin();
         auto itDesc=descendants[i].begin();
         while(itLifted!=neighbors.end()){
@@ -346,11 +346,11 @@ inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::separateCut
     }
 
 
-    size_t i=0;
+    std::size_t i=0;
     while(nrClosedNodes<numberOfVertices&&i<edgesToSort.size()){
-        size_t v=std::get<1>(edgesToSort[i]);
-        size_t index=std::get<2>(edgesToSort[i]);
-        size_t w=baseGraph.getForwardEdgeVertex(v,index);
+        std::size_t v=std::get<1>(edgesToSort[i]);
+        std::size_t index=std::get<2>(edgesToSort[i]);
+        std::size_t w=baseGraph.getForwardEdgeVertex(v,index);
         double cost=std::get<0>(edgesToSort[i]);
 
 
@@ -367,7 +367,7 @@ inline void LdpCutSeparator<CUT_FACTOR,SINGLE_NODE_CUT_FACTOR_CONT>::separateCut
         for(auto& pred: predecessors[v]){
            // std::cout<<"pred "<<pred<<std::endl;
             if(candidateLifted[pred].empty()) continue;
-            std::list<size_t> edgesToKeep;
+            std::list<std::size_t> edgesToKeep;
             auto  liftedIt=candidateLifted[pred].begin();
             auto  liftedEnd=candidateLifted[pred].end();
             auto  newDescIt=descendants[w].begin();

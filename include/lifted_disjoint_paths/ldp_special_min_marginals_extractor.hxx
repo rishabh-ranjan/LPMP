@@ -14,10 +14,10 @@ public:
     template<class SNC_FACTOR_CONT>
     void sendMessagesToSncFactors(std::vector<std::array<SNC_FACTOR_CONT*,2>>& SNCFactors);
 
-    const std::vector<std::map<size_t,double>>& getBaseEdgesWithCosts()const {
+    const std::vector<std::map<std::size_t,double>>& getBaseEdgesWithCosts()const {
         return baseEdgesWithCosts;
     }
-    const std::vector<std::map<size_t,double>>& getLiftedEdgesWithCosts()const {
+    const std::vector<std::map<std::size_t,double>>& getLiftedEdgesWithCosts()const {
         return liftedEdgesWithCosts;
     }
 
@@ -26,9 +26,9 @@ private:
     const lifted_disjoint_paths::LdpInstance& instance;
     std::vector<CUT_FACTOR_CONT*>& cutFactors;
     std::vector<PATH_FACTOR_CONT*>& pathFactors;
-    size_t numberOfVertices;
-    std::vector<std::map<size_t,double>> baseEdgesWithCosts;
-    std::vector<std::map<size_t,double>> liftedEdgesWithCosts;
+    std::size_t numberOfVertices;
+    std::vector<std::map<std::size_t,double>> baseEdgesWithCosts;
+    std::vector<std::map<std::size_t,double>> liftedEdgesWithCosts;
 };
 
 
@@ -45,8 +45,8 @@ inline LdpSpecialMinMarginalsExtractor<CUT_FACTOR_CONT,PATH_FACTOR_CONT>::LdpSpe
 
 template<class CUT_FACTOR_CONT,class PATH_FACTOR_CONT>
 inline void LdpSpecialMinMarginalsExtractor<CUT_FACTOR_CONT,PATH_FACTOR_CONT>::initMinMarginals(bool doCostUpdate){
-    baseEdgesWithCosts=std::vector<std::map<size_t,double>>(numberOfVertices);
-    liftedEdgesWithCosts=std::vector<std::map<size_t,double>>(numberOfVertices);
+    baseEdgesWithCosts=std::vector<std::map<std::size_t,double>>(numberOfVertices);
+    liftedEdgesWithCosts=std::vector<std::map<std::size_t,double>>(numberOfVertices);
 
 
     for (int i = 0; i < pathFactors.size(); ++i) {
@@ -55,8 +55,8 @@ inline void LdpSpecialMinMarginalsExtractor<CUT_FACTOR_CONT,PATH_FACTOR_CONT>::i
         const auto& pathVertices=pFactor->getListOfVertices();
         assert(pathVertices.size()==minMarginals.size());
         for (int j = 0; j < pathVertices.size()-1; ++j) {
-            size_t v1=pathVertices[j];
-            size_t v2=pathVertices[j+1];
+            std::size_t v1=pathVertices[j];
+            std::size_t v2=pathVertices[j+1];
             assert(j<minMarginals.size());
             if(pFactor->getLiftedInfo().at(j)==0){
                 baseEdgesWithCosts[v1][v2]+=minMarginals[j];
@@ -102,12 +102,12 @@ inline void LdpSpecialMinMarginalsExtractor<CUT_FACTOR_CONT,PATH_FACTOR_CONT>::i
         const auto & outputs=cFactor->getOutputVertices();
 
         for (int j = 0; j < inputs.size(); ++j) {
-            size_t v1=inputs[j];
+            std::size_t v1=inputs[j];
             const auto * iter=minMarginals.forwardNeighborsBegin(j);
             const auto * end=minMarginals.forwardNeighborsEnd(j);
-            size_t outputCounter=0;
+            std::size_t outputCounter=0;
             for (;iter!=end;iter++) {
-                size_t v2=outputs.at(iter->head);
+                std::size_t v2=outputs.at(iter->head);
                 double delta=iter->cost;
                 baseEdgesWithCosts[v1][v2]+=delta;
                 if(doCostUpdate){
@@ -129,10 +129,10 @@ inline void LdpSpecialMinMarginalsExtractor<CUT_FACTOR_CONT,PATH_FACTOR_CONT>::i
         auto liftedMinMarginalControl=cFactor->getAllMinMarginals().second;
         assert(abs(liftedMinMarginalControl)<eps);
         for (int j = 0; j < inputs.size(); ++j) {
-            size_t v1=inputs[j];
+            std::size_t v1=inputs[j];
             const auto * iter=minMarginalsControl.forwardNeighborsBegin(j);
             const auto * end=minMarginalsControl.forwardNeighborsEnd(j);
-            size_t outputCounter=0;
+            std::size_t outputCounter=0;
             for (;iter!=end;iter++) {
                 double delta=iter->cost;
                 assert(abs(delta)<eps);
@@ -151,13 +151,13 @@ template<class CUT_FACTOR_CONT,class PATH_FACTOR_CONT>
 template<class SNC_FACTOR_CONT>
 inline void LdpSpecialMinMarginalsExtractor<CUT_FACTOR_CONT,PATH_FACTOR_CONT>::sendMessagesToSncFactors(std::vector<std::array<SNC_FACTOR_CONT *,2>>& SNCFactors)
 {
-    for (size_t i = 0; i < baseEdgesWithCosts.size(); ++i) {
+    for (std::size_t i = 0; i < baseEdgesWithCosts.size(); ++i) {
         assert(i<SNCFactors.size());
         if(i>=SNCFactors.size()) std::cout<<"wrong size"<<std::endl;
         auto* pOutFactor=SNCFactors[i][1]->get_factor();
         auto iter=baseEdgesWithCosts[i].begin();
-        const std::vector<size_t>& baseIDs= pOutFactor->getBaseIDs();
-        size_t counter=0;
+        const std::vector<std::size_t>& baseIDs= pOutFactor->getBaseIDs();
+        std::size_t counter=0;
         while(iter!=baseEdgesWithCosts[i].end()){
             if(baseIDs[counter]<iter->first){
                 counter++;
@@ -168,11 +168,11 @@ inline void LdpSpecialMinMarginalsExtractor<CUT_FACTOR_CONT,PATH_FACTOR_CONT>::s
             }
             else{
                 assert(baseIDs[counter]==iter->first);
-                size_t outputVertex=iter->first;
+                std::size_t outputVertex=iter->first;
                 double costUpdate=iter->second;
                 auto * pInFactor=SNCFactors[outputVertex][0]->get_factor();
                 pOutFactor->updateEdgeCost(0.5*costUpdate,counter,false);
-                size_t indexForInput=pInFactor->getBaseIDToOrder(i);
+                std::size_t indexForInput=pInFactor->getBaseIDToOrder(i);
                 pInFactor->updateEdgeCost(0.5*costUpdate,indexForInput,false);
                 iter++;
                 counter++;
@@ -180,13 +180,13 @@ inline void LdpSpecialMinMarginalsExtractor<CUT_FACTOR_CONT,PATH_FACTOR_CONT>::s
         }
     }
 
-    for (size_t i = 0; i < liftedEdgesWithCosts.size(); ++i) {
+    for (std::size_t i = 0; i < liftedEdgesWithCosts.size(); ++i) {
         if(i>=SNCFactors.size()) std::cout<<"wrong size"<<std::endl;
         assert(i<SNCFactors.size());
         auto* pOutFactor=SNCFactors[i][1]->get_factor();
         auto iter=liftedEdgesWithCosts[i].begin();
-        const std::vector<size_t>& liftedIDs= pOutFactor->getLiftedIDs();
-        size_t counter=0;
+        const std::vector<std::size_t>& liftedIDs= pOutFactor->getLiftedIDs();
+        std::size_t counter=0;
 
         while(iter!=liftedEdgesWithCosts[i].end()){
             if(liftedIDs[counter]<iter->first){
@@ -198,11 +198,11 @@ inline void LdpSpecialMinMarginalsExtractor<CUT_FACTOR_CONT,PATH_FACTOR_CONT>::s
             }
             else{
                 assert(liftedIDs[counter]==iter->first);
-                size_t outputVertex=iter->first;
+                std::size_t outputVertex=iter->first;
                 double costUpdate=iter->second;
                 auto * pInFactor=SNCFactors[outputVertex][0]->get_factor();
                 pOutFactor->updateEdgeCost(0.5*costUpdate,counter,true);
-                size_t indexForInput=pInFactor->getLiftedIDToOrder(i);
+                std::size_t indexForInput=pInFactor->getLiftedIDToOrder(i);
                 pInFactor->updateEdgeCost(0.5*costUpdate,indexForInput,true);
                 counter++;
                 iter++;

@@ -288,7 +288,7 @@ namespace LPMP {
                     assert(size() >= 2);
                     REAL min_val = std::numeric_limits<REAL>::infinity();
                     REAL second_min_val = std::numeric_limits<REAL>::infinity();
-                    for(size_t i=0; i<this->size(); ++i)
+                    for(std::size_t i=0; i<this->size(); ++i)
                     {
                         const REAL tmp_min = std::min((*this)[i], min_val);
                         const REAL tmp_max = std::max((*this)[i], min_val);
@@ -882,8 +882,8 @@ class matrix : public matrix_expression<T,matrix<T>> {
             static_assert(std::is_same<T,REAL>::value, "");
             vector<T> min(dim2());
             std::fill(min.begin(), min.end(), std::numeric_limits<REAL>::infinity());
-            for(size_t i=0; i<dim1(); ++i)
-                for(size_t j=0; j<dim2(); ++j)
+            for(std::size_t i=0; i<dim1(); ++i)
+                for(std::size_t j=0; j<dim2(); ++j)
                     min[j] = std::min(min[j], (*this)(i,j));
 
             return min;
@@ -895,11 +895,11 @@ class matrix : public matrix_expression<T,matrix<T>> {
             static_assert(std::is_same<T,REAL>::value, "");
             assert(v.size() == dim1());
             vector<T> min(dim2());
-            for(size_t j=0; j<min.size(); ++j)
+            for(std::size_t j=0; j<min.size(); ++j)
                 min[j] = std::numeric_limits<REAL>::infinity();
 
-            for(size_t i=0; i<dim1(); ++i)
-                for(size_t j=0; j<dim2(); ++j)
+            for(std::size_t i=0; i<dim1(); ++i)
+                for(std::size_t j=0; j<dim2(); ++j)
                     min[j] = std::min(min[j], (*this)(i,j) + v[i]);
 
             return min;
@@ -914,7 +914,7 @@ class matrix : public matrix_expression<T,matrix<T>> {
         {
             assert(x1<dim1());
             REAL min = std::numeric_limits<REAL>::infinity();
-            for(size_t j=0; j<dim2(); ++j)
+            for(std::size_t j=0; j<dim2(); ++j)
                 min = std::min((*this)(x1,j), min);
             return min;
         }
@@ -923,7 +923,7 @@ class matrix : public matrix_expression<T,matrix<T>> {
         {
             assert(x1<dim1());
             REAL min = std::numeric_limits<REAL>::infinity();
-            for(size_t j=0; j<dim2(); ++j)
+            for(std::size_t j=0; j<dim2(); ++j)
                 min = std::min((*this)(x1,j) + v[j], min);
             return min;
         }

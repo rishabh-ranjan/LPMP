@@ -548,8 +548,8 @@ namespace LPMP {
     protected:
         void init_costs();
 
-        void min_marginal_averaging_step_forward(const size_t var, std::vector<std::array<double,2>>& min_marginals);
-        void min_marginal_averaging_step_backward(const size_t var, std::vector<std::array<double,2>>& min_marginals); 
+        void min_marginal_averaging_step_forward(const std::size_t var, std::vector<std::array<double,2>>& min_marginals);
+        void min_marginal_averaging_step_backward(const std::size_t var, std::vector<std::array<double,2>>& min_marginals); 
 
         std::array<double, 2> min_marginal(const std::size_t var, const std::size_t bdd_index) const;
         template <typename ITERATOR>
@@ -622,11 +622,11 @@ namespace LPMP {
     template<typename BDD_VARIABLE, typename BDD_BRANCH_NODE>
     void bdd_mma_base<BDD_VARIABLE, BDD_BRANCH_NODE>::init_costs()
     {
-        for (size_t var = 0; var < this->nr_variables(); var++)
-        for (size_t bdd_index = 0; bdd_index < this->nr_bdds(var); bdd_index++)
+        for (std::size_t var = 0; var < this->nr_variables(); var++)
+        for (std::size_t bdd_index = 0; bdd_index < this->nr_bdds(var); bdd_index++)
         {
             auto & bdd_var = this->bdd_variables_(var, bdd_index);
-            for (size_t node_index = bdd_var.first_node_index; node_index < bdd_var.last_node_index; node_index++)
+            for (std::size_t node_index = bdd_var.first_node_index; node_index < bdd_var.last_node_index; node_index++)
                 this->bdd_branch_nodes_[node_index].variable_cost = & bdd_var.cost;
         }
         costs_.resize(this->nr_variables(), std::numeric_limits<double>::infinity());
@@ -889,7 +889,7 @@ namespace LPMP {
         }
 
     template<typename BDD_VARIABLE, typename BDD_BRANCH_NODE>
-    void bdd_mma_base<BDD_VARIABLE, BDD_BRANCH_NODE>::min_marginal_averaging_step_forward(const size_t var, std::vector<std::array<double,2>>& min_marginals)
+    void bdd_mma_base<BDD_VARIABLE, BDD_BRANCH_NODE>::min_marginal_averaging_step_forward(const std::size_t var, std::vector<std::array<double,2>>& min_marginals)
     {
         //std::cout << "variable " << var << " of " << this->nr_variables() << std::endl;
         // collect min marginals
@@ -959,7 +959,7 @@ namespace LPMP {
     }
 
     template<typename BDD_VARIABLE, typename BDD_BRANCH_NODE>
-    void bdd_mma_base<BDD_VARIABLE, BDD_BRANCH_NODE>::min_marginal_averaging_step_backward(const size_t var, std::vector<std::array<double,2>>& min_marginals)
+    void bdd_mma_base<BDD_VARIABLE, BDD_BRANCH_NODE>::min_marginal_averaging_step_backward(const std::size_t var, std::vector<std::array<double,2>>& min_marginals)
     {
         //std::cout << "variable " << var << " of " << this->nr_variables() << std::endl;
         // collect min marginals

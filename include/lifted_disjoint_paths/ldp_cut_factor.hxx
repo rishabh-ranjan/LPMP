@@ -22,16 +22,16 @@ class ldp_cut_factor
 {
 public:
 
-    ldp_cut_factor(size_t v_,size_t w_, double liftedCost_,std::map<size_t,std::map<size_t,double>> inputEdges);
-    // ldp_cut_factor(size_t v_, size_t w_, const std::vector<std::array<size_t,2>>& edgesInDirectedGraph,const std::vector<double>& edgeCosts,const INSTANCE& ldpInstance);
+    ldp_cut_factor(std::size_t v_,std::size_t w_, double liftedCost_,std::map<std::size_t,std::map<std::size_t,double>> inputEdges);
+    // ldp_cut_factor(std::size_t v_, std::size_t w_, const std::vector<std::array<std::size_t,2>>& edgesInDirectedGraph,const std::vector<double>& edgeCosts,const INSTANCE& ldpInstance);
     double LowerBound() const;
 
 
     double EvaluatePrimal() const;
 
-    void setPrimal(const std::vector<size_t>& primalDescendants, const std::vector<size_t> &vertexLabels);
+    void setPrimal(const std::vector<std::size_t>& primalDescendants, const std::vector<std::size_t> &vertexLabels);
 
-    const std::vector<size_t>& getPrimal();
+    const std::vector<std::size_t>& getPrimal();
 
     template<class ARCHIVE> void serialize_primal(ARCHIVE& ar) { ar(); }
     template<class ARCHIVE> void serialize_dual(ARCHIVE& ar) { ar(); }
@@ -43,43 +43,43 @@ public:
     // std::array<double,3> getAllMinMarginals();
 
 
-    void updateCostBaseForward(const size_t& inputVertexIndex, const size_t& neighborIndex,const double& value);
+    void updateCostBaseForward(const std::size_t& inputVertexIndex, const std::size_t& neighborIndex,const double& value);
 
 
-    void updateCostBaseBackward(const size_t& inputVertexIndex, const size_t& neighborIndex,const double& value);
+    void updateCostBaseBackward(const std::size_t& inputVertexIndex, const std::size_t& neighborIndex,const double& value);
 
     void updateCostLifted(const double& value);
 
-    std::tuple<double, size_t, size_t, char> minCutEdge(size_t index1, size_t index2,const LdpTwoLayerGraph* pCutGraph,const double* pLiftedCost) const;
+    std::tuple<double, std::size_t, std::size_t, char> minCutEdge(std::size_t index1, std::size_t index2,const LdpTwoLayerGraph* pCutGraph,const double* pLiftedCost) const;
 
     double getLiftedMinMarginal(const LdpTwoLayerGraph* pCutGraph,const double* pLiftedCost) const;
-    double getOneEdgeMinMarginal(const size_t & index1, const size_t & neighborIndex, const LdpTwoLayerGraph *pCutGraph, const double *pLiftedCost) const;
+    double getOneEdgeMinMarginal(const std::size_t & index1, const std::size_t & neighborIndex, const LdpTwoLayerGraph *pCutGraph, const double *pLiftedCost) const;
 
 
     const LdpTwoLayerGraph& getCutGraph()const {
         return cutGraph;
     }
 
-    const std::vector<size_t>& getInputVertices()const{
+    const std::vector<std::size_t>& getInputVertices()const{
         return inputVertices;
     }
 
-    const std::vector<size_t>& getOutputVertices()const{
+    const std::vector<std::size_t>& getOutputVertices()const{
         return outputVertices;
     }
 
-    const size_t& getNumberOfInputs()const{
+    const std::size_t& getNumberOfInputs()const{
         return numberOfInput;
     }
 
-    const size_t& getNumberOfOutputs()const{
+    const std::size_t& getNumberOfOutputs()const{
         return numberOfOutput;
     }
 
-    const size_t& getLiftedInputVertex() const{
+    const std::size_t& getLiftedInputVertex() const{
         return v;
     }
-    const size_t& getLiftedOutputVertex() const{
+    const std::size_t& getLiftedOutputVertex() const{
         return w;
     }
 
@@ -100,31 +100,31 @@ public:
 
     void print()const ;
 private:
-    double advancedMinimizer(const size_t& index1, const size_t& neighborIndex, bool restrictToOne, bool addLiftedCost, const LdpTwoLayerGraph *pCutGraph, const double *pLiftedCost)const;
+    double advancedMinimizer(const std::size_t& index1, const std::size_t& neighborIndex, bool restrictToOne, bool addLiftedCost, const LdpTwoLayerGraph *pCutGraph, const double *pLiftedCost)const;
 
     LPMP::linear_assignment_problem_input createLAStandard(bool addLiftedCost, const LdpTwoLayerGraph *pCutGraph, const double *pLiftedCost)const;
-    LPMP::linear_assignment_problem_input laExcludeEdge(const size_t& v1,const size_t& v2,bool addLiftedCost, const LdpTwoLayerGraph *pCutGraph, const double *pLiftedCost)const ;
-    LPMP::linear_assignment_problem_input laExcludeVertices(const size_t& v1, const size_t& v2,bool addLiftedCost, const LdpTwoLayerGraph *pCutGraph, const double *pLiftedCost)const;
+    LPMP::linear_assignment_problem_input laExcludeEdge(const std::size_t& v1,const std::size_t& v2,bool addLiftedCost, const LdpTwoLayerGraph *pCutGraph, const double *pLiftedCost)const ;
+    LPMP::linear_assignment_problem_input laExcludeVertices(const std::size_t& v1, const std::size_t& v2,bool addLiftedCost, const LdpTwoLayerGraph *pCutGraph, const double *pLiftedCost)const;
 
 
 
 
     //std::vector<double> costs;
 
-    std::vector<size_t> inputVertices;
-    std::vector<size_t> outputVertices;
+    std::vector<std::size_t> inputVertices;
+    std::vector<std::size_t> outputVertices;
     LdpTwoLayerGraph cutGraph;
-    size_t v;
-    size_t w;
+    std::size_t v;
+    std::size_t w;
     //double liftedEdgeCost;
-    std::vector<size_t> primalSolution; //inputNodeIndex ->index of neighbor within cutGraph
+    std::vector<std::size_t> primalSolution; //inputNodeIndex ->index of neighbor within cutGraph
     bool liftedActiveInPrimal;
-    std::array<size_t,2> baseCoveringLifted; //{input node index,index in output nodes+numberOfInput}
-    size_t numberOfInput;
-    size_t numberOfOutput;
+    std::array<std::size_t,2> baseCoveringLifted; //{input node index,index in output nodes+numberOfInput}
+    std::size_t numberOfInput;
+    std::size_t numberOfOutput;
     bool baseCoverLiftedExists;
-    size_t unassignedLabel;
-    mutable std::vector<size_t> storeLabeling;  //index to index
+    std::size_t unassignedLabel;
+    mutable std::vector<std::size_t> storeLabeling;  //index to index
     double liftedCost;
     mutable bool liftedActive;
     mutable double primalBaseCost;
@@ -142,12 +142,12 @@ private:
 class ldp_snc_cut_message
 {
 public:
-    ldp_snc_cut_message(  std::vector<size_t> _nodeIndicesInCut,  //empty if it is a message only for lifted edge
-                          std::vector<size_t> _nodeIndicesInSnc,
-                          size_t _sncNodeIDindexInCut,
+    ldp_snc_cut_message(  std::vector<std::size_t> _nodeIndicesInCut,  //empty if it is a message only for lifted edge
+                          std::vector<std::size_t> _nodeIndicesInSnc,
+                          std::size_t _sncNodeIDindexInCut,
                           bool _sncIsOut,
                           bool _containsLiftedEdge,
-                          size_t _nodeIndexOfLiftedEdge):
+                          std::size_t _nodeIndexOfLiftedEdge):
         nodeIndicesInCut(_nodeIndicesInCut),  //empty if it is a message only for lifted edge
         nodeIndicesInSnc(_nodeIndicesInSnc),
         sncNodeIDindexInCut(_sncNodeIDindexInCut), //Warning if only lifted edge is incident, this is equal to number of inputs
@@ -187,7 +187,7 @@ public:
 #ifndef NDEBUG
                 //if(debug()){
                 lastV1=l.getInputVertices().at(sncNodeIDindexInCut);
-                size_t otherVertex=l.getCutGraph().getForwardEdgeVertex(sncNodeIDindexInCut,nodeIndicesInCut[msg_dim]);
+                std::size_t otherVertex=l.getCutGraph().getForwardEdgeVertex(sncNodeIDindexInCut,nodeIndicesInCut[msg_dim]);
                 lastV2=l.getOutputVertices().at(otherVertex);
                 lastValue=msg;
                 //}
@@ -198,7 +198,7 @@ public:
 #ifndef NDEBUG
                 //if(debug()){
                     lastV1=l.getOutputVertices().at(sncNodeIDindexInCut);
-                    size_t otherVertex=l.getCutGraph().getBackwardEdgeVertex(sncNodeIDindexInCut,nodeIndicesInCut[msg_dim]);
+                    std::size_t otherVertex=l.getCutGraph().getBackwardEdgeVertex(sncNodeIDindexInCut,nodeIndicesInCut[msg_dim]);
                     lastV2=l.getInputVertices().at(otherVertex);
                     lastValue=msg;
                 //}
@@ -216,7 +216,7 @@ public:
 
         assert(msg_dim <=nodeIndicesInSnc.size());
         // if(debug()) r.LowerBound();
-        size_t secondVertex;
+        std::size_t secondVertex;
         if(msg_dim==nodeIndicesInSnc.size()){
 
             assert(containsLiftedEdge);
@@ -254,14 +254,14 @@ public:
          const std::vector<double>& baseCosts=r.getBaseCosts();
 
          std::vector<double> liftedMM=r.getAllLiftedMinMarginals();
-         for (size_t i = 0; i < liftedCosts.size(); ++i) {
+         for (std::size_t i = 0; i < liftedCosts.size(); ++i) {
              liftedMM[i]*=0.5;
              liftedCosts[i]-=liftedMM[i];
          }
          std::vector<double> baseMM=r.getAllBaseMinMarginals(&baseCosts, &liftedCosts);
 
-         std::vector<size_t> scalingLifted(liftedCosts.size());
-         std::vector<size_t> scalingBase(baseCosts.size());
+         std::vector<std::size_t> scalingLifted(liftedCosts.size());
+         std::vector<std::size_t> scalingBase(baseCosts.size());
 
 
          for(auto it=msg_begin; it!=msg_end; ++it)
@@ -269,10 +269,10 @@ public:
 
              auto& msg = (*it).GetMessageOp();
 
-             size_t i=0;
+             std::size_t i=0;
              double delta=0;
              for (;i<msg.nodeIndicesInSnc.size();i++) {
-                 size_t index=msg.nodeIndicesInSnc[i];
+                 std::size_t index=msg.nodeIndicesInSnc[i];
                  assert(index<scalingBase.size());
                  scalingBase[index]++;
 
@@ -289,10 +289,10 @@ public:
 
              auto& msg = (*it).GetMessageOp();
 
-             size_t i=0;
+             std::size_t i=0;
              double delta=0;
              for (;i<msg.nodeIndicesInSnc.size();i++) {
-                 size_t index=msg.nodeIndicesInSnc[i];
+                 std::size_t index=msg.nodeIndicesInSnc[i];
                  assert(index<scalingBase.size());
                  double delta=baseMM[index]/double(scalingBase[index]);
                  (*it)[i]-=omega*delta;
@@ -300,7 +300,7 @@ public:
              }
              if(msg.containsLiftedEdge){
                  assert(msg.nodeIndexOfLiftedEdge<scalingLifted.size());
-                 size_t index=msg.nodeIndexOfLiftedEdge;
+                 std::size_t index=msg.nodeIndexOfLiftedEdge;
                  double delta=liftedMM[index]/double(scalingLifted[index]);
                  (*it)[i]-=omega*delta;
              }
@@ -321,7 +321,7 @@ public:
 
             auto& msg = (*it).GetMessageOp();
 
-            size_t i=0;
+            std::size_t i=0;
             for (;i<msg.nodeIndicesInCut.size();i++) {
 
                 if(msg.sncIsOut){
@@ -351,7 +351,7 @@ public:
 
         std::vector<double> baseCosts=r.getBaseCosts();
         std::vector<double> liftedCosts=r.getLiftedCosts(); //TODO change to const reference
-        size_t i=0;
+        std::size_t i=0;
         double delta=0;
         for (;i<nodeIndicesInSnc.size();i++) {
 
@@ -394,14 +394,14 @@ public:
         //std::cout<<"send cut to right"<<std::endl;
 
         double delta;
-        size_t i=0;
+        std::size_t i=0;
         double liftedCost=l.getLiftedCost();
         LdpTwoLayerGraph cutGraph=l.getCutGraph();
         double controlDelta=0;
         for (;i<nodeIndicesInCut.size();i++) {
 
             if(sncIsOut){
-                size_t otherVertex=l.getCutGraph().getForwardEdgeVertex(sncNodeIDindexInCut,nodeIndicesInCut[i]);
+                std::size_t otherVertex=l.getCutGraph().getForwardEdgeVertex(sncNodeIDindexInCut,nodeIndicesInCut[i]);
                 //std::cout<<"base edge mm, neighbor node "<<l.getOutputVertices()[otherVertex]<<std::endl;
                 delta = l.getOneEdgeMinMarginal(sncNodeIDindexInCut,otherVertex,&cutGraph,&liftedCost);
                 //std::cout<<"orig edge cost "<<cutGraph.getForwardEdgeCost(sncNodeIDindexInCut,nodeIndicesInCut[i])<<std::endl;;
@@ -415,7 +415,7 @@ public:
             }
             else{  //just for output nodes now
 
-                size_t otherVertex=l.getCutGraph().getBackwardEdgeVertex(sncNodeIDindexInCut,nodeIndicesInCut[i]);
+                std::size_t otherVertex=l.getCutGraph().getBackwardEdgeVertex(sncNodeIDindexInCut,nodeIndicesInCut[i]);
                 //std::cout<<"base edge mm, neighbor node "<<l.getOutputVertices()[otherVertex]<<std::endl;
                 delta = l.getOneEdgeMinMarginal(otherVertex,sncNodeIDindexInCut,&cutGraph,&liftedCost);
                 //std::cout<<"orig edge cost "<<cutGraph.getForwardEdgeCost(sncNodeIDindexInCut,nodeIndicesInCut[i])<<std::endl;;
@@ -474,16 +474,16 @@ public:
 private:
 
 
-    const std::vector<size_t> nodeIndicesInCut;  //empty if it is a message only for lifted edge
-    const std::vector<size_t> nodeIndicesInSnc;
-    const size_t sncNodeIDindexInCut;
+    const std::vector<std::size_t> nodeIndicesInCut;  //empty if it is a message only for lifted edge
+    const std::vector<std::size_t> nodeIndicesInSnc;
+    const std::size_t sncNodeIDindexInCut;
     const bool sncIsOut;   //if true, central node is in inputs, other nodes in outputs
     const bool containsLiftedEdge;
-    const size_t nodeIndexOfLiftedEdge;
+    const std::size_t nodeIndexOfLiftedEdge;
 
 
-    mutable size_t lastV1;
-    mutable size_t lastV2;
+    mutable std::size_t lastV1;
+    mutable std::size_t lastV2;
     mutable double lastValue;
 };
 

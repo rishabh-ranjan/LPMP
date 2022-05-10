@@ -36,7 +36,7 @@
 namespace py = pybind11;
 namespace LPMP {
 
-template<class T = size_t>
+template<class T = std::size_t>
 struct CompleteStructure {
 public:
     template<class PAR>
@@ -88,20 +88,20 @@ public:
 
 
     template<class PAR>
-    void addEdgesFromFile(const std::string& fileName,PAR& params,size_t minVertexToUse=0);
+    void addEdgesFromFile(const std::string& fileName,PAR& params,std::size_t minVertexToUse=0);
 
     template<class PAR>
-    void addEdgesFromVectors(const py::array_t<size_t>& edges,const py::array_t<double>& costs,PAR& params,size_t minVertexToUse=0);
+    void addEdgesFromVectors(const py::array_t<std::size_t>& edges,const py::array_t<double>& costs,PAR& params,std::size_t minVertexToUse=0);
 
-    void addEdgesFromVectorsAll(const py::array_t<size_t>& edges,const py::array_t<double>& costs);
+    void addEdgesFromVectorsAll(const py::array_t<std::size_t>& edges,const py::array_t<double>& costs);
 
     void setVerticesCostsVector(const std::vector<double>& costs);
 
     void setVerticesCosts(const py::array_t<double>& costs);
 
-    std::vector<bool> getGraphEdgeLabels(const std::vector<std::vector<size_t>>& paths) const;
+    std::vector<bool> getGraphEdgeLabels(const std::vector<std::vector<std::size_t>>& paths) const;
 
-    std::vector<std::array<size_t,2>> getEdgeList() const;
+    std::vector<std::array<std::size_t,2>> getEdgeList() const;
 
     const VertexGroups<>& getVertexGroups(){
         return *pVertexGroups;
@@ -121,7 +121,7 @@ public:
         std::vector<double> verticesScore;
 
         LdpDirectedGraph myCompleteGraph;
-        size_t maxTime;
+        std::size_t maxTime;
 
 
 private:
@@ -129,7 +129,7 @@ private:
     VertexGroups<>* pVertexGroups;
     std::chrono::steady_clock::time_point constructorBegin;
     std::string edgeFileName;
-    size_t vertexShiftBack;
+    std::size_t vertexShiftBack;
 
 };
 
@@ -144,15 +144,15 @@ inline void CompleteStructure<T>::setVerticesCostsVector(const std::vector<doubl
 template<class T>
 inline void CompleteStructure<T>::setVerticesCosts(const py::array_t<double>& costs){
     const auto costVector=costs.unchecked<1>();
-    const size_t dimOfCosts=costVector.shape(0);
+    const std::size_t dimOfCosts=costVector.shape(0);
     assert(dimOfCosts==verticesScore.size());
-    for (size_t i=0;i<dimOfCosts;i++){
+    for (std::size_t i=0;i<dimOfCosts;i++){
         verticesScore[i]=costVector(i);
     }
 }
 
 template<class T>
-inline void CompleteStructure<T>::addEdgesFromVectorsAll(const py::array_t<size_t>& edges,const py::array_t<double>& costs){
+inline void CompleteStructure<T>::addEdgesFromVectorsAll(const py::array_t<std::size_t>& edges,const py::array_t<double>& costs){
     char delim=',';
     VertexGroups<>& vg=*pVertexGroups;
 
@@ -160,7 +160,7 @@ inline void CompleteStructure<T>::addEdgesFromVectorsAll(const py::array_t<size_
     const std::size_t dim1=edgeVector.shape(0);
     const std::size_t dim2=edgeVector.shape(1);
     const auto costVector=costs.unchecked<1>();
-    const size_t dimOfCosts=costVector.shape(0);
+    const std::size_t dimOfCosts=costVector.shape(0);
 
 
     if(dim2!=2){
@@ -173,9 +173,9 @@ inline void CompleteStructure<T>::addEdgesFromVectorsAll(const py::array_t<size_
     }
 
 
-//    for (size_t i=0;i<dim1;i++) {
-//        size_t v=edgeVector(i,0);
-//        size_t w=edgeVector(i,1);
+//    for (std::size_t i=0;i<dim1;i++) {
+//        std::size_t v=edgeVector(i,0);
+//        std::size_t w=edgeVector(i,1);
 //        double edgeCost=costVector(i);
 
 //        if(v>vg.getMaxVertex()||w>vg.getMaxVertex()){
@@ -194,7 +194,7 @@ inline void CompleteStructure<T>::addEdgesFromVectorsAll(const py::array_t<size_
 
 template<class T>
 template<class PAR>
-inline void CompleteStructure<T>::addEdgesFromVectors(const py::array_t<size_t>& edges, const py::array_t<double>& costs, PAR& params, size_t minVertexToUse){
+inline void CompleteStructure<T>::addEdgesFromVectors(const py::array_t<std::size_t>& edges, const py::array_t<double>& costs, PAR& params, std::size_t minVertexToUse){
     char delim=',';
     VertexGroups<>& vg=*pVertexGroups;
     vertexShiftBack=std::max(minVertexToUse,vg.getVertexShiftBack());
@@ -203,7 +203,7 @@ inline void CompleteStructure<T>::addEdgesFromVectors(const py::array_t<size_t>&
     const std::size_t dim1=edgeVector.shape(0);
     const std::size_t dim2=edgeVector.shape(1);
     const auto costVector=costs.unchecked<1>();
-    const size_t dimOfCosts=costVector.shape(0);
+    const std::size_t dimOfCosts=costVector.shape(0);
 
 
     if(dim2!=2){
@@ -218,26 +218,26 @@ inline void CompleteStructure<T>::addEdgesFromVectors(const py::array_t<size_t>&
     params.getControlOutput()<<"Reading base edges from vector. "<<std::endl;
     params.writeControlOutput();
 
-    std::vector<std::array<size_t,2>> edgesToUse;
+    std::vector<std::array<std::size_t,2>> edgesToUse;
     std::vector<double> costsToUse;
 
-    size_t i=0;
+    std::size_t i=0;
 
 
     for (;i<dim1;i++) {
-        size_t v0=edgeVector(i,0);
-        size_t w0=edgeVector(i,1);
+        std::size_t v0=edgeVector(i,0);
+        std::size_t w0=edgeVector(i,1);
 
         assert(w0>v0);
 
         if(v0>=minVertexToUse){
-            size_t v=v0-minVertexToUse;
-            size_t w=w0-minVertexToUse;
+            std::size_t v=v0-minVertexToUse;
+            std::size_t w=w0-minVertexToUse;
 
             if(w<=vg.getMaxVertex()){
 
-                size_t l0=vg.getGroupIndex(v);
-                size_t l1=vg.getGroupIndex(w);
+                std::size_t l0=vg.getGroupIndex(v);
+                std::size_t l1=vg.getGroupIndex(w);
 
                 assert(l1>l0);
 
@@ -266,7 +266,7 @@ inline void CompleteStructure<T>::addEdgesFromVectors(const py::array_t<size_t>&
 
 template<class T>
 template<class PAR>
-inline void CompleteStructure<T>::addEdgesFromFile(const std::string& fileName, PAR& params, size_t minVertexToUse){  //min VertexToUse cannot be always based on VG
+inline void CompleteStructure<T>::addEdgesFromFile(const std::string& fileName, PAR& params, std::size_t minVertexToUse){  //min VertexToUse cannot be always based on VG
     char delim=',';
     VertexGroups<>& vg=*pVertexGroups;
     edgeFileName=fileName;
@@ -299,7 +299,7 @@ inline void CompleteStructure<T>::addEdgesFromFile(const std::string& fileName, 
 
             unsigned int v0 = std::stoul(strings[0]);
             if(v0>=vertexShiftBack){
-                size_t v=v0-vertexShiftBack;
+                std::size_t v=v0-vertexShiftBack;
                 double c = std::stod(strings[1]);
                 assert(v<verticesScore.size());
                 verticesScore[v]=c;
@@ -309,9 +309,9 @@ inline void CompleteStructure<T>::addEdgesFromFile(const std::string& fileName, 
 
         params.getControlOutput()<<"Reading base edges from file. "<<std::endl;
         params.writeControlOutput();
-        size_t maxLabel=0;
+        std::size_t maxLabel=0;
 
-        std::vector<std::array<size_t,2>> listOfEdges;
+        std::vector<std::array<std::size_t,2>> listOfEdges;
         std::vector<double> completeScore;
 
         if(vertexShiftBack>0){
@@ -326,15 +326,15 @@ inline void CompleteStructure<T>::addEdgesFromFile(const std::string& fileName, 
                 if(v0>=vertexShiftBack){
                     minVertexFound=true;
                     unsigned int w0 = std::stoul(strings[1]);
-                    size_t w=w0-vertexShiftBack;
-                    size_t v=v0-vertexShiftBack;
+                    std::size_t w=w0-vertexShiftBack;
+                    std::size_t v=v0-vertexShiftBack;
 
                     assert(v<=vg.getMaxVertex());
 
                     if(w<=vg.getMaxVertex()){
 
-                        size_t l0=vg.getGroupIndex(v);
-                        size_t l1=vg.getGroupIndex(w);
+                        std::size_t l0=vg.getGroupIndex(v);
+                        std::size_t l1=vg.getGroupIndex(w);
 
                         //if(v>vg.getMaxVertex()||w>vg.getMaxVertex()) continue;
 
@@ -366,15 +366,15 @@ inline void CompleteStructure<T>::addEdgesFromFile(const std::string& fileName, 
             assert(w0>v0);
             assert(v0>=vertexShiftBack);
 
-            size_t v=v0-vertexShiftBack;
-            size_t w=w0-vertexShiftBack;
+            std::size_t v=v0-vertexShiftBack;
+            std::size_t w=w0-vertexShiftBack;
 
             if(v>vg.getMaxVertex()) break;
 
             if(w>vg.getMaxVertex()) continue;
 
-            size_t l0=vg.getGroupIndex(v);
-            size_t l1=vg.getGroupIndex(w);
+            std::size_t l0=vg.getGroupIndex(v);
+            std::size_t l1=vg.getGroupIndex(w);
 
             //if(v>vg.getMaxVertex()||w>vg.getMaxVertex()) continue;
 
@@ -408,11 +408,11 @@ inline void CompleteStructure<T>::addEdgesFromFile(const std::string& fileName, 
 
 
 template<class T>
-inline std::vector<std::array<size_t,2>> CompleteStructure<T>::getEdgeList() const{
-    //std::vector<std::array<size_t,2>> edges(myCompleteGraph.getNumberOfEdges());
-    std::vector<std::array<size_t,2>> edges;
-    size_t edgeCounter=0;
-    for (size_t i = 0; i < myCompleteGraph.getNumberOfVertices(); ++i) {
+inline std::vector<std::array<std::size_t,2>> CompleteStructure<T>::getEdgeList() const{
+    //std::vector<std::array<std::size_t,2>> edges(myCompleteGraph.getNumberOfEdges());
+    std::vector<std::array<std::size_t,2>> edges;
+    std::size_t edgeCounter=0;
+    for (std::size_t i = 0; i < myCompleteGraph.getNumberOfVertices(); ++i) {
         for (auto iter=myCompleteGraph.forwardNeighborsBegin(i);iter!=myCompleteGraph.forwardNeighborsEnd(i);iter++) {
             edges.push_back({i,iter->first});
         }

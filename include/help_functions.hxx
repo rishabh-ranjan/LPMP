@@ -18,7 +18,7 @@ namespace LPMP {
 inline std::string LatexEscape(const std::string& s)
 {
    std::string escaped = s;
-   size_t start_pos = 0;
+   std::size_t start_pos = 0;
    while(start_pos < escaped.length() && (start_pos = escaped.find("_", start_pos)) != std::string::npos) {
       escaped.replace(start_pos, 1, "{\\_}");
       start_pos += 4;
@@ -70,10 +70,10 @@ void BuildIndexMaps(ITERATOR fIt, const ITERATOR fEndIt, std::map<F,I>& elemToIn
 }
 
 template<class T>
-std::vector<T> GetSubVector(const std::vector<T>& v, const std::vector<size_t>& inds)
+std::vector<T> GetSubVector(const std::vector<T>& v, const std::vector<std::size_t>& inds)
 {
    std::vector<T> subVec(inds.size());
-   for(size_t i=0; i<inds.size(); i++) {
+   for(std::size_t i=0; i<inds.size(); i++) {
       subVec[i] = v[inds[i]];
    }
    return subVec;
@@ -83,7 +83,7 @@ template<class VECTOR>
 bool HasUniqueValues(const VECTOR& v)
 {
    std::set<typename VECTOR::value_type> values;
-   for(size_t i=0; i<v.size(); i++) {
+   for(std::size_t i=0; i<v.size(); i++) {
       if(values.find( v[i] ) != values.end()) return false;
       else values.insert( v[i] );
    }
@@ -132,14 +132,14 @@ std::array<T,2> two_largest_elements(ITERATOR begin, ITERATOR end)
 
 // return indices belonging to the three smallest entries
 template<class T>
-std::tuple<size_t,size_t,size_t> MinThreeIndices(const std::vector<T>& v)
+std::tuple<std::size_t,std::size_t,std::size_t> MinThreeIndices(const std::vector<T>& v)
 {
    assert(v.size() > 2);
-   std::vector<size_t> ind(v.size());
-   for(size_t i=0; i<ind.size(); i++)  ind[i] = i;
+   std::vector<std::size_t> ind(v.size());
+   for(std::size_t i=0; i<ind.size(); i++)  ind[i] = i;
    // do zrobienia: use partial_sort here
-   std::sort(ind.begin(), ind.end(), [&](const size_t i, const size_t j)->bool {return v[i] < v[j];} );
-   return std::tuple<size_t,size_t,size_t>(ind[0], ind[1], ind[2]);
+   std::sort(ind.begin(), ind.end(), [&](const std::size_t i, const std::size_t j)->bool {return v[i] < v[j];} );
+   return std::tuple<std::size_t,std::size_t,std::size_t>(ind[0], ind[1], ind[2]);
 }
 
 template<class T, class A>
@@ -162,7 +162,7 @@ void NormalizeVector(std::vector<T>& v)
    //const T mean = std::accumulate(v.begin(), v.end(),0)/v.size();
    return; // do zrobienia: why is it not applicable in marg_message?
    const T mean = *std::min_element(v.begin(), v.end());
-   for(size_t i=0; i<v.size(); i++) {
+   for(std::size_t i=0; i<v.size(); i++) {
       v[i] -= mean;
    }
 }

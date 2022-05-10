@@ -29,7 +29,7 @@ class ParametersParser{
             std::string line;
             if(searchSolverKeyword){
                 while (!solverPart&&std::getline(data, line) ) {
-                    size_t commentPos=line.find_first_of('#');
+                    std::size_t commentPos=line.find_first_of('#');
                     if(commentPos<line.length()){
                         line.erase(commentPos);
                     }
@@ -65,7 +65,7 @@ class ParametersParser{
 
         bool newSection=false;
         while(!newSection&&std::getline(data, line)){
-            size_t commentPos=line.find_first_of('#');
+            std::size_t commentPos=line.find_first_of('#');
             if(commentPos<line.length()){
                 line.erase(commentPos);
             }
@@ -74,8 +74,8 @@ class ParametersParser{
                     strings=split<>(line,delim);
                     std::string whitespaces (" ");
 
-                    size_t foundLast = strings[0].find_last_not_of(whitespaces);
-                    size_t foundFirst=strings[0].find_first_not_of(whitespaces);
+                    std::size_t foundLast = strings[0].find_last_not_of(whitespaces);
+                    std::size_t foundFirst=strings[0].find_first_not_of(whitespaces);
                     std::string key=strings[0].substr(foundFirst,foundLast-foundFirst+1);
 
                     foundLast = strings[1].find_last_not_of(whitespaces);

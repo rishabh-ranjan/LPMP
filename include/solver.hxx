@@ -140,7 +140,7 @@ namespace LPMP {
                     return outputFile_;
                 }
 
-                const size_t& getIterationNumber()const {
+                const std::size_t& getIterationNumber()const {
                     return iter;
                 }
 

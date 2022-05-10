@@ -80,14 +80,14 @@ namespace LPMP {
 
             bool fix_variables();
 
-            bool fix_variables(const std::vector<size_t> & indices, const std::vector<char> & values);
-            bool fix_variable(const size_t var, const char value);
-            bool is_fixed(const size_t var) const;
+            bool fix_variables(const std::vector<std::size_t> & indices, const std::vector<char> & values);
+            bool fix_variable(const std::size_t var, const char value);
+            bool is_fixed(const std::size_t var) const;
 
             std::vector<double> total_min_marginals();
             std::vector<double> search_space_reduction_coeffs();
 
-            void count_forward_run(size_t last_var);
+            void count_forward_run(std::size_t last_var);
             void count_backward_run(ptrdiff_t first_var);
 
             void min_marginal_averaging_forward();
@@ -97,12 +97,12 @@ namespace LPMP {
             void init(const ILP_input& input);
             void init();
 
-            void revert_changes(const size_t target_log_size);
+            void revert_changes(const std::size_t target_log_size);
 
             void init_primal_solution() { primal_solution_.resize(nr_variables(), 2); }
             const std::vector<char> & primal_solution() const { return primal_solution_; }
             double compute_upper_bound();
-            const size_t log_size() const { return log_.size(); }
+            const std::size_t log_size() const { return log_.size(); }
 
         private:
             void init_pointers();
@@ -123,15 +123,15 @@ namespace LPMP {
 
     void bdd_mma_fixing::init_pointers()
     {
-        for (size_t var = 0; var < nr_variables(); var++)
+        for (std::size_t var = 0; var < nr_variables(); var++)
         {
-            for (size_t bdd_index = 0; bdd_index < nr_bdds(var); bdd_index++)
+            for (std::size_t bdd_index = 0; bdd_index < nr_bdds(var); bdd_index++)
             {
                 auto & bdd_var = bdd_variables_(var, bdd_index);
                 bdd_var.nr_feasible_low_arcs = 0;
                 bdd_var.nr_feasible_high_arcs = 0;
                 bdd_var.variable_index = var;
-                for (size_t node_index = bdd_var.first_node_index; node_index < bdd_var.last_node_index; node_index++)
+                for (std::size_t node_index = bdd_var.first_node_index; node_index < bdd_var.last_node_index; node_index++)
                 {
                     auto & bdd_node = bdd_branch_nodes_[node_index];
                     if (bdd_node.low_outgoing != bdd_branch_node_fix::terminal_0())
@@ -190,12 +190,12 @@ namespace LPMP {
         primal_solution_[var] = value;
         const log_entry entry(&primal_solution_[var]);
         log_.push(entry);
-        std::vector<std::pair<size_t, char>> restrictions;
+        std::vector<std::pair<std::size_t, char>> restrictions;
 
-        for (size_t bdd_index = 0; bdd_index < nr_bdds(var); bdd_index++)
+        for (std::size_t bdd_index = 0; bdd_index < nr_bdds(var); bdd_index++)
         {
             auto & bdd_var = bdd_variables_(var, bdd_index);
-            for (size_t node_index = bdd_var.first_node_index; node_index < bdd_var.last_node_index; node_index++)
+            for (std::size_t node_index = bdd_var.first_node_index; node_index < bdd_var.last_node_index; node_index++)
             {
                 auto & bdd_node = bdd_branch_nodes_[node_index];
 
@@ -380,7 +380,7 @@ namespace LPMP {
         }
     }
 
-    bool bdd_mma_fixing::fix_variables(const std::vector<size_t> & variables, const std::vector<char> & values)
+    bool bdd_mma_fixing::fix_variables(const std::vector<std::size_t> & variables, const std::vector<char> & values)
     {
         assert(variables.size() == values.size());
 
@@ -388,11 +388,11 @@ namespace LPMP {
 
         struct VarFix
         {
-            VarFix(const size_t log_size, const size_t index, const char val)
+            VarFix(const std::size_t log_size, const std::size_t index, const char val)
             : log_size_(log_size), index_(index), val_(val) {}
             
-            const size_t log_size_;
-            const size_t index_;
+            const std::size_t log_size_;
+            const std::size_t index_;
             const char val_;
         };
 
@@ -400,9 +400,9 @@ namespace LPMP {
         variable_fixes.emplace(log_.size(), 0, 1-values[0]);
         variable_fixes.emplace(log_.size(), 0, values[0]);
 
-        size_t nfixes = 0;
-        size_t max_fixes = nr_variables();
-        // size_t max_fixes = std::numeric_limits<size_t>::max();
+        std::size_t nfixes = 0;
+        std::size_t max_fixes = nr_variables();
+        // std::size_t max_fixes = std::numeric_limits<std::size_t>::max();
         std::cout << "Search tree node budget: " << max_fixes << std::endl;
         std::cout << "Expanded: " << std::endl;
 
@@ -415,7 +415,7 @@ namespace LPMP {
 
             auto fix = variable_fixes.top();
             variable_fixes.pop();
-            size_t index = fix.index_;
+            std::size_t index = fix.index_;
 
             revert_changes(fix.log_size_);
             bool feasible = fix_variable(variables[index], fix.val_);
@@ -437,14 +437,14 @@ namespace LPMP {
         return false;
     }
 
-    bool bdd_mma_fixing::is_fixed(const size_t var) const
+    bool bdd_mma_fixing::is_fixed(const std::size_t var) const
     {
         assert(primal_solution_.size() == nr_variables());
         assert(var < primal_solution_.size());
         return primal_solution_[var] < 2;
     }
 
-    void bdd_mma_fixing::revert_changes(const size_t target_log_size)
+    void bdd_mma_fixing::revert_changes(const std::size_t target_log_size)
     {
         while (log_.size() > target_log_size)
         {
@@ -478,10 +478,10 @@ namespace LPMP {
         assert(first_var >= 0 && first_var < this->nr_variables());
         for (ptrdiff_t var = this->nr_variables()-1; var >= first_var; --var)
         {
-            for (size_t bdd_index=0; bdd_index<this->nr_bdds(var); bdd_index++)
+            for (std::size_t bdd_index=0; bdd_index<this->nr_bdds(var); bdd_index++)
             {
                 auto & bdd_var = bdd_variables_(var, bdd_index);
-                for (size_t node_index = bdd_var.first_node_index; node_index < bdd_var.last_node_index; node_index++)
+                for (std::size_t node_index = bdd_var.first_node_index; node_index < bdd_var.last_node_index; node_index++)
                 {
                     auto & bdd_node = bdd_branch_nodes_[node_index];
                     bdd_node.count_backward_step();
@@ -490,15 +490,15 @@ namespace LPMP {
         } 
     }
 
-    void bdd_mma_fixing::count_forward_run(size_t last_var)
+    void bdd_mma_fixing::count_forward_run(std::size_t last_var)
     {
         assert(last_var >= 0 && last_var < this->nr_variables());
-        for (size_t var = 0; var <= last_var; var++)
+        for (std::size_t var = 0; var <= last_var; var++)
         {
-            for (size_t bdd_index=0; bdd_index<this->nr_bdds(var); bdd_index++)
+            for (std::size_t bdd_index=0; bdd_index<this->nr_bdds(var); bdd_index++)
             {
                 auto & bdd_var = bdd_variables_(var, bdd_index);
-                for (size_t node_index = bdd_var.first_node_index; node_index < bdd_var.last_node_index; node_index++)
+                for (std::size_t node_index = bdd_var.first_node_index; node_index < bdd_var.last_node_index; node_index++)
                 {
                     auto & bdd_node = bdd_branch_nodes_[node_index];
                     bdd_node.count_forward_step();
@@ -513,13 +513,13 @@ namespace LPMP {
         // solution count backward run
         count_backward_run(0);
         // solution count forward run
-        for (size_t var = 0; var < this->nr_variables(); var++)
+        for (std::size_t var = 0; var < this->nr_variables(); var++)
         {
             double coeff = 0;
-            for (size_t bdd_index=0; bdd_index<this->nr_bdds(var); bdd_index++)
+            for (std::size_t bdd_index=0; bdd_index<this->nr_bdds(var); bdd_index++)
             {
                 auto & bdd_var = bdd_variables_(var, bdd_index);
-                for (size_t node_index = bdd_var.first_node_index; node_index < bdd_var.last_node_index; node_index++)
+                for (std::size_t node_index = bdd_var.first_node_index; node_index < bdd_var.last_node_index; node_index++)
                 {
                     auto & bdd_node = bdd_branch_nodes_[node_index];
                     bdd_node.count_forward_step();
@@ -539,8 +539,8 @@ namespace LPMP {
         // additional MMA iteration increases chance of finding a feasible solution
         min_marginal_averaging_iteration();
         std::vector<double> total_min_marginals = this->total_min_marginals();
-        std::vector<size_t> variables;
-        for (size_t i = 0; i < nr_variables(); i++)
+        std::vector<std::size_t> variables;
+        for (std::size_t i = 0; i < nr_variables(); i++)
             variables.push_back(i);
 
         const double eps = std::numeric_limits<double>::epsilon();
@@ -555,36 +555,36 @@ namespace LPMP {
                 return 0.0;
         };
 
-        auto order_reduction = [&](const size_t a, const size_t b)
+        auto order_reduction = [&](const std::size_t a, const std::size_t b)
         {
             return sign(reduction_coeffs[a]) * total_min_marginals[a] > sign(reduction_coeffs[b]) * total_min_marginals[b];
         };
 
-        auto order_abs = [&](const size_t a, const size_t b)
+        auto order_abs = [&](const std::size_t a, const std::size_t b)
         {
             return std::abs(total_min_marginals[a]) > std::abs(total_min_marginals[b]);
         };
 
-        auto order_up = [&](const size_t a, const size_t b)
+        auto order_up = [&](const std::size_t a, const std::size_t b)
         {
             return total_min_marginals[a] < total_min_marginals[b];
         };
 
-        auto order_up_down = [&](const size_t a, const size_t b)
+        auto order_up_down = [&](const std::size_t a, const std::size_t b)
         {
             if (total_min_marginals[a] > eps && total_min_marginals[b] > eps)
                 return total_min_marginals[a] > total_min_marginals[b];
             return total_min_marginals[a] < total_min_marginals[b];
         };
 
-        auto order_down_up = [&](const size_t a, const size_t b)
+        auto order_down_up = [&](const std::size_t a, const std::size_t b)
         {
             if (total_min_marginals[a] < -eps && total_min_marginals[b] < -eps)
                 return total_min_marginals[a] < total_min_marginals[b];
             return total_min_marginals[a] > total_min_marginals[b];
         };
 
-        auto order_down = [&](const size_t a, const size_t b)
+        auto order_down = [&](const std::size_t a, const std::size_t b)
         {
             return total_min_marginals[a] > total_min_marginals[b];
         };
@@ -601,7 +601,7 @@ namespace LPMP {
             std::sort(variables.begin(), variables.end(), order_up);
 
         std::vector<char> values;
-        for (size_t i = 0; i < variables.size(); i++)
+        for (std::size_t i = 0; i < variables.size(); i++)
         {
             char val;
             if (options.fixing_value == bdd_min_marginal_averaging_options::fixing_value::marginal)
@@ -656,10 +656,10 @@ namespace LPMP {
     //         double min_score = std::numeric_limits<double>::infinity();
     //         double max_score = -min_score;
     //         double prev_min_score = min_score;
-    //         size_t min_var;
-    //         size_t max_var;
-    //         size_t nconflicts = 0;
-    //         for (size_t var = 0; var < nr_variables(); var++)
+    //         std::size_t min_var;
+    //         std::size_t max_var;
+    //         std::size_t nconflicts = 0;
+    //         for (std::size_t var = 0; var < nr_variables(); var++)
     //         {
     //             if (is_fixed(var))
     //             {
@@ -687,13 +687,13 @@ namespace LPMP {
     //         if (min_score == std::numeric_limits<double>::infinity())
     //             return true;
 
-    //         const size_t lsize = log_size();
+    //         const std::size_t lsize = log_size();
     //         const double old_lb = lower_bound_;
 
     //         const bool small_enough = min_score < -eps;
             
     //         const char val = small_enough ? 1 : 0;
-    //         const size_t best_var = small_enough ? min_var : max_var;
+    //         const std::size_t best_var = small_enough ? min_var : max_var;
     //         const double best_score = small_enough ? min_score : max_score;
 
     //         bool feasible = fix_variable(best_var, val);

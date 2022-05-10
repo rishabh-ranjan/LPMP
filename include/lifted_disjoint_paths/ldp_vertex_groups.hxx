@@ -21,7 +21,7 @@
 namespace LPMP {
 
 
-template<class T=size_t>
+template<class T=std::size_t>
 class VertexGroups{
 public:
 
@@ -29,7 +29,7 @@ public:
 
 
 
-    VertexGroups(std::unordered_map<size_t,std::vector<size_t>> groups_,std::vector<size_t> vToGroup_): //no shift
+    VertexGroups(std::unordered_map<std::size_t,std::vector<std::size_t>> groups_,std::vector<std::size_t> vToGroup_): //no shift
         vToGroup(vToGroup_)
     {
         timeShift=0;
@@ -40,8 +40,8 @@ public:
         std::cout<<"vg max vertex "<<maxVertex<<std::endl;
         std::cout<<"vg max time "<<maxTime<<std::endl;
 //
-        size_t groupsSize=maxTime+2-timeShift;
-        groups=std::vector<std::vector<size_t>>(groupsSize);
+        std::size_t groupsSize=maxTime+2-timeShift;
+        groups=std::vector<std::vector<std::size_t>>(groupsSize);
         for(auto pair:groups_){
             assert(pair.first<groupsSize);
             groups[pair.first]=pair.second;
@@ -70,19 +70,19 @@ public:
     template<class PAR>
     void initFromFile(const std::string& fileName,const PAR& parameters);
 
-    void initFromVector(const std::vector<size_t>& verticesInFrames,size_t timeShift_,size_t vertexShift_);
+    void initFromVector(const std::vector<std::size_t>& verticesInFrames,std::size_t timeShift_,std::size_t vertexShift_);
 
-    void initFromVector(const std::vector<size_t>& verticesInFrames){
+    void initFromVector(const std::vector<std::size_t>& verticesInFrames){
         initFromVector(verticesInFrames,0,0);
     }
 
     void print()const;
 
 
-  //  std::vector<std::vector<size_t>> extractCorePaths(const std::vector<std::vector<size_t>>& paths, size_t cutoff,bool isFirst,bool isLast,size_t vertexShift) const;
+  //  std::vector<std::vector<std::size_t>> extractCorePaths(const std::vector<std::vector<std::size_t>>& paths, std::size_t cutoff,bool isFirst,bool isLast,std::size_t vertexShift) const;
 
 
-    size_t getGroupIndex(size_t v) const{
+    std::size_t getGroupIndex(std::size_t v) const{
         if(v>maxVertex+2){
             std::cout<<"v is "<<v<<", max vertex "<<maxVertex<<std::endl;
         }
@@ -97,78 +97,78 @@ public:
         return vToGroup[v-vertexShift];
     }
 
-    const std::vector<size_t>& getGroupVertices(size_t index)const{  //e.g. first layer 201 -> timeShift =200, normally first layer = 1
+    const std::vector<std::size_t>& getGroupVertices(std::size_t index)const{  //e.g. first layer 201 -> timeShift =200, normally first layer = 1
 
         assert(index>=timeShift&&index<=maxTime+1);
         return groups.at(index-timeShift);
     }
 
     //ID of maximal valid vertex (i.e. without s and t)
-    size_t getMaxVertex() const {
+    std::size_t getMaxVertex() const {
         return maxVertex;
     }
 
     //Time of the last video frame
-    size_t getMaxTime() const {
+    std::size_t getMaxTime() const {
         return maxTime;
     }
 
-    size_t getMinTime() const {
+    std::size_t getMinTime() const {
         return timeShift+1;
     }
 
-    size_t getMinVertex() const {
+    std::size_t getMinVertex() const {
         return vertexShift;
     }
 
-    size_t getVertexShiftBack() const{
+    std::size_t getVertexShiftBack() const{
         return vertexShiftBack;
     }
 
-    size_t getMinVertexInTime(size_t time)const{
+    std::size_t getMinVertexInTime(std::size_t time)const{
         assert(time<=maxTime);
         assert(time>timeShift);
-        size_t i=time;
+        std::size_t i=time;
         while(i<=maxTime&&groups.at(i-timeShift).size()==0){
             i++;
         }
-        if(i>maxTime) return std::numeric_limits<size_t>::max();
+        if(i>maxTime) return std::numeric_limits<std::size_t>::max();
         else return groups.at(i-timeShift).front();
     }
 
-    size_t getMaxVertexInTime(size_t time)const {
+    std::size_t getMaxVertexInTime(std::size_t time)const {
         assert(time<=maxTime);
         assert(time>timeShift);
-        size_t i=time;
+        std::size_t i=time;
         while(i>timeShift&&groups.at(i-timeShift).size()==0){
             i--;
         }
-        if(i==timeShift) return std::numeric_limits<size_t>::max();
+        if(i==timeShift) return std::numeric_limits<std::size_t>::max();
         else return groups.at(i-timeShift).back();
     }
 
 
-    std::vector<std::vector<size_t>> extractInnerPaths(const std::vector<std::vector<size_t> > &paths, const size_t minT, const size_t maxT, const size_t vShift=0) const;
+    std::vector<std::vector<std::size_t>> extractInnerPaths(const std::vector<std::vector<std::size_t> > &paths, const std::size_t minT, const std::size_t maxT, const std::size_t vShift=0) const;
 
     void testCorrectness(bool printToo)const ;
 
 private:
-    //std::vector<std::vector<size_t>> groups;
-    std::vector<std::vector<size_t>> groups;
-    std::vector<size_t> vToGroup;
-    size_t maxVertex;
-    size_t maxTime;
-    size_t timeShift;  //If first layer is not one, but timeShift+1
-    size_t vertexShift;  //First vertex is not zero but vertexShift
+    //std::vector<std::vector<std::size_t>> groups;
+    std::vector<std::vector<std::size_t>> groups;
+    std::vector<std::size_t> vToGroup;
+    std::size_t maxVertex;
+    std::size_t maxTime;
+    std::size_t timeShift;  //If first layer is not one, but timeShift+1
+    std::size_t vertexShift;  //First vertex is not zero but vertexShift
 
-    size_t vertexShiftBack;
+    std::size_t vertexShiftBack;
 
 
 };
 
 template<class T>
 inline void VertexGroups<T>::print() const{
-    for (size_t i = 0; i <= maxTime+1; ++i) {
+    for (std::size_t i = 0; i <= maxTime+1; ++i) {
         std::cout<<"layer "<<i<<": ";
         for (int j = 0; j < groups[i].size(); ++j) {
             std::cout<<groups[i][j]<<",";
@@ -181,12 +181,12 @@ inline void VertexGroups<T>::print() const{
 
 template<class T>
 inline void VertexGroups<T>::testCorrectness(bool printToo) const{
-    for (size_t i=timeShift;i<=maxTime+1;i++) {
-        const std::vector<size_t>&vertices=getGroupVertices(i);
+    for (std::size_t i=timeShift;i<=maxTime+1;i++) {
+        const std::vector<std::size_t>&vertices=getGroupVertices(i);
         if(printToo)std::cout<<"group "<<i<<": "<<std::endl;
         for(auto &v:vertices){
           if(printToo)  std::cout<<v<<",";
-            size_t gi=getGroupIndex(v);
+            std::size_t gi=getGroupIndex(v);
             assert(gi==i);
         }
        if(printToo) std::cout<<std::endl;
@@ -195,23 +195,23 @@ inline void VertexGroups<T>::testCorrectness(bool printToo) const{
 }
 
 template<class T>
-inline void VertexGroups<T>::initFromVector(const std::vector<size_t>& verticesInFrames, size_t timeShift_,size_t vertexShift_){
+inline void VertexGroups<T>::initFromVector(const std::vector<std::size_t>& verticesInFrames, std::size_t timeShift_,std::size_t vertexShift_){
     timeShift=timeShift_;
     vertexShift=vertexShift_;
     maxTime=verticesInFrames.size()+timeShift;
-    size_t groupsSize=maxTime+2-timeShift;
-    groups=std::vector<std::vector<size_t>>(groupsSize);
-    size_t inFrameCounter=0;
-    size_t vertexCounter=vertexShift;
-    size_t frameCounter=timeShift+1;
-    std::vector<size_t> verticesInGroup;
-    vToGroup=std::vector<size_t>();
+    std::size_t groupsSize=maxTime+2-timeShift;
+    groups=std::vector<std::vector<std::size_t>>(groupsSize);
+    std::size_t inFrameCounter=0;
+    std::size_t vertexCounter=vertexShift;
+    std::size_t frameCounter=timeShift+1;
+    std::vector<std::size_t> verticesInGroup;
+    vToGroup=std::vector<std::size_t>();
     while(frameCounter<=maxTime){
         while(frameCounter<=maxTime&&inFrameCounter==verticesInFrames.at(frameCounter-1-timeShift)){
             groups.at(frameCounter-timeShift)=verticesInGroup;
             inFrameCounter=0;
             frameCounter++;
-            verticesInGroup=std::vector<size_t>();
+            verticesInGroup=std::vector<std::size_t>();
         }
         if(frameCounter<=maxTime){
             verticesInGroup.push_back(vertexCounter);
@@ -223,15 +223,15 @@ inline void VertexGroups<T>::initFromVector(const std::vector<size_t>& verticesI
 
     maxVertex=vertexCounter-1;
     assert(maxVertex==vertexShift+vToGroup.size()-1);
-    size_t s=maxVertex+1;
-    size_t t=maxVertex+2;
+    std::size_t s=maxVertex+1;
+    std::size_t t=maxVertex+2;
 
-    verticesInGroup=std::vector<size_t>();
+    verticesInGroup=std::vector<std::size_t>();
     verticesInGroup.push_back(s);
     vToGroup.push_back(timeShift);
     groups.at(0)=verticesInGroup;
 
-    verticesInGroup=std::vector<size_t>();
+    verticesInGroup=std::vector<std::size_t>();
     verticesInGroup.push_back(t);
     vToGroup.push_back(frameCounter);
     groups.at(frameCounter)=verticesInGroup;
@@ -252,27 +252,27 @@ inline void VertexGroups<T>::initFromVector(const std::vector<size_t>& verticesI
 template<class T>
 template<class PAR>
 inline void VertexGroups<T>::initFromFile(const std::string& fileName, const PAR &parameters){
-    size_t lineCounter=0;
-    std::vector<size_t> currentGroup;
+    std::size_t lineCounter=0;
+    std::vector<std::size_t> currentGroup;
     std::vector<std::string> strings;
     std::string line;
     char delim=',';
 
 
-    currentGroup=std::vector<size_t>();
+    currentGroup=std::vector<std::size_t>();
     groups.push_back(currentGroup);  //For the s layer
-    currentGroup=std::vector<size_t>();
+    currentGroup=std::vector<std::size_t>();
 
 
-    size_t maxTimeToRead=parameters.getMaxTimeFrame();
-//    size_t minTimeToRead=parameters.getMinTimeFrame();
+    std::size_t maxTimeToRead=parameters.getMaxTimeFrame();
+//    std::size_t minTimeToRead=parameters.getMinTimeFrame();
 //    assert(minTimeToRead<maxTimeToRead);
 //    assert(minTimeToRead>0);
     timeShift=0;  //These two are not used
     vertexShift=0;
 
-    size_t minTimeToRead=parameters.getMinTimeFrame();
-    size_t timeShiftBack=minTimeToRead-1;
+    std::size_t minTimeToRead=parameters.getMinTimeFrame();
+    std::size_t timeShiftBack=minTimeToRead-1;
     vertexShiftBack=0;
 
 
@@ -288,7 +288,7 @@ inline void VertexGroups<T>::initFromFile(const std::string& fileName, const PAR
         unsigned int time;
 
         bool firstVertexFound=false;
-        size_t firstVertex=0;
+        std::size_t firstVertex=0;
 
         //Skip lines until the first time within scope
         while (!firstVertexFound&&std::getline(timeData, line) && !line.empty()) {
@@ -357,10 +357,10 @@ inline void VertexGroups<T>::initFromFile(const std::string& fileName, const PAR
                 else{
 
                     groups.push_back(currentGroup);
-                    currentGroup=std::vector<size_t>();
+                    currentGroup=std::vector<std::size_t>();
                     while(groups.size()<time-timeShiftBack){
                         groups.push_back(currentGroup);
-                        currentGroup=std::vector<size_t>();
+                        currentGroup=std::vector<std::size_t>();
                     }
                     currentGroup.push_back(v-vertexShiftBack);
                 }
@@ -377,15 +377,15 @@ inline void VertexGroups<T>::initFromFile(const std::string& fileName, const PAR
 
         maxVertex=vToGroup.size()-1;
 
-        size_t s=maxVertex+1;
-        size_t t=maxVertex+2;
+        std::size_t s=maxVertex+1;
+        std::size_t t=maxVertex+2;
 
         vToGroup.push_back(0);  //For s
         vToGroup.push_back(maxTime+1);  //For t
 
         groups.at(0).push_back(s);
 
-        currentGroup=std::vector<size_t>();
+        currentGroup=std::vector<std::size_t>();
         currentGroup.push_back(t);
         groups.push_back(currentGroup);
 
@@ -402,9 +402,9 @@ inline void VertexGroups<T>::initFromFile(const std::string& fileName, const PAR
 }
 
 //template<class T>
-//inline std::vector<std::vector<size_t>> VertexGroups<T>::extractCorePaths(const std::vector<std::vector<size_t>>& paths, size_t cutoff,bool isFirst,bool isLast,size_t vertexShift) const{
-//    size_t minT;
-//    size_t maxT;
+//inline std::vector<std::vector<std::size_t>> VertexGroups<T>::extractCorePaths(const std::vector<std::vector<std::size_t>>& paths, std::size_t cutoff,bool isFirst,bool isLast,std::size_t vertexShift) const{
+//    std::size_t minT;
+//    std::size_t maxT;
 //    if(isFirst){
 //        minT=1;
 //    }
@@ -423,14 +423,14 @@ inline void VertexGroups<T>::initFromFile(const std::string& fileName, const PAR
 
 //Vertices in paths are assumed to be numbered from zero, vShift should transform them to globalIDs
 template<class T>
-inline std::vector<std::vector<size_t>> VertexGroups<T>::extractInnerPaths(const std::vector<std::vector<size_t>>& paths, const size_t minT, const size_t maxT,const size_t vShift) const{
+inline std::vector<std::vector<std::size_t>> VertexGroups<T>::extractInnerPaths(const std::vector<std::vector<std::size_t>>& paths, const std::size_t minT, const std::size_t maxT,const std::size_t vShift) const{
     //maxT inclusive
-    std::vector<std::vector<size_t>> outputPaths;
+    std::vector<std::vector<std::size_t>> outputPaths;
     for (int i = 0; i < paths.size(); ++i) {
-        const std::vector<size_t>& path=paths[i];
-        std::vector<size_t> outputPath;
-        size_t j=0;
-        size_t time=0;
+        const std::vector<std::size_t>& path=paths[i];
+        std::vector<std::size_t> outputPath;
+        std::size_t j=0;
+        std::size_t time=0;
         while(j<paths[i].size()){
 
             time=getGroupIndex(paths[i][j]);
@@ -453,10 +453,10 @@ inline std::vector<std::vector<size_t>> VertexGroups<T>::extractInnerPaths(const
             }
         }
 
-//        for(size_t v: path){
+//        for(std::size_t v: path){
 //            assert(v>=vShift);
-//            size_t vertex=v-vShift;
-//            size_t time=getGroupIndex(vertex);
+//            std::size_t vertex=v-vShift;
+//            std::size_t time=getGroupIndex(vertex);
 //            if(time<=maxT){
 //                if(time>=minT){
 //                    outputPath.push_back(vertex);

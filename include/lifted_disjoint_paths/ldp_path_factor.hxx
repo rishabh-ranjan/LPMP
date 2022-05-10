@@ -11,14 +11,14 @@ namespace LPMP {
 class ldp_path_factor{
 
 public:
-    ldp_path_factor(const std::vector<size_t>& _listOfVertices,const std::vector<double>& _listOfCosts,const std::vector<char>& _isLifted,const lifted_disjoint_paths::LdpInstance* pInstance,bool _mustCut=false);
+    ldp_path_factor(const std::vector<std::size_t>& _listOfVertices,const std::vector<double>& _listOfCosts,const std::vector<char>& _isLifted,const lifted_disjoint_paths::LdpInstance* pInstance,bool _mustCut=false);
 
 
     double LowerBound() const;
 
     double EvaluatePrimal() const;
 
-    void setPrimal(const std::vector<size_t>& primalDescendants, const std::vector<size_t> &vertexLabels);
+    void setPrimal(const std::vector<std::size_t>& primalDescendants, const std::vector<std::size_t> &vertexLabels);
 
     const std::vector<char>& getPrimal(){
         return primalSolution;
@@ -34,12 +34,12 @@ public:
     // std::array<double,3> getAllMinMarginals();
 
 
-    void updateEdgeCost(const size_t& edgeIndex,const double& value);
+    void updateEdgeCost(const std::size_t& edgeIndex,const double& value);
 
-    double getMinMarginal(const size_t& edgeIndex,const std::vector<double> *pCosts) const;
+    double getMinMarginal(const std::size_t& edgeIndex,const std::vector<double> *pCosts) const;
 
 
-    const std::vector<size_t>& getListOfVertices()const{
+    const std::vector<std::size_t>& getListOfVertices()const{
         return listOfVertices;
     }
 
@@ -51,7 +51,7 @@ public:
         return isLifted;
     }
 
-    const size_t& getNumberOfEdges()const{
+    const std::size_t& getNumberOfEdges()const{
         return numberOfEdges;
     }
 
@@ -72,14 +72,14 @@ public:
     void print() const;
 
 private:
-    double minimize(const std::vector<double> *pCosts, size_t edgeIndex, bool edgeLabel)const;
-    double minimizeForMustCut(const std::vector<double> *pCosts, size_t edgeIndex, bool edgeLabel)const;
+    double minimize(const std::vector<double> *pCosts, std::size_t edgeIndex, bool edgeLabel)const;
+    double minimizeForMustCut(const std::vector<double> *pCosts, std::size_t edgeIndex, bool edgeLabel)const;
 
-    const std::vector<size_t> listOfVertices;
+    const std::vector<std::size_t> listOfVertices;
     std::vector<double> listOfCosts;
     const std::vector<char> isLifted;
     std::vector<char> isStrongBase;
-    size_t numberOfEdges;
+    std::size_t numberOfEdges;
     std::vector<char> primalSolution;
     mutable double primalBaseCost;
     mutable double primalLiftedCost;
@@ -93,8 +93,8 @@ private:
 class ldp_snc_path_message
 {
 public:
-    ldp_snc_path_message(const std::vector<size_t>& _edgeIndexInPath,  //Mostly one, two for the first and the last path vertices
-                         const std::vector<size_t>& _vertexIndexInSnc,
+    ldp_snc_path_message(const std::vector<std::size_t>& _edgeIndexInPath,  //Mostly one, two for the first and the last path vertices
+                         const std::vector<std::size_t>& _vertexIndexInSnc,
                          const std::vector<char>& _isLifted, bool debugInfo=false)
     {
         edgeIndexInPath=_edgeIndexInPath;  //Mostly one, two for the first and the last path vertices
@@ -121,9 +121,9 @@ public:
 
 #ifndef NDEBUG
         //if(debug()){
-        size_t indexInPath=edgeIndexInPath[msg_dim];
-        size_t v0=l.getListOfVertices().at(indexInPath);
-        size_t v1;
+        std::size_t indexInPath=edgeIndexInPath[msg_dim];
+        std::size_t v0=l.getListOfVertices().at(indexInPath);
+        std::size_t v1;
         if(indexInPath==l.getNumberOfEdges()-1){
             v1=l.getListOfVertices().at(0);
             lastV1=v1;
@@ -159,11 +159,11 @@ public:
         r.updateEdgeCost(msg,vertexIndexInSnc[msg_dim],isLifted[msg_dim]);
 #ifndef NDEBUG
         //if(debug()){
-        size_t centralNodeID=r.nodeID;
+        std::size_t centralNodeID=r.nodeID;
 
-        size_t secondVertex;
-        size_t v0;
-        size_t v1;
+        std::size_t secondVertex;
+        std::size_t v0;
+        std::size_t v1;
 
         if(isLifted.at(msg_dim)){
 
@@ -196,8 +196,8 @@ public:
         {
 
             auto& msg = (*it).GetMessageOp();
-            for (size_t j = 0; j < msg.dimension; ++j) {
-                size_t index=msg.edgeIndexInPath.at(j);
+            for (std::size_t j = 0; j < msg.dimension; ++j) {
+                std::size_t index=msg.edgeIndexInPath.at(j);
                 double delta=0;
                 delta=0.5*allMM.at(index);
                 (*it)[j] -= omega*delta;
@@ -217,14 +217,14 @@ public:
          const std::vector<double>& baseCosts=r.getBaseCosts();
 
          std::vector<double> liftedMM=r.getAllLiftedMinMarginals();
-         for (size_t i = 0; i < liftedCosts.size(); ++i) {
+         for (std::size_t i = 0; i < liftedCosts.size(); ++i) {
              liftedMM[i]*=0.5;
              liftedCosts[i]-=liftedMM[i];
          }
          std::vector<double> baseMM=r.getAllBaseMinMarginals(&baseCosts, &liftedCosts);
 
-         std::vector<size_t> scalingLifted(liftedCosts.size());
-         std::vector<size_t> scalingBase(baseCosts.size());
+         std::vector<std::size_t> scalingLifted(liftedCosts.size());
+         std::vector<std::size_t> scalingBase(baseCosts.size());
 
 
          for(auto it=msg_begin; it!=msg_end; ++it)
@@ -232,7 +232,7 @@ public:
 
              auto& msg = (*it).GetMessageOp();
              if(msg.dimension==0){
-                 size_t index=msg.vertexIndexInSnc[0];
+                 std::size_t index=msg.vertexIndexInSnc[0];
                  if(msg.isLifted.at(0)){
                      scalingLifted.at(index)++;
                  }
@@ -241,8 +241,8 @@ public:
                  }
              }
              else{
-                 for (size_t j = 0; j < msg.dimension; ++j) {
-                     size_t index=msg.vertexIndexInSnc.at(j);
+                 for (std::size_t j = 0; j < msg.dimension; ++j) {
+                     std::size_t index=msg.vertexIndexInSnc.at(j);
                      if(msg.isLifted.at(j)){
                          scalingLifted.at(index)++;
                      }
@@ -259,7 +259,7 @@ public:
 
              auto& msg = (*it).GetMessageOp();
              if(msg.dimension==0){
-                 size_t index=msg.vertexIndexInSnc[0];
+                 std::size_t index=msg.vertexIndexInSnc[0];
                  double delta=0;
                  if(msg.isLifted.at(0)){
                      delta=liftedMM.at(index)/double(scalingLifted.at(index));
@@ -272,8 +272,8 @@ public:
 
              }
              else{
-                 for (size_t j = 0; j < msg.dimension; ++j) {
-                     size_t index=msg.vertexIndexInSnc.at(j);
+                 for (std::size_t j = 0; j < msg.dimension; ++j) {
+                     std::size_t index=msg.vertexIndexInSnc.at(j);
                      double delta=0;
                      if(msg.isLifted.at(j)){
                          delta=liftedMM.at(index)/double(scalingLifted.at(index));
@@ -339,7 +339,7 @@ public:
         else{
             std::vector<double> baseCosts=r.getBaseCosts();
             std::vector<double> liftedCosts=r.getLiftedCosts();
-            for (size_t i=0;i<dimension;i++) {
+            for (std::size_t i=0;i<dimension;i++) {
                 if(isLifted.at(i)){
                     // std::cout<<"lifted "<<std::endl;
                     delta = r.getOneLiftedMinMarginal(vertexIndexInSnc[i],&baseCosts,&liftedCosts);
@@ -403,7 +403,7 @@ public:
         else{
             std::vector<double> localCosts=l.getCosts();
 
-            for (size_t i=0;i<dimension;i++) {
+            for (std::size_t i=0;i<dimension;i++) {
                 delta=l.getMinMarginal(edgeIndexInPath[i],&localCosts);
                 //  std::cout<<"sending "<<delta<<std::endl;
                 assert(edgeIndexInPath[i]<localCosts.size());
@@ -432,14 +432,14 @@ public:
     }
 
 private:
-    std::vector<size_t> edgeIndexInPath;  //Mostly one, two for the first and the last path vertices
-    size_t dimension;
-    std::vector<size_t> vertexIndexInSnc;
+    std::vector<std::size_t> edgeIndexInPath;  //Mostly one, two for the first and the last path vertices
+    std::size_t dimension;
+    std::vector<std::size_t> vertexIndexInSnc;
     std::vector<char> isLifted;
     bool debInfo;
 
-    mutable size_t lastV1;
-    mutable size_t lastV2;
+    mutable std::size_t lastV1;
+    mutable std::size_t lastV2;
     mutable double lastValue;
 
 };
