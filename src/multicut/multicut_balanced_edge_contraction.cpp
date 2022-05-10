@@ -34,9 +34,9 @@ namespace LPMP {
         auto pq_cmp = [](const edge_type_q& e1, const edge_type_q& e2) { return e1.balanced_cost < e2.balanced_cost; };
         std::priority_queue<edge_type_q, std::vector<edge_type_q>, decltype(pq_cmp)> Q(pq_cmp);
 
-        auto compute_balanced_edge_cost = [&](const double mc_edge_cost, const size_t i, const size_t j) -> double {
-            const size_t i_size = partition.no_elements(partition.find(i));
-            const size_t j_size = partition.no_elements(partition.find(j));
+        auto compute_balanced_edge_cost = [&](const double mc_edge_cost, const std::size_t i, const std::size_t j) -> double {
+            const std::size_t i_size = partition.no_elements(partition.find(i));
+            const std::size_t j_size = partition.no_elements(partition.find(j));
             return mc_edge_cost / double(i_size + j_size);
         };
 
@@ -94,9 +94,9 @@ namespace LPMP {
         }
 
         std::vector<int> node_connected_components_ids(instance.no_nodes());
-        for(size_t i=0; i<instance.no_nodes(); ++i)
+        for(std::size_t i=0; i<instance.no_nodes(); ++i)
         {
-            const size_t c = partition.find(i);
+            const std::size_t c = partition.find(i);
             node_connected_components_ids[i] = c;
         }
         return {multicut_edge_labeling(instance, partition), node_connected_components_ids}; 

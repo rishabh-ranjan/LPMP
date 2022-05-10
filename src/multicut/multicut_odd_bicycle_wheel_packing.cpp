@@ -51,7 +51,7 @@ namespace LPMP {
         assert(nodes_valid(axle_nodes, wheel_nodes));
         double participating_cases = std::numeric_limits<double>::infinity();
         double min_other_cases = 0.0;
-        size_t axle_edge_index, wheel_edge_index;
+        std::size_t axle_edge_index, wheel_edge_index;
         const auto edges = get_axle_wheel_edge_indices(axle_nodes, wheel_nodes);
         std::tie(axle_edge_index, wheel_edge_index) = std::make_tuple(edges[0], edges[1]);
         //const auto [axle_edge_index, wheel_edge_index] = get_axle_wheel_edge_indices(axle_nodes, wheel_nodes);
@@ -70,7 +70,7 @@ namespace LPMP {
     {
         assert(nodes_valid(axle_nodes, wheel_nodes));
         assert(weight >= 0.0);
-        size_t axle_edge_index, wheel_edge_index;
+        std::size_t axle_edge_index, wheel_edge_index;
         const auto edges = get_axle_wheel_edge_indices(axle_nodes, wheel_nodes);
         std::tie(axle_edge_index, wheel_edge_index) = std::make_tuple(edges[0], edges[1]);
         //const auto [axle_edge_index, wheel_edge_index] = get_axle_wheel_edge_indices(axle_nodes, wheel_nodes);

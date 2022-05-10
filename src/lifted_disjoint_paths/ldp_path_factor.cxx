@@ -4,7 +4,7 @@ namespace LPMP {
 
 
 
-ldp_path_factor::ldp_path_factor(const std::vector<size_t>& _listOfVertices, const std::vector<double>& _listOfCosts, const std::vector<char>& _isLifted, const lifted_disjoint_paths::LdpInstance* pInstance, bool _mustCut):
+ldp_path_factor::ldp_path_factor(const std::vector<std::size_t>& _listOfVertices, const std::vector<double>& _listOfCosts, const std::vector<char>& _isLifted, const lifted_disjoint_paths::LdpInstance* pInstance, bool _mustCut):
     listOfVertices(_listOfVertices),
     listOfCosts(_listOfCosts),
     isLifted(_isLifted),
@@ -28,7 +28,7 @@ ldp_path_factor::ldp_path_factor(const std::vector<size_t>& _listOfVertices, con
     primalSolution=std::vector<char>(numberOfEdges);
     optSolution=std::vector<char>(numberOfEdges);
    // assert(listOfCosts.size()>2);
-    for (size_t i = 0; i < numberOfEdges; ++i) {
+    for (std::size_t i = 0; i < numberOfEdges; ++i) {
         if(!isLifted[i]){
             bool strongBase=pInstance->checkStrongBase(listOfVertices[i],listOfVertices[i+1]);
             isStrongBase[i]=strongBase;
@@ -37,13 +37,13 @@ ldp_path_factor::ldp_path_factor(const std::vector<size_t>& _listOfVertices, con
 }
 
 
-double ldp_path_factor::getMinMarginal(const size_t &edgeIndex,const std::vector<double>* pCosts) const{
+double ldp_path_factor::getMinMarginal(const std::size_t &edgeIndex,const std::vector<double>* pCosts) const{
     //assert(listOfCosts.size()==listOfVertices.size()&&listOfCosts.size()==isLifted.size());
     assert(listOfCosts.size()==numberOfEdges);
     assert(numberOfEdges>=2);
     assert(edgeIndex<numberOfEdges);
     //std::cout<<" printing path factor "<<std::endl;
-    for(size_t i=0;i<numberOfEdges;i++){
+    for(std::size_t i=0;i<numberOfEdges;i++){
         //std::cout<<"vertex "<<listOfVertices[i]<<std::endl;
         //std::cout<<"vertex "<<listOfVertices[i]<<std::endl;
     }
@@ -61,7 +61,7 @@ std::vector<double> ldp_path_factor::getAllMinMarginals()const{
     std::vector<double> minMarginals(numberOfEdges);
     double currentOpt=minimize(&localCosts,numberOfEdges,false);
     std::vector<char> origOptSolution=optSolution;
-    for (size_t i = 0; i < numberOfEdges; ++i) {
+    for (std::size_t i = 0; i < numberOfEdges; ++i) {
         if(origOptSolution[i]){
             double restrictedOpt=minimize(&localCosts,i,false);
             double delta=currentOpt-restrictedOpt;
@@ -87,31 +87,31 @@ void ldp_path_factor::init_primal(){
 
 void ldp_path_factor::print() const{
     std::cout<<"path factor, is must cut "<<mustCut<<std::endl;
-    for (size_t i = 0; i < listOfVertices.size(); ++i) {
+    for (std::size_t i = 0; i < listOfVertices.size(); ++i) {
         char il=isLifted.at(i);
         std::cout<<"vertex "<<listOfVertices[i]<<", is lifted "<<int(il)<<", cost "<<listOfCosts[i]<<std::endl;
     }
 
 }
 
-void ldp_path_factor::updateEdgeCost(const size_t& edgeIndex,const double& value){
+void ldp_path_factor::updateEdgeCost(const std::size_t& edgeIndex,const double& value){
     assert(edgeIndex<listOfCosts.size());
    // std::cout<<"update edge cost, index "<<edgeIndex<<", value "<<value<<std::endl;
     listOfCosts[edgeIndex]+=value;
 }
 
-void ldp_path_factor::setPrimal(const std::vector<size_t>& primalDescendants, const std::vector<size_t> &vertexLabels){
+void ldp_path_factor::setPrimal(const std::vector<std::size_t>& primalDescendants, const std::vector<std::size_t> &vertexLabels){
 
-    size_t numberOfZeros=0;
-    size_t indexOfZero=0;
-    size_t maxNumber=numberOfEdges;
+    std::size_t numberOfZeros=0;
+    std::size_t indexOfZero=0;
+    std::size_t maxNumber=numberOfEdges;
     if(!mustCut){
         maxNumber--;
     }
-    for (size_t i=0;i<listOfVertices.size()-1;i++) {
+    for (std::size_t i=0;i<listOfVertices.size()-1;i++) {
 
-        size_t vertex1=listOfVertices[i];
-        size_t vertex2=listOfVertices[i+1];
+        std::size_t vertex1=listOfVertices[i];
+        std::size_t vertex2=listOfVertices[i+1];
         assert(vertex1<vertexLabels.size()&&vertex2<vertexLabels.size()&&vertex1<primalDescendants.size());
 
         if(isLifted[i]){
@@ -137,8 +137,8 @@ void ldp_path_factor::setPrimal(const std::vector<size_t>& primalDescendants, co
         }
     }
     if(!mustCut){
-        size_t vertex2=listOfVertices.back();
-        size_t vertex1=listOfVertices[0];
+        std::size_t vertex2=listOfVertices.back();
+        std::size_t vertex1=listOfVertices[0];
         primalSolution.back()=(vertexLabels[vertex1]!=0&&vertexLabels[vertex1]==vertexLabels[vertex2]);
         if(primalSolution.back()==0){
             indexOfZero=numberOfEdges-1;
@@ -153,7 +153,7 @@ double ldp_path_factor::EvaluatePrimal() const{
     double value=0;
     primalBaseCost=0;
     primalLiftedCost=0;
-    for (size_t i=0;i<numberOfEdges;i++) {
+    for (std::size_t i=0;i<numberOfEdges;i++) {
         if(primalSolution[i]){
             value+=listOfCosts[i];
             if(isLifted[i]){
@@ -168,12 +168,12 @@ double ldp_path_factor::EvaluatePrimal() const{
 }
 
 
-//double ldp_path_factor::minimizeForMustCut(const std::vector<double>*pCosts,size_t edgeIndex,bool edgeLabel)const{
+//double ldp_path_factor::minimizeForMustCut(const std::vector<double>*pCosts,std::size_t edgeIndex,bool edgeLabel)const{
 //    const std::vector<double>& costs=*pCosts;
 //    double optimalValue=0;
-//    size_t indexOfWeakestNegative=numberOfEdges;
-//    size_t numberOfPositive=1;
-//    size_t indexOfPositive=numberOfEdges;
+//    std::size_t indexOfWeakestNegative=numberOfEdges;
+//    std::size_t numberOfPositive=1;
+//    std::size_t indexOfPositive=numberOfEdges;
 //    std::fill(optSolution.begin(),optSolution.end(),1);
 //    assert(optSolution.size()==numberOfEdges);
 //    assert(costs.size()==numberOfEdges);
@@ -193,7 +193,7 @@ double ldp_path_factor::EvaluatePrimal() const{
 //    }
 
 
-//    for(size_t i=0;i<numberOfEdges-1;i++){
+//    for(std::size_t i=0;i<numberOfEdges-1;i++){
 //        if(i==edgeIndex) continue;
 //        if(costs[i]<0){
 //            optimalValue+=costs[i];
@@ -255,16 +255,16 @@ double ldp_path_factor::EvaluatePrimal() const{
 
 
 
-double ldp_path_factor::minimize(const std::vector<double>*pCosts,size_t edgeIndex,bool edgeLabel)const{
+double ldp_path_factor::minimize(const std::vector<double>*pCosts,std::size_t edgeIndex,bool edgeLabel)const{
     const std::vector<double>& costs=*pCosts;
     double optimalValue=0;
-    size_t indexOfWeakestNegative=numberOfEdges;
-    size_t numberOfPositive=0;
+    std::size_t indexOfWeakestNegative=numberOfEdges;
+    std::size_t numberOfPositive=0;
     if(mustCut){
         numberOfPositive=1;
     }
 
-    size_t indexOfPositive=numberOfEdges;
+    std::size_t indexOfPositive=numberOfEdges;
     std::fill(optSolution.begin(),optSolution.end(),1);
     assert(optSolution.size()==numberOfEdges);
     assert(costs.size()==numberOfEdges);
@@ -284,7 +284,7 @@ double ldp_path_factor::minimize(const std::vector<double>*pCosts,size_t edgeInd
     }
 
 
-    for(size_t i=0;i<numberOfEdges;i++){
+    for(std::size_t i=0;i<numberOfEdges;i++){
         if(i==edgeIndex) continue;
         if(costs[i]<0){
             optimalValue+=costs[i];
@@ -346,7 +346,7 @@ double ldp_path_factor::LowerBound()const{
     double optValue=minimize(&listOfCosts,numberOfEdges,0);
     if(debug()){
         double value=0;
-        for (size_t i = 0; i < numberOfEdges; ++i) {
+        for (std::size_t i = 0; i < numberOfEdges; ++i) {
             if(optSolution[i]) value+=listOfCosts[i];
         }
         assert(std::abs(value-optValue)<eps);

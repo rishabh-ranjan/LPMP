@@ -144,7 +144,7 @@ PYBIND11_MODULE(graph_matching_py, m) {
             assert(i < l.size());
             return l[i];
         })
-        //.def("__getitem__", [](const LPMP::graph_matching_input::labeling &l, size_t i) { 
+        //.def("__getitem__", [](const LPMP::graph_matching_input::labeling &l, std::size_t i) { 
         //        if (i >= l.size()) throw py::index_error();
         //        return l[i];
         //        })

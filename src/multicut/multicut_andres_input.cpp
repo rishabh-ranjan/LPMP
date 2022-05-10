@@ -20,7 +20,7 @@ namespace multicut_andres_input {
       andres::graph::hdf5::load(fileHandle, "graph", originalGraph);
       andres::graph::hdf5::load(fileHandle, "graph-lifted", liftedGraph);
 
-      std::vector<size_t> shape;
+      std::vector<std::size_t> shape;
       andres::graph::hdf5::load(fileHandle, "edge-cut-probabilities", shape, edgeValues);
       andres::graph::hdf5::closeFile(fileHandle);
 

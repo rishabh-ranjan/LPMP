@@ -1,7 +1,7 @@
 #include "lifted_disjoint_paths/ldp_directed_graph.hxx"
 
 namespace LPMP {
-//LdpDirectedGraph::LdpDirectedGraph(const std::vector<std::array<size_t,2>>& edges,const std::vector<double>& inputEdgeCosts){
+//LdpDirectedGraph::LdpDirectedGraph(const std::vector<std::array<std::size_t,2>>& edges,const std::vector<double>& inputEdgeCosts){
 //    //TODO the same as in the previous constructor but addd s and t nodes and edges with given cost
 //    LdpDirectedGraph(edges,inputEdgeCosts,std::numeric_limits<double>::max(),std::numeric_limits<double>::max());
 //}
@@ -13,14 +13,14 @@ LdpDirectedGraph::LdpDirectedGraph(const LdpDirectedGraph& inputGraph,double inp
     //std::cout<<"graph constructor "<<std::endl;
     numberOfVertices=inputGraph.getNumberOfVertices()+2;
     numberOfEdges=0;
-    size_t numberOfBackwardEdges=0;
+    std::size_t numberOfBackwardEdges=0;
 
     //std::cout<<"vertices "<<numberOfVertices<<std::endl;
-    size_t s=numberOfVertices-2;
-    size_t t=numberOfVertices-1;
+    std::size_t s=numberOfVertices-2;
+    std::size_t t=numberOfVertices-1;
     std::vector<std::size_t> adjacencyForward(numberOfVertices);
     std::vector<std::size_t> adjacencyBackward(numberOfVertices);
-    for(size_t i=0;i<numberOfVertices-2;i++){
+    for(std::size_t i=0;i<numberOfVertices-2;i++){
         //std::cout<<"for "<<i<<std::endl;
         adjacencyForward[i]=inputGraph.getNumberOfEdgesFromVertex(i)+1;
         //std::cout<<"adj forward "<<i<<": "<<adjacencyForward[i]<<std::endl;
@@ -34,11 +34,11 @@ LdpDirectedGraph::LdpDirectedGraph(const LdpDirectedGraph& inputGraph,double inp
     backwardEdges.resize(adjacencyBackward.begin(),adjacencyBackward.end());
 
    // std::cout<<"adjacency ok"<<std::endl;
-    for (size_t i = 0; i < numberOfVertices-2; ++i) {
+    for (std::size_t i = 0; i < numberOfVertices-2; ++i) {
         forwardEdges[s][i]={i,inputEdgeCost,numberOfVertices};
 
         backwardEdges[t][i]={i,outputEdgeCost,numberOfVertices};
-        size_t j = 0;
+        std::size_t j = 0;
         for (; j < adjacencyForward[i]-1; ++j) {
             forwardEdges[i][j]=inputGraph.getForwardEdges()[i][j];
             numberOfEdges++;
@@ -58,7 +58,7 @@ LdpDirectedGraph::LdpDirectedGraph(const LdpDirectedGraph& inputGraph,double inp
 
     assert(numberOfBackwardEdges==numberOfEdges);
 
-    for (size_t i=0;i<numberOfVertices;i++) {
+    for (std::size_t i=0;i<numberOfVertices;i++) {
         std::sort(forwardEdges[i].begin(),forwardEdges[i].end());
         std::sort(backwardEdges[i].begin(),backwardEdges[i].end());
     }
@@ -68,12 +68,12 @@ LdpDirectedGraph::LdpDirectedGraph(const LdpDirectedGraph& inputGraph,double inp
 
 
 void LdpDirectedGraph::setNeighborPointers(){
-    std::vector<size_t> backCounters(numberOfVertices,0);
-    for (size_t i = 0; i < numberOfVertices; ++i) {
+    std::vector<std::size_t> backCounters(numberOfVertices,0);
+    for (std::size_t i = 0; i < numberOfVertices; ++i) {
         edge* iterForward=forwardEdges[i].begin();
-        size_t counter=0;
+        std::size_t counter=0;
         while(iterForward!=forwardEdges[i].end()){
-            size_t neighborID=iterForward->first;
+            std::size_t neighborID=iterForward->first;
             edge& backwardEdge=backwardEdges[neighborID][backCounters[neighborID]];
             assert(backwardEdge.first==i);
             iterForward->reverse_neighbor_index=backCounters[neighborID];

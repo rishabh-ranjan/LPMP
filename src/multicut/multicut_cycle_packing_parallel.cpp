@@ -96,10 +96,10 @@ namespace LPMP {
     {
         for(std::size_t c=1; c<cycle.size()-1; ++c) {
             // std::cout << "Processing triangle: " << cycle[0] << "," << cycle[c] << "," << cycle[c+1] << std::endl;
-            std::array<std::pair<size_t, int>,3> sorted_nodes = {std::make_pair(cycle[0],0), std::make_pair(cycle[c],1), 
+            std::array<std::pair<std::size_t, int>,3> sorted_nodes = {std::make_pair(cycle[0],0), std::make_pair(cycle[c],1), 
                                                                  std::make_pair(cycle[c+1],2)};
             std::sort(sorted_nodes.begin(), sorted_nodes.end(), 
-                    [](std::pair<size_t, double> n1, std::pair<size_t, double> n2) {return n1.first < n2.first;});
+                    [](std::pair<std::size_t, double> n1, std::pair<std::size_t, double> n2) {return n1.first < n2.first;});
             std::size_t i=sorted_nodes[0].first, j=sorted_nodes[1].first, k=sorted_nodes[2].first;
             double w_ij, w_jk, w_ik;
             if (sorted_nodes[0].second == 1){
@@ -335,7 +335,7 @@ namespace LPMP {
         const auto end_time = std::chrono::steady_clock::now();
         std::cout << "CP parallel optimization took " <<  std::chrono::duration_cast<std::chrono::milliseconds>(end_time - begin_time).count() << " milliseconds\n";
 
-        size_t remain_repulsive_edges = 0;
+        std::size_t remain_repulsive_edges = 0;
         for (auto v: repulsive_edge_vec) { 
             for (auto e: v)
                 other_edges.push_back(edge_t{e[0], e[1], e.cost});

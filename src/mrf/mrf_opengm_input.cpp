@@ -20,8 +20,8 @@ namespace mrf_opengm_input {
    mrf_input parse_file(const std::string& filename)
    {
        typedef double ValueType;
-       typedef size_t IndexType;
-       typedef size_t LabelType;
+       typedef std::size_t IndexType;
+       typedef std::size_t LabelType;
        typedef opengm::Adder OperatorType;
        typedef opengm::Minimizer AccumulatorType;
        typedef opengm::DiscreteSpace<IndexType, LabelType> SpaceType;

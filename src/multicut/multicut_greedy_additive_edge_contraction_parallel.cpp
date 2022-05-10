@@ -45,7 +45,7 @@ namespace LPMP {
     }
 
     tf::Task distribute_edges_by_endnodes(tf::Taskflow& taskflow, const dynamic_graph_thread_safe<edge_type>& g, const multicut_instance& instance, tf::Task prev, std::vector<pq_t>& queues, const int& nr_threads) {
-        auto Q = taskflow.for_each_index(0,nr_threads,1, [&](const size_t thread_no) {
+        auto Q = taskflow.for_each_index(0,nr_threads,1, [&](const std::size_t thread_no) {
             const std::size_t nodes_batch_size = instance.no_nodes()/nr_threads + 1;
             const std::size_t first_node = thread_no*nodes_batch_size;
             const std::size_t last_node = std::min((thread_no+1)*nodes_batch_size, instance.no_nodes());
@@ -66,7 +66,7 @@ namespace LPMP {
 
 
     tf::Task distribute_edges_no_conflicts(tf::Taskflow& taskflow, const multicut_instance& instance,  std::vector<pq_t>& queues, const int& nr_threads, dynamic_graph_thread_safe<edge_type>& partial_graph, std::vector<std::vector<std::tuple<std::size_t, std::size_t, double>>>& remaining_edges) {
-        std::vector<size_t> degree(instance.no_nodes());
+        std::vector<std::size_t> degree(instance.no_nodes());
         for (auto& edge: instance.edges()){
             degree[edge[0]]++;
             degree[edge[1]]++;

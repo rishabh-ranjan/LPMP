@@ -94,9 +94,9 @@ namespace LPMP {
         }
 
         std::vector<int> node_connected_components_ids(instance.no_nodes());
-        for(size_t i=0; i<instance.no_nodes(); ++i)
+        for(std::size_t i=0; i<instance.no_nodes(); ++i)
         {
-            const size_t c = partition.find(i);
+            const std::size_t c = partition.find(i);
             node_connected_components_ids[i] = c;
         }
         return {multicut_edge_labeling(instance, partition), node_connected_components_ids}; 

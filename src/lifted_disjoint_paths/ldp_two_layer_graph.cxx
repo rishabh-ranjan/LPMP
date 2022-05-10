@@ -2,7 +2,7 @@
 
 namespace LPMP {
 
-LdpTwoLayerGraph::LdpTwoLayerGraph(const std::vector<std::array<size_t,2>>& edges,const std::vector<double>& inputEdgeCosts){
+LdpTwoLayerGraph::LdpTwoLayerGraph(const std::vector<std::array<std::size_t,2>>& edges,const std::vector<double>& inputEdgeCosts){
 
     std::vector<std::size_t> adjacencyForward;
     std::vector<std::size_t> adjacencyBackward;
@@ -13,9 +13,9 @@ LdpTwoLayerGraph::LdpTwoLayerGraph(const std::vector<std::array<size_t,2>>& edge
     // first determine size for adjacency_list
     numberOfOutputs=0;
     numberOfInputs=0;
-    for(const std::array<size_t,2>& e:edges){
-        size_t i=e[0];
-        size_t j=e[1];
+    for(const std::array<std::size_t,2>& e:edges){
+        std::size_t i=e[0];
+        std::size_t j=e[1];
         numberOfInputs=std::max(i+1,adjacencyForward.size());
         numberOfOutputs=std::max(j+1,adjacencyBackward.size());
         adjacencyForward.resize(numberOfInputs);
@@ -34,9 +34,9 @@ LdpTwoLayerGraph::LdpTwoLayerGraph(const std::vector<std::array<size_t,2>>& edge
      std::fill(adjacencyForward.begin(), adjacencyForward.end(), 0);
      std::fill(adjacencyBackward.begin(), adjacencyBackward.end(), 0);
 
-    for(size_t i=0;i<edges.size();i++){
-        size_t v=edges[i][0];
-        size_t w=edges[i][1];
+    for(std::size_t i=0;i<edges.size();i++){
+        std::size_t v=edges[i][0];
+        std::size_t w=edges[i][1];
         forwardEdges[v][adjacencyForward[v]]={w,inputEdgeCosts[i],adjacencyBackward[w]};
         backwardEdges[w][adjacencyBackward[w]]={v,inputEdgeCosts[i],adjacencyForward[v]};
         //std::cout<<"add edge to layer graph "<<v<<", "<<w<<std::endl;
@@ -44,7 +44,7 @@ LdpTwoLayerGraph::LdpTwoLayerGraph(const std::vector<std::array<size_t,2>>& edge
         adjacencyBackward[w]++;
     }
 
-//        for (size_t i=0;i<numberOfInputs;i++) {
+//        for (std::size_t i=0;i<numberOfInputs;i++) {
 //            std::sort(forwardEdges[i].begin(),forwardEdges[i].end());
 
 //        }

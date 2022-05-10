@@ -10,7 +10,7 @@ namespace LPMP {
                 mc_cost += e.cost; 
 
         double node_cost = 0.0;
-        for(size_t i=0; i<nr_nodes(); ++i)
+        for(std::size_t i=0; i<nr_nodes(); ++i)
             node_cost += node_costs(i, labeling[i]);
 
         return mc_cost + node_cost; 
@@ -22,7 +22,7 @@ namespace LPMP {
             return false;
 
         // see whether nodes have admissible labels 
-        for(size_t i=0; i<nr_nodes(); ++i)
+        for(std::size_t i=0; i<nr_nodes(); ++i)
             if(labeling[i] >= nr_labels())
                 return false;
         

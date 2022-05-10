@@ -26,8 +26,8 @@ namespace LPMP {
         auto nr_triangles = e.triangle_indices.size();
         assert(nr_triangles > 0);
         for (auto t: e.triangle_indices){
-            std::array<std::pair<size_t, int>,3> sorted_nodes = {std::make_pair(e.nodes[0],0),std::make_pair(e.nodes[1],1),std::make_pair(t[0],2)};
-            std::sort(sorted_nodes.begin(), sorted_nodes.end(), [](std::pair<size_t, double> n1, std::pair<size_t, double> n2) {return n1.first < n2.first;});
+            std::array<std::pair<std::size_t, int>,3> sorted_nodes = {std::make_pair(e.nodes[0],0),std::make_pair(e.nodes[1],1),std::make_pair(t[0],2)};
+            std::sort(sorted_nodes.begin(), sorted_nodes.end(), [](std::pair<std::size_t, double> n1, std::pair<std::size_t, double> n2) {return n1.first < n2.first;});
             std::size_t i=sorted_nodes[0].first, j=sorted_nodes[1].first, k=sorted_nodes[2].first;
             if (sorted_nodes[0].second == 2){
                 atomic_addition(triangle_to_edge[t[1]].weights[1], tmp_cost/nr_triangles);

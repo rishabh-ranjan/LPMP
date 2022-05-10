@@ -32,22 +32,22 @@ int main(int argc, char** argv)
    DataSpace edge_ids_dspace = edge_ids_dset.getSpace();
 
    // get the size of the dataset
-   hsize_t edge_values_dims[2];
-   const hsize_t edge_values_rank = edge_values_dspace.getSimpleExtentDims(edge_values_dims, NULL); // rank = 1
+   hstd::size_t edge_values_dims[2];
+   const hstd::size_t edge_values_rank = edge_values_dspace.getSimpleExtentDims(edge_values_dims, NULL); // rank = 1
    assert(edge_values_rank == 1);
 
-   hsize_t edge_ids_dims[3];
-   const hsize_t edge_ids_rank = edge_ids_dspace.getSimpleExtentDims(edge_ids_dims, NULL); // rank = 2
+   hstd::size_t edge_ids_dims[3];
+   const hstd::size_t edge_ids_rank = edge_ids_dspace.getSimpleExtentDims(edge_ids_dims, NULL); // rank = 2
    assert(edge_ids_rank == 2);
    assert(edge_ids_dims[0] == edge_values_dims[0]);
    assert(edge_ids_dims[1] == 2);
 
    // Define the memory dataspace
-   hsize_t edge_values_dimsm[1];
+   hstd::size_t edge_values_dimsm[1];
    edge_values_dimsm[0] = edge_values_dims[0];
    DataSpace edge_values_memspace (1,edge_values_dimsm);
 
-   hsize_t edge_ids_dimsm[1];
+   hstd::size_t edge_ids_dimsm[1];
    edge_ids_dimsm[0] = edge_ids_dims[0];
    edge_ids_dimsm[1] = edge_ids_dims[1];
    DataSpace edge_ids_memspace (2,edge_ids_dimsm);

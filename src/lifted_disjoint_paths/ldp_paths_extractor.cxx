@@ -4,9 +4,9 @@
 namespace LPMP {
 
 
-std::vector<size_t> LdpPathsExtractor::getTimeLayersAfterPaths()const{
-    std::vector<size_t> paths(vg.getMaxTime()-maxPathsTime);
-    for (size_t i = 0; i < paths.size(); ++i) {
+std::vector<std::size_t> LdpPathsExtractor::getTimeLayersAfterPaths()const{
+    std::vector<std::size_t> paths(vg.getMaxTime()-maxPathsTime);
+    for (std::size_t i = 0; i < paths.size(); ++i) {
         assert(i+maxPathsTime+1<=vg.getMaxTime());
         paths[i]=vg.getGroupVertices(i+maxPathsTime+1).size();
     }
@@ -14,17 +14,17 @@ std::vector<size_t> LdpPathsExtractor::getTimeLayersAfterPaths()const{
 
 }
 
-std::vector<size_t> LdpPathsExtractor::getTimeLayersBeforePaths()const{
-    std::vector<size_t> paths(minPathsTime-1);
-    for (size_t i = 0; i < paths.size(); ++i) {
+std::vector<std::size_t> LdpPathsExtractor::getTimeLayersBeforePaths()const{
+    std::vector<std::size_t> paths(minPathsTime-1);
+    for (std::size_t i = 0; i < paths.size(); ++i) {
         paths[i]=vg.getGroupVertices(i+1).size();
     }
     return paths;
 }
 
 void LdpPathsExtractor::printExtractedPaths()const{
-    for (size_t i = 0; i < extractedPaths.size(); ++i) {
-        for (size_t j = 0; j < extractedPaths[i].size(); ++j) {
+    for (std::size_t i = 0; i < extractedPaths.size(); ++i) {
+        for (std::size_t j = 0; j < extractedPaths[i].size(); ++j) {
             std::cout<<extractedPaths[i][j]<<",";
         }
         std::cout<<std::endl<<std::endl;
@@ -33,7 +33,7 @@ void LdpPathsExtractor::printExtractedPaths()const{
 }
 
 
-LdpPathsExtractor::LdpPathsExtractor(const VertexGroups<>& vertexGroups,const std::vector<std::vector<size_t>>& paths, size_t cutoff,bool isFirst,bool isLast,size_t _vertexShift):
+LdpPathsExtractor::LdpPathsExtractor(const VertexGroups<>& vertexGroups,const std::vector<std::vector<std::size_t>>& paths, std::size_t cutoff,bool isFirst,bool isLast,std::size_t _vertexShift):
        vg(vertexGroups)
 {
     minIntervalVertex=_vertexShift;
@@ -58,10 +58,10 @@ LdpPathsExtractor::LdpPathsExtractor(const VertexGroups<>& vertexGroups,const st
     maxPathsVertex=vg.getMaxVertexInTime(maxPathsTime)+minIntervalVertex;
     assert(maxPathsVertex>minPathsVertex);
 
-    vertexToPath=std::vector<size_t>(maxPathsVertex-minPathsVertex+1);
-    for (size_t i = 0; i < extractedPaths.size(); ++i) {
-        for (size_t j = 0; j < extractedPaths[i].size(); ++j) {
-            size_t vertex=extractedPaths[i][j];
+    vertexToPath=std::vector<std::size_t>(maxPathsVertex-minPathsVertex+1);
+    for (std::size_t i = 0; i < extractedPaths.size(); ++i) {
+        for (std::size_t j = 0; j < extractedPaths[i].size(); ++j) {
+            std::size_t vertex=extractedPaths[i][j];
             assert(vertex>=minPathsVertex);
             assert(vertex<=maxPathsVertex);
             assert(vertex-minPathsVertex<vertexToPath.size());

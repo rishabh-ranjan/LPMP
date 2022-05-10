@@ -29,13 +29,13 @@ LdpIntervalConnection::LdpIntervalConnection( const LdpPathsExtractor& _pathExtr
 }
 
 
-void LdpIntervalConnection::initScoreOfVertices(const std::vector<size_t> &listOfVertices, const std::vector<double> &costs){
+void LdpIntervalConnection::initScoreOfVertices(const std::vector<std::size_t> &listOfVertices, const std::vector<double> &costs){
     assert(listOfVertices.size()==costs.size());
     std::fill(verticesScore.begin(),verticesScore.end(),0);
-    for (size_t i = 0; i < costs.size(); ++i) {
-        size_t vertex=listOfVertices[i];
+    for (std::size_t i = 0; i < costs.size(); ++i) {
+        std::size_t vertex=listOfVertices[i];
         if(vertex>=n1&&vertex<n1+n2){
-            size_t localVertex=globalToLocalFree(vertex);
+            std::size_t localVertex=globalToLocalFree(vertex);
             verticesScore[localVertex]=costs[i];
         }
     }
@@ -55,7 +55,7 @@ void LdpIntervalConnection::initFromFile(const std::string& fileName){
         std::getline(data, line);
 
         std::vector<std::string> strings;
-        std::vector<size_t> vertices;
+        std::vector<std::size_t> vertices;
         std::vector<double> scoreOfVertices;
 
         //Vertices that are not found have score=0. Appearance and disappearance cost are read here.
@@ -74,7 +74,7 @@ void LdpIntervalConnection::initFromFile(const std::string& fileName){
         }
       //  std::cout<<"vertices read"<<std::endl;
 
-        std::vector<std::array<size_t,2>> edges;
+        std::vector<std::array<std::size_t,2>> edges;
         std::vector<double> costs;
 
         while (std::getline(data, line) && !line.empty()) {
@@ -110,21 +110,21 @@ void LdpIntervalConnection::initFromFile(const std::string& fileName){
 
 }
 
-void LdpIntervalConnection::initEdgesFromVectors(const std::vector<std::array<size_t, 2> > &edges, const std::vector<double> &costs){
+void LdpIntervalConnection::initEdgesFromVectors(const std::vector<std::array<std::size_t, 2> > &edges, const std::vector<double> &costs){
     assert(edges.size()==costs.size());
-    std::vector<std::array<size_t,2>> freeEdges;
+    std::vector<std::array<std::size_t,2>> freeEdges;
     std::vector<double> costOfFreeEdges;
-    std::vector<std::map<size_t,double>> firstPathsToFree(n1);
-    std::map<size_t,std::map<size_t,double>> freeToSecondPaths;
-   // std::map<size_t,std::map<size_t,double>> pathsToPaths;
+    std::vector<std::map<std::size_t,double>> firstPathsToFree(n1);
+    std::map<std::size_t,std::map<std::size_t,double>> freeToSecondPaths;
+   // std::map<std::size_t,std::map<std::size_t,double>> pathsToPaths;
 
-    size_t edgesToSecond=0;
-    size_t negativeEdgesToSecond=0;
-    size_t firstToMiddleEdges=0;
-    size_t withinMiddleEdges=0;
-    for (size_t i = 0; i < edges.size(); ++i) {
-        size_t vertex1=edges[i][0];
-        size_t vertex2=edges[i][1];
+    std::size_t edgesToSecond=0;
+    std::size_t negativeEdgesToSecond=0;
+    std::size_t firstToMiddleEdges=0;
+    std::size_t withinMiddleEdges=0;
+    for (std::size_t i = 0; i < edges.size(); ++i) {
+        std::size_t vertex1=edges[i][0];
+        std::size_t vertex2=edges[i][1];
 
 
         assert(vertex2>vertex1);
@@ -132,30 +132,30 @@ void LdpIntervalConnection::initEdgesFromVectors(const std::vector<std::array<si
             char graphPart1=vertexToGraphPartGlobal(vertex1);
             char graphPart2=vertexToGraphPartGlobal(vertex2);
             if(graphPart1==0){
-                size_t pathLocalID=firstPathsVertexToLocalIndex(vertex1);
+                std::size_t pathLocalID=firstPathsVertexToLocalIndex(vertex1);
                 if(graphPart2==1){
-                    size_t vertex2LocalIndex=globalToLocalFree(vertex2);
+                    std::size_t vertex2LocalIndex=globalToLocalFree(vertex2);
                     firstPathsToFree[pathLocalID][vertex2LocalIndex]+=costs[i];
                     firstToMiddleEdges++;
                 }
                 else if(graphPart2==2){
                     if(diagnostics()) std::cout<<"WARNIG: Edges directly between first and second interval tracklets are not supported and are skipped."<<std::endl;
-                   // size_t vertex2LocalIndex=secondPathsVertexToLocalIndex(vertex2);
+                   // std::size_t vertex2LocalIndex=secondPathsVertexToLocalIndex(vertex2);
                    // pathsToPaths[pathLocalID][vertex2LocalIndex]+=costs[i];
                 }
             }
             else if (graphPart1==1) {
-                size_t vertex1LocalIndex=globalToLocalFree(vertex1);
+                std::size_t vertex1LocalIndex=globalToLocalFree(vertex1);
                 if(graphPart2==1){
-                    size_t vertex2LocalIndex=globalToLocalFree(vertex2);
+                    std::size_t vertex2LocalIndex=globalToLocalFree(vertex2);
                     freeEdges.push_back({vertex1LocalIndex,vertex2LocalIndex});
                     costOfFreeEdges.push_back(costs[i]);
                     withinMiddleEdges++;
                 }
                 else{
                     assert(graphPart2==2);
-                    size_t vertex2LocalIndex=secondPathsVertexToLocalIndex(vertex2);
-                    size_t pathIndex=secondPathsLocalIndexToPathIndex(vertex2LocalIndex);
+                    std::size_t vertex2LocalIndex=secondPathsVertexToLocalIndex(vertex2);
+                    std::size_t pathIndex=secondPathsLocalIndexToPathIndex(vertex2LocalIndex);
                     freeToSecondPaths[vertex1LocalIndex][vertex2LocalIndex]+=costs[i];
                     edgesToSecond++;
                     if(costs[i]<0){
@@ -171,11 +171,11 @@ void LdpIntervalConnection::initEdgesFromVectors(const std::vector<std::array<si
    if(debug()) std::cout<<"first to middle edges "<<firstToMiddleEdges<<std::endl;
    if(debug()) std::cout<<"within middle "<<withinMiddleEdges<<std::endl;
 
-    for (size_t i = 0; i < n1; ++i) {
+    for (std::size_t i = 0; i < n1; ++i) {
         auto edgesFromVertex1=firstPathsToFree[i];
-        size_t vertex1=i;
+        std::size_t vertex1=i;
         for (auto iter2=edgesFromVertex1.begin();iter2!=edgesFromVertex1.end();iter2++) {
-            size_t vertex2=iter2->first;
+            std::size_t vertex2=iter2->first;
             double cost=iter2->second;
             freeEdges.push_back({vertex1,vertex2});
             costOfFreeEdges.push_back(cost);
@@ -184,10 +184,10 @@ void LdpIntervalConnection::initEdgesFromVectors(const std::vector<std::array<si
     }
 
     for (auto iter=freeToSecondPaths.begin();iter!=freeToSecondPaths.end();iter++) {
-        size_t vertex1=iter->first;
+        std::size_t vertex1=iter->first;
         auto edgesFromVertex1=iter->second;
         for (auto iter2=edgesFromVertex1.begin();iter2!=edgesFromVertex1.end();iter2++) {
-            size_t vertex2=iter2->first;
+            std::size_t vertex2=iter2->first;
             double cost=iter2->second;
             freeEdges.push_back({vertex1,vertex2});
             costOfFreeEdges.push_back(cost);
@@ -195,10 +195,10 @@ void LdpIntervalConnection::initEdgesFromVectors(const std::vector<std::array<si
     }
 
 //    for (auto iter=pathsToPaths.begin();iter!=pathsToPaths.end();iter++) {
-//        size_t vertex1=iter->first;
+//        std::size_t vertex1=iter->first;
 //        auto edgesFromVertex1=iter->second;
 //        for (auto iter2=edgesFromVertex1.begin();iter2!=edgesFromVertex1.end();iter2++) {
-//            size_t vertex2=iter2->first;
+//            std::size_t vertex2=iter2->first;
 //            double cost=iter2->second;
 //            freeEdges.push_back({vertex1,vertex2});
 //            costOfFreeEdges.push_back(cost);
@@ -211,10 +211,10 @@ void LdpIntervalConnection::initEdgesFromVectors(const std::vector<std::array<si
 
     completeGraph=LdpDirectedGraph(edgeVector,infoVector,numberOfLocalVertices);
 
-    std::vector<size_t> firstLayers=pathExtractor1.getTimeLayersAfterPaths();
-    std::vector<size_t> secondLayers=pathExtractor2.getTimeLayersBeforePaths();
+    std::vector<std::size_t> firstLayers=pathExtractor1.getTimeLayersAfterPaths();
+    std::vector<std::size_t> secondLayers=pathExtractor2.getTimeLayersBeforePaths();
 
-    std::vector<size_t> allLayers;
+    std::vector<std::size_t> allLayers;
     allLayers.push_back(n1);
     allLayers.insert(allLayers.end(),firstLayers.begin(),firstLayers.end());
     allLayers.insert(allLayers.end(),secondLayers.begin(),secondLayers.end());
@@ -224,7 +224,7 @@ void LdpIntervalConnection::initEdgesFromVectors(const std::vector<std::array<si
 
 }
 
-char LdpIntervalConnection::vertexToGraphPartGlobal(const size_t& vertexGlobalID)const{
+char LdpIntervalConnection::vertexToGraphPartGlobal(const std::size_t& vertexGlobalID)const{
     assert(vertexGlobalID>=pathExtractor1.getMinPathsVertex());
     assert(vertexGlobalID<=pathExtractor2.getMaxPathsVertex());
     if(vertexGlobalID<=pathExtractor1.getMaxPathsVertex()){
@@ -239,7 +239,7 @@ char LdpIntervalConnection::vertexToGraphPartGlobal(const size_t& vertexGlobalID
 
 }
 
-char LdpIntervalConnection::vertexToGraphPartLocal(const size_t& localVertexIndex)const{
+char LdpIntervalConnection::vertexToGraphPartLocal(const std::size_t& localVertexIndex)const{
     assert(localVertexIndex<numberOfLocalVertices);
     if(localVertexIndex<n1){
         return 0;
@@ -253,28 +253,28 @@ char LdpIntervalConnection::vertexToGraphPartLocal(const size_t& localVertexInde
 }
 
 
-void LdpIntervalConnection::createResultsStructures(const std::vector<std::vector<size_t>> &paths){
+void LdpIntervalConnection::createResultsStructures(const std::vector<std::vector<std::size_t>> &paths){
 
-    middleIntervalPaths=std::vector<std::vector<size_t>>();
+    middleIntervalPaths=std::vector<std::vector<std::size_t>>();
     firstToMiddle=std::vector<int> (n1,-1);
     middleToSecond=std::vector<int>();
-    // std::vector<size_t> startInMiddle;
-    // std::vector<size_t> startInSecond;
+    // std::vector<std::size_t> startInMiddle;
+    // std::vector<std::size_t> startInSecond;
 
     //std::vector<bool>isProcessedInSecond(n3);
 
-    std::vector<std::vector<size_t>> pathsToReturn;
-    for (size_t i = 0; i < paths.size(); ++i) {
-        std::vector<size_t> newPath;
-        size_t firstVertex=paths[i][0];
+    std::vector<std::vector<std::size_t>> pathsToReturn;
+    for (std::size_t i = 0; i < paths.size(); ++i) {
+        std::vector<std::size_t> newPath;
+        std::size_t firstVertex=paths[i][0];
         char graphPart=vertexToGraphPartLocal(firstVertex);
 
 
         if(graphPart!=2&&(graphPart!=0||paths[i].size()>1)){
 
             //assert(paths[i][1]<n1+n2);
-            size_t j=0;
-            size_t newPathIndex=middleIntervalPaths.size();
+            std::size_t j=0;
+            std::size_t newPathIndex=middleIntervalPaths.size();
             if(graphPart==0){
                 assert(paths[i].size()>1);
                 assert(vertexToGraphPartLocal(paths[i][1])!=2);
@@ -283,16 +283,16 @@ void LdpIntervalConnection::createResultsStructures(const std::vector<std::vecto
             }
 
             for (; j < paths[i].size()-1; ++j) {
-                size_t vertex=paths[i][j];
+                std::size_t vertex=paths[i][j];
                 assert(vertexToGraphPartLocal(vertex)==1);
-                size_t transformedVertex=localToGlobalFree(vertex);
+                std::size_t transformedVertex=localToGlobalFree(vertex);
                 assert(transformedVertex>=firstFreeVertex&&transformedVertex<=lastFreeVertex);
                 newPath.push_back(transformedVertex);
             }
 
             char graphPartOfLast=vertexToGraphPartLocal(paths[i].back());
             if(graphPartOfLast==1){
-                size_t transformedVertex=localToGlobalFree(paths[i].back());
+                std::size_t transformedVertex=localToGlobalFree(paths[i].back());
                 newPath.push_back(transformedVertex);
                 middleIntervalPaths.push_back(newPath);
                 middleToSecond.push_back(-1);
@@ -300,7 +300,7 @@ void LdpIntervalConnection::createResultsStructures(const std::vector<std::vecto
             }else{
                 assert(graphPartOfLast==2);
                 assert(newPath.size()>0);
-                size_t secondPathIndex=secondPathsLocalIndexToPathIndex(paths[i].back());
+                std::size_t secondPathIndex=secondPathsLocalIndexToPathIndex(paths[i].back());
                 middleIntervalPaths.push_back(newPath);
                 middleToSecond.push_back(int(secondPathIndex));
             }
@@ -313,14 +313,14 @@ void LdpIntervalConnection::createResultsStructures(const std::vector<std::vecto
 
 }
 
-std::vector<std::vector<size_t>> LdpIntervalConnection::decodePaths(const std::vector<std::vector<size_t>>& paths)const{
-    std::vector<std::vector<size_t>> pathsToReturn;
-    for (size_t i = 0; i < paths.size(); ++i) {
-        std::vector<size_t> newPath;
-        size_t firstVertex=paths[i][0];
+std::vector<std::vector<std::size_t>> LdpIntervalConnection::decodePaths(const std::vector<std::vector<std::size_t>>& paths)const{
+    std::vector<std::vector<std::size_t>> pathsToReturn;
+    for (std::size_t i = 0; i < paths.size(); ++i) {
+        std::vector<std::size_t> newPath;
+        std::size_t firstVertex=paths[i][0];
         char graphPart=vertexToGraphPartLocal(firstVertex);
         if(graphPart==0){
-            const std::vector<size_t>& startPath=pathExtractor1.getExtractedPaths().at(firstVertex);
+            const std::vector<std::size_t>& startPath=pathExtractor1.getExtractedPaths().at(firstVertex);
             newPath.insert(newPath.end(),startPath.begin(),startPath.end());
         }
         else if (graphPart==1) {
@@ -330,36 +330,36 @@ std::vector<std::vector<size_t>> LdpIntervalConnection::decodePaths(const std::v
             assert(graphPart==2);
             assert(paths[i].size()==1);
             assert(firstVertex>=n1+n2);
-            size_t pathIndex=firstVertex-n1-n2;
-            const std::vector<size_t>& startPath=pathExtractor2.getExtractedPaths().at(pathIndex);
+            std::size_t pathIndex=firstVertex-n1-n2;
+            const std::vector<std::size_t>& startPath=pathExtractor2.getExtractedPaths().at(pathIndex);
             newPath.insert(newPath.end(),startPath.begin(),startPath.end());
         }
-        for (size_t j = 1; j < paths[i].size()-1; ++j) {
-            size_t vertex=paths[i][j];
+        for (std::size_t j = 1; j < paths[i].size()-1; ++j) {
+            std::size_t vertex=paths[i][j];
             assert(vertexToGraphPartLocal(vertex)==1);
-            size_t transformedVertex=localToGlobalFree(vertex);
+            std::size_t transformedVertex=localToGlobalFree(vertex);
             assert(transformedVertex>=firstFreeVertex&&transformedVertex<=lastFreeVertex);
             newPath.push_back(transformedVertex);
         }
         if(paths[i].size()>1){
-            size_t lastVertex=paths[i].back();
+            std::size_t lastVertex=paths[i].back();
             char graphPart=vertexToGraphPartLocal(lastVertex);
             assert(graphPart!=0);
             if(graphPart==1){
-                size_t transformedVertex=localToGlobalFree(lastVertex);
+                std::size_t transformedVertex=localToGlobalFree(lastVertex);
                 newPath.push_back(transformedVertex);
             }
             else if(graphPart==2){
-                size_t pathIndex=lastVertex-n1-n2;
-                const std::vector<size_t>& startPath=pathExtractor2.getExtractedPaths().at(pathIndex);
+                std::size_t pathIndex=lastVertex-n1-n2;
+                const std::vector<std::size_t>& startPath=pathExtractor2.getExtractedPaths().at(pathIndex);
                 newPath.insert(newPath.end(),startPath.begin(),startPath.end());
             }
         }
         pathsToReturn.push_back(newPath);
     }
 
-//     for (size_t i = 0; i < pathsToReturn.size(); ++i) {
-//         for (size_t j = 0; j < pathsToReturn[i].size(); ++j) {
+//     for (std::size_t i = 0; i < pathsToReturn.size(); ++i) {
+//         for (std::size_t j = 0; j < pathsToReturn[i].size(); ++j) {
 //             std::cout<<pathsToReturn[i][j]<<",";
 //         }
 //         std::cout<<std::endl<<std::endl;

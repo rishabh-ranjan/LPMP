@@ -41,8 +41,8 @@ int main(int argc, char** argv)
    const std::string output_file = argv[2];
 
    typedef double                                                               ValueType;          // type used for values
-   typedef size_t                                                               IndexType;          // type used for indexing nodes and factors (default : size_t)
-   typedef size_t                                                               LabelType;          // type used for labels (default : size_t)
+   typedef std::size_t                                                               IndexType;          // type used for indexing nodes and factors (default : std::size_t)
+   typedef std::size_t                                                               LabelType;          // type used for labels (default : std::size_t)
    typedef opengm::Adder                                                        OpType;             // operation used to combine terms
    typedef opengm::ExplicitFunction<ValueType,IndexType,LabelType>              ExplicitFunction;   // shortcut for explicite function
    typedef opengm::PottsFunction<ValueType,IndexType,LabelType>                 PottsFunction;      // Potts function

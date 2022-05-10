@@ -28,7 +28,7 @@ double compute_triangle_th(const std::size_t center_node_index, const multicut_t
 {
    assert(center_node_index <= 2);
 
-   size_t first_incident_edge, second_incident_edge;
+   std::size_t first_incident_edge, second_incident_edge;
    const auto edges = incident_edges_indices(center_node_index);
    std::tie(first_incident_edge, second_incident_edge) = std::make_tuple(edges[0], edges[1]);
    //const auto [first_incident_edge, second_incident_edge] = incident_edges_indices(center_node_index);
@@ -49,7 +49,7 @@ void reparametrize_triplet(multicut_triplet_factor& t, const std::size_t center_
    assert(center_node_index <= 2);
    assert(weight >= 0.0);
 
-   size_t first_incident_edge, second_incident_edge;
+   std::size_t first_incident_edge, second_incident_edge;
    const auto edges = incident_edges_indices(center_node_index);
    std::tie(first_incident_edge, second_incident_edge) = std::make_tuple(edges[0], edges[1]);
    //const auto [first_incident_edge, second_incident_edge] = incident_edges_indices(center_node_index);
